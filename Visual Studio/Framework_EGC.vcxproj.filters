@@ -37,8 +37,8 @@
     <Filter Include="Migine\GameObjects">
       <UniqueIdentifier>{9aadbaae-7946-43af-a090-f2ad088c624c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Migine\SpatialBinaryTree">
-      <UniqueIdentifier>{86c6ea1a-f0b5-43a3-aafa-8bb645964570}</UniqueIdentifier>
+    <Filter Include="Migine\BroadContactDetection">
+      <UniqueIdentifier>{a59a9af8-cf6e-401c-ac62-866a34b4547c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -76,14 +76,8 @@
     <ClCompile Include="..\Source\Core\Window\InputController.cpp">
       <Filter>Core\Window</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Component\SimpleScene.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Core\GPU\GPUBuffers.cpp">
       <Filter>Core\GPU</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Component\SceneInput.cpp">
-      <Filter>Component</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Laboratoare\Laborator8\Laborator8.cpp">
       <Filter>Laboratoare\Laborator8</Filter>
@@ -115,14 +109,23 @@
     <ClCompile Include="..\Source\Migine\Renderers\BaseRenderer.cpp">
       <Filter>Migine\Renderers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Migine\SpatialBinaryTree\AABB.cpp">
-      <Filter>Migine\SpatialBinaryTree</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Migine\SpatialBinaryTree\SpatialBinaryTree.cpp">
-      <Filter>Migine\SpatialBinaryTree</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Migine\ResourceManager.cpp">
       <Filter>Migine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Migine\BroadContactDetection\AABB.cpp">
+      <Filter>Migine\BroadContactDetection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Migine\BroadContactDetection\BVH.cpp">
+      <Filter>Migine\BroadContactDetection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Migine\BaseScene.cpp">
+      <Filter>Migine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Migine\SceneInput.cpp">
+      <Filter>Migine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Migine\BroadContactDetection\RenderedWraperForAABB.cpp">
+      <Filter>Migine\BroadContactDetection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -177,9 +180,6 @@
     <ClInclude Include="..\Source\Core\GPU\GPUBuffers.h">
       <Filter>Core\GPU</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Component\SceneInput.h">
-      <Filter>Component</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Laboratoare\Laborator8\Laborator8.h">
       <Filter>Laboratoare\Laborator8</Filter>
     </ClInclude>
@@ -216,17 +216,23 @@
     <ClInclude Include="..\Source\Migine\Renderers\BaseRenderer.h">
       <Filter>Migine\Renderers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Migine\SpatialBinaryTree\AABB.h">
-      <Filter>Migine\SpatialBinaryTree</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Migine\SpatialBinaryTree\SpatialBinaryTree.h">
-      <Filter>Migine\SpatialBinaryTree</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Migine\ResourceManager.h">
       <Filter>Migine</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Component\SimpleScene.h">
-      <Filter>Component</Filter>
+    <ClInclude Include="..\Source\Migine\BroadContactDetection\AABB.h">
+      <Filter>Migine\BroadContactDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Migine\BroadContactDetection\BVH.h">
+      <Filter>Migine\BroadContactDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Migine\BaseScene.h">
+      <Filter>Migine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Migine\SceneInput.h">
+      <Filter>Migine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Migine\BroadContactDetection\RenderedWraperForAABB.h">
+      <Filter>Migine\BroadContactDetection</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -17,7 +17,9 @@ RenderedObject::RenderedObject(Mesh* mesh, BaseRenderer* renderer, const EngineC
 }
 
 RenderedObject::~RenderedObject() {
-	delete renderer;
+	if (renderer) {
+		delete renderer;
+	}
 }
 
 void RenderedObject::Render(const Camera* camera) {

@@ -20,8 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\Component\CameraInput.cpp" />
-    <ClCompile Include="..\Source\Component\SceneInput.cpp" />
-    <ClCompile Include="..\Source\Component\SimpleScene.cpp" />
     <ClCompile Include="..\Source\Core\Engine.cpp" />
     <ClCompile Include="..\Source\Core\GPU\GPUBuffers.cpp" />
     <ClCompile Include="..\Source\Core\GPU\Mesh.cpp" />
@@ -35,6 +33,10 @@
     <ClCompile Include="..\Source\include\gl.cpp" />
     <ClCompile Include="..\Source\Laboratoare\Laborator8\Laborator8.cpp" />
     <ClCompile Include="..\Source\Main.cpp" />
+    <ClCompile Include="..\Source\Migine\BaseScene.cpp" />
+    <ClCompile Include="..\Source\Migine\BroadContactDetection\AABB.cpp" />
+    <ClCompile Include="..\Source\Migine\BroadContactDetection\BVH.cpp" />
+    <ClCompile Include="..\Source\Migine\BroadContactDetection\RenderedWraperForAABB.cpp" />
     <ClCompile Include="..\Source\Migine\GameObjects\Box.cpp" />
     <ClCompile Include="..\Source\Migine\GameObjects\GameObject.cpp" />
     <ClCompile Include="..\Source\Migine\GameObjects\Sphere.cpp" />
@@ -44,14 +46,11 @@
     <ClCompile Include="..\Source\Migine\Renderers\SimpleRenderer.cpp" />
     <ClCompile Include="..\Source\Migine\Renderers\WireframeRenderer.cpp" />
     <ClCompile Include="..\Source\Migine\ResourceManager.cpp" />
-    <ClCompile Include="..\Source\Migine\SpatialBinaryTree\AABB.cpp" />
-    <ClCompile Include="..\Source\Migine\SpatialBinaryTree\SpatialBinaryTree.cpp" />
+    <ClCompile Include="..\Source\Migine\SceneInput.cpp" />
     <ClCompile Include="..\Source\Migine\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Component\CameraInput.h" />
-    <ClInclude Include="..\Source\Component\SceneInput.h" />
-    <ClInclude Include="..\Source\Component\SimpleScene.h" />
     <ClInclude Include="..\Source\Core\Engine.h" />
     <ClInclude Include="..\Source\Core\GPU\GPUBuffers.h" />
     <ClInclude Include="..\Source\Core\GPU\Mesh.h" />
@@ -69,6 +68,10 @@
     <ClInclude Include="..\Source\include\utils.h" />
     <ClInclude Include="..\Source\Laboratoare\LabList.h" />
     <ClInclude Include="..\Source\Laboratoare\Laborator8\Laborator8.h" />
+    <ClInclude Include="..\Source\Migine\BaseScene.h" />
+    <ClInclude Include="..\Source\Migine\BroadContactDetection\AABB.h" />
+    <ClInclude Include="..\Source\Migine\BroadContactDetection\BVH.h" />
+    <ClInclude Include="..\Source\Migine\BroadContactDetection\RenderedWraperForAABB.h" />
     <ClInclude Include="..\Source\Migine\constants.h" />
     <ClInclude Include="..\Source\Migine\define.h" />
     <ClInclude Include="..\Source\Migine\GameObjects\Box.h" />
@@ -80,8 +83,7 @@
     <ClInclude Include="..\Source\Migine\Renderers\SimpleRenderer.h" />
     <ClInclude Include="..\Source\Migine\Renderers\WireframeRenderer.h" />
     <ClInclude Include="..\Source\Migine\ResourceManager.h" />
-    <ClInclude Include="..\Source\Migine\SpatialBinaryTree\AABB.h" />
-    <ClInclude Include="..\Source\Migine\SpatialBinaryTree\SpatialBinaryTree.h" />
+    <ClInclude Include="..\Source\Migine\SceneInput.h" />
     <ClInclude Include="..\Source\Migine\utils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -99,26 +101,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>ClangCL</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -214,7 +216,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

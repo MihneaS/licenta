@@ -1,12 +1,11 @@
 #pragma once
-#include <Component/SimpleScene.h>
+
 #include <Component/Transform/Transform.h>
 #include <Core/GPU/Mesh.h>
 
-#include <vector>
-#include <Migine/GameObjects/GameObject.h>
+#include <Migine/BaseScene.h>
 
-class Laborator8 : public SimpleScene
+class Laborator8 : public Migine::BaseScene
 {
 	public:
 		Laborator8();
@@ -17,6 +16,7 @@ class Laborator8 : public SimpleScene
 	private:
 		void FrameStart() override;
 		void Update(float deltaTimeSeconds) override;
+		void OldUpdate(float deltaTimeSeconds);
 		void FrameEnd() override;
 
 		void RenderSimpleMesh(Mesh *mesh, Shader *shader, const glm::mat4 &modelMatrix, const glm::vec3 &color = glm::vec3(1));
@@ -34,5 +34,6 @@ class Laborator8 : public SimpleScene
 		float materialKd;
 		float materialKs;
 
-		std::vector<Migine::GameObject*> gameObjects;
+		glm::vec3 lightPosition;
+		glm::vec3 lightDirection;
 };

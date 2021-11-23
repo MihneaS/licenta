@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <unordered_map>
 
 #include <assimp/Importer.hpp>		// C++ importer interface
 #include <assimp/scene.h>			// Output data structure
@@ -65,14 +66,22 @@ struct MeshEntry
 };
 
 namespace Migine {
+#define MIGINE_MESH_IDS \
+MIGINE_X(plane, "plane")\
+MIGINE_X(line, "line")\
+MIGINE_X(boxWireframe, "boxWireframe") \
+MIGINE_X(box, "box")\
+MIGINE_X(sphere, "sphere")
+
+#define MIGINE_X(id, name) id,
 	enum class MeshId {
-		plane,
-		line,
-		boxWireframe,
-		box,
-		sphere
+		MIGINE_MESH_IDS
 	};
+#undef MIGINE_X
+
+	extern std::unordered_map<MeshId, const char*> meshIdToIdNames;
 }
+
 
 class Mesh
 {

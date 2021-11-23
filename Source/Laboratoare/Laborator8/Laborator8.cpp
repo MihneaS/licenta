@@ -19,18 +19,13 @@ using glm::vec3;
 using glm::quat;
 using EngineComponents::Transform;
 using EngineComponents::Camera;
-using Migine::EulerAnglesDegToQuat;
-using Migine::MeshId;
-using Migine::ShaderId;
-using Migine::ResourceManager;
-using Migine::GetMesh;
-using Migine::GetShader;
+using namespace Migine;
 
 Laborator8::Laborator8() {
 }
 
 Laborator8::~Laborator8() {
-	for each  (auto gameObject in gameObjects) {
+	for (auto gameObject : gameObjects) {
 		delete gameObject;
 	}
 }
@@ -52,19 +47,24 @@ void Laborator8::Init()
 
 	// create test Migine::Box
 	{
-		Migine::Box *box = new Migine::Box({ 2,2,-2 }, { 1,2,1 }, EulerAnglesDegToQuat({45, 0, 45}));
-		box->aabb.show = true;
-		gameObjects.push_back(box);
+		RegisterGameObject(new Migine::Box({ 2,2,-2 }, { 1,2,1 }, EulerAnglesDegToQuat({45, 0, 45})));
 	}
 
 	//create test Migine::Sphere
 	{
-		Migine::Sphere* sphere = new Migine::Sphere({ -2,2,-2 }, { 2,0.5,1 }, EulerAnglesDegToQuat({ 45, 0, 45 }));
-		sphere->aabb.show = true;
-		gameObjects.push_back(sphere);
+		RegisterGameObject(new Migine::Sphere({ -2,2,-2 }, { 2,0.5,1 }, EulerAnglesDegToQuat({ 45, 0, 45 })));
 	}
 
-	for each (auto gameObject in gameObjects) {
+
+	{
+		RegisterGameObject(new Migine::Sphere({ 2, 5, 0}));
+		RegisterGameObject(new Migine::Sphere({ -2, 5, 0 }));
+		RegisterGameObject(new Migine::Sphere({ 0, 5, 2 }));
+		RegisterGameObject(new Migine::Sphere({ 0, 5, -2 }));
+		RegisterGameObject(new Migine::Sphere({ 6, 5, 0 }));
+	}
+
+	for (auto gameObject : gameObjects) {
 		gameObject->Init();
 	}
 
@@ -83,49 +83,16 @@ void Laborator8::FrameStart()
 
 void Laborator8::Update(float deltaTimeSeconds)
 {
-	{
-		glm::mat4 modelMatrix = glm::mat4(1);
-		modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 1, 0));
-		RenderSimpleMesh(GetMesh<MeshId::sphere>(), GetShader<ShaderId::lab8>(), modelMatrix);
-		//RenderMesh(meshes["sphere"], shaders["Simple"], modelMatrix);
-	}
+	OldUpdate(deltaTimeSeconds);
 
-	{
-		glm::mat4 modelMatrix = glm::mat4(1);
-		modelMatrix = glm::translate(modelMatrix, glm::vec3(2, 0.5f, 0));
-		modelMatrix = glm::rotate(modelMatrix, RADIANS(60.0f), glm::vec3(1, 0, 0));
-		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f));
-		RenderSimpleMesh(GetMesh<MeshId::box>(), GetShader<ShaderId::lab8>(), modelMatrix);
-		//RenderMesh(meshes["box"], shaders["Simple"], modelMatrix);
-	}
-
-	{
-		glm::mat4 modelMatrix = glm::mat4(1);
-		modelMatrix = glm::translate(modelMatrix, glm::vec3(-2, 0.5f, 0));
-		modelMatrix = glm::rotate(modelMatrix, RADIANS(60.0f), glm::vec3(1, 1, 0));
-		RenderSimpleMesh(GetMesh<MeshId::box>(), GetShader<ShaderId::lab8>(), modelMatrix, glm::vec3(0, 0.5, 0));
-		//RenderMesh(meshes["box"], shaders["Simple"], modelMatrix);
-	}
-
-	// Render ground
-	{
-		glm::mat4 modelMatrix = glm::mat4(1);
-		modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0.01f, 0));
-		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.25f));
-		RenderSimpleMesh(GetMesh<MeshId::plane>(), GetShader<ShaderId::lab8>(), modelMatrix);
-		//RenderMesh(meshes["plane"], shaders["Simple"], modelMatrix);
-	}
-
-	// Render the point light in the scene
-	{
-		glm::mat4 modelMatrix = glm::mat4(1);
-		modelMatrix = glm::translate(modelMatrix, lightPosition);
-		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
-		RenderMesh(GetMesh<MeshId::sphere>(), GetShader<ShaderId::lab8>(), modelMatrix);
-	}
-
-	for each (auto gameObject in gameObjects) {
+	for (auto gameObject : gameObjects) {
 		gameObject->Render(this->GetSceneCamera());
+	}
+	bvh.RenderAll(camera);
+	int i = 1;
+	while (i < 2) {
+		i++;
+		auto o = false;
 	}
 }
 
@@ -242,4 +209,47 @@ void Laborator8::OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY)
 
 void Laborator8::OnWindowResize(int width, int height)
 {
+}
+
+void Laborator8::OldUpdate(float deltaTimeSeconds) {
+	{
+		glm::mat4 modelMatrix = glm::mat4(1);
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 1, 0));
+		RenderSimpleMesh(GetMesh<MeshId::sphere>(), GetShader<ShaderId::lab8>(), modelMatrix);
+		//RenderMesh(meshes["sphere"], shaders["Simple"], modelMatrix);
+	}
+
+	{
+		glm::mat4 modelMatrix = glm::mat4(1);
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(2, 0.5f, 0));
+		modelMatrix = glm::rotate(modelMatrix, RADIANS(60.0f), glm::vec3(1, 0, 0));
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f));
+		RenderSimpleMesh(GetMesh<MeshId::box>(), GetShader<ShaderId::lab8>(), modelMatrix);
+		//RenderMesh(meshes["box"], shaders["Simple"], modelMatrix);
+	}
+
+	{
+		glm::mat4 modelMatrix = glm::mat4(1);
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(-2, 0.5f, 0));
+		modelMatrix = glm::rotate(modelMatrix, RADIANS(60.0f), glm::vec3(1, 1, 0));
+		RenderSimpleMesh(GetMesh<MeshId::box>(), GetShader<ShaderId::lab8>(), modelMatrix, glm::vec3(0, 0.5, 0));
+		//RenderMesh(meshes["box"], shaders["Simple"], modelMatrix);
+	}
+
+	// Render ground
+	{
+		glm::mat4 modelMatrix = glm::mat4(1);
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0.01f, 0));
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.25f));
+		RenderSimpleMesh(GetMesh<MeshId::plane>(), GetShader<ShaderId::lab8>(), modelMatrix);
+		//RenderMesh(meshes["plane"], shaders["Simple"], modelMatrix);
+	}
+
+	// Render the point light in the scene
+	{
+		glm::mat4 modelMatrix = glm::mat4(1);
+		modelMatrix = glm::translate(modelMatrix, lightPosition);
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
+		RenderMesh(GetMesh<MeshId::sphere>(), GetShader<ShaderId::lab8>(), modelMatrix);
+	}
 }
