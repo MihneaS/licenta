@@ -104,6 +104,8 @@ void Laborator8::Update(float deltaTimeSeconds)
 		gameObject->Render(this->GetSceneCamera());
 	}
 	bvh.RenderAll(camera);
+
+	PrintFps(deltaTimeSeconds);
 }
 
 void Laborator8::FrameEnd()

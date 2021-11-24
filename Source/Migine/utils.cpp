@@ -2,9 +2,14 @@
 
 #include <Migine/constants.h>
 
+#include <sstream>
+#include <iostream>
+
 using namespace Migine;
 using glm::quat;
 using glm::vec3;
+using std::cout;
+using std::stringstream;
 
 quat Migine::EulerAnglesToQuat(vec3 eulerAngles)
 {
@@ -18,4 +23,26 @@ quat Migine::EulerAnglesToQuat(vec3 eulerAngles)
 quat Migine::EulerAnglesDegToQuat(vec3 eulerAngles)
 {
 	return EulerAnglesToQuat(eulerAngles * kDegToRad);
+}
+
+void Migine::PrintFps(float deltaTime) {
+	// time is in seconds
+	static int lastPrintedStringLength = 0;
+	static float timeSinceLastPrint = 0;
+	static int framesSinceLastPrint = 0;
+
+	stringstream ss;
+
+	timeSinceLastPrint += deltaTime;
+	framesSinceLastPrint++;
+	if (timeSinceLastPrint >= 0.66) {
+		for (int i = 0; i < lastPrintedStringLength; i++) {
+			cout << "\b";
+		}
+		ss << framesSinceLastPrint / timeSinceLastPrint << " fps";
+		lastPrintedStringLength = ss.str().size();
+		cout << ss.str();
+		timeSinceLastPrint = 0;
+		framesSinceLastPrint = 0;
+	}
 }
