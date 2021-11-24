@@ -47,12 +47,21 @@ namespace Migine {
 			// memory managed by someone else
 			const AABB* addedVolume;
 			std::unordered_map<const Node*, float> cache;
-
-
 		public:
 			EnlargedVolumeGreater(const AABB* addedVolume);
 		private:
 			float GetEnlargedVolume(const Node* toEnlarge);
+		public:
+			bool operator() (const Node* lhs, const Node* rhs);
+		};
+		class ManhattanDistanceGreater {
+			// memory managed by someone else
+			const AABB* addedVolume;
+			std::unordered_map<const Node*, float> cache;
+		public:
+			ManhattanDistanceGreater(const AABB* addedVolume);
+		private:
+			float GetDistance(const Node* to);
 		public:
 			bool operator() (const Node* lhs, const Node* rhs);
 		};

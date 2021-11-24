@@ -117,8 +117,10 @@ void BVH::Insert(Node* root, GameObject* gameObject) {
 		tree_root = newLeafNode;
 	}
 	else {
-		EnlargedVolumeGreater greater(&aabbForGameObj);
-		priority_queue<Node*, vector<Node*>, EnlargedVolumeGreater> pq(greater);
+		//EnlargedVolumeGreater greater(&aabbForGameObj);
+		//priority_queue<Node*, vector<Node*>, EnlargedVolumeGreater> pq(greater);
+		ManhattanDistanceGreater greater(&aabbForGameObj);
+		priority_queue<Node*, vector<Node*>, ManhattanDistanceGreater> pq(greater);
 		while (!root->IsLeaf()) {
 			/* 
 			* aici godot (care se inspira din bullet) selecteaza pur si simplu "copilul mai apropiat",
@@ -243,4 +245,26 @@ void BVH::PrintRecursive(std::ostream& outStream, Node* root, int level) {
 	else {
 		outStream << " Leaf\n";
 	}
+}
+
+BVH::ManhattanDistanceGreater::ManhattanDistanceGreater(const AABB* addedVolume) :
+	addedVolume(addedVolume) {
+}
+
+float Migine::BVH::ManhattanDistanceGreater::GetDistance(const Node* other) {
+	auto it = cache.find(other);
+	if (it != cache.end()) {
+		return it->second;
+	}
+	vec3 addedVolumeCenter = addedVolume->GetCenter();
+	vec3 otherCenter = other->boundingVolume.GetCenter();
+	float distance = abs(addedVolumeCenter.x - otherCenter.x) +
+	                 abs(addedVolumeCenter.y - otherCenter.y) +
+	                 abs(addedVolumeCenter.z - otherCenter.z);
+	cache[other] = distance;
+	return distance;
+}
+
+bool BVH::ManhattanDistanceGreater::operator()(const Node* lhs, const Node* rhs) {
+	return GetDistance(lhs) > GetDistance(rhs);
 }
