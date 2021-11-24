@@ -21,6 +21,8 @@ using EngineComponents::Transform;
 using EngineComponents::Camera;
 using namespace Migine;
 
+Migine::GameObject* tmp;
+
 Laborator8::Laborator8() {
 }
 
@@ -63,6 +65,11 @@ void Laborator8::Init()
 		RegisterGameObject(new Migine::Sphere({ 0, 5, -2 }));
 		RegisterGameObject(new Migine::Sphere({ 6, 5, 0 }));
 	}
+	{
+		Migine::Sphere* s = new Migine::Sphere({ -6, 5, 0 });
+		RegisterGameObject(s);
+		tmp = s;
+	}
 
 	for (auto gameObject : gameObjects) {
 		gameObject->Init();
@@ -84,16 +91,19 @@ void Laborator8::FrameStart()
 void Laborator8::Update(float deltaTimeSeconds)
 {
 	OldUpdate(deltaTimeSeconds);
-
+	for (auto gameObject : gameObjects) {
+		bool hasMoved = gameObject->Integrate(deltaTimeSeconds);
+		if (hasMoved) {
+			bvh.Update(gameObject);
+		}
+	}
+	static float t = 0;
+	t += deltaTimeSeconds;
+	tmp->speed = { 0, sin(t), 0 };
 	for (auto gameObject : gameObjects) {
 		gameObject->Render(this->GetSceneCamera());
 	}
 	bvh.RenderAll(camera);
-	int i = 1;
-	while (i < 2) {
-		i++;
-		auto o = false;
-	}
 }
 
 void Laborator8::FrameEnd()

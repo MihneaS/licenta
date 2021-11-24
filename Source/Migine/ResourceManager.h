@@ -10,7 +10,9 @@ namespace Migine {
 	private:
 		ResourceManager();
 
+		// memory manged by this
 		std::unordered_map<MeshId, Mesh*> meshes;
+		// memory managed by this
 		std::unordered_map<ShaderId, Shader*> shaders;
 		
 	public:

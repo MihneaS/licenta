@@ -8,7 +8,9 @@ namespace Migine {
 
 	class BaseRenderer {
 	public:
+		// memory managed by someone else
 		const Shader *shader;
+		// memory managed by someone else
 		RenderedObject *renderedObject;
 
 		BaseRenderer(const Shader *shader, RenderedObject* renderedObject);

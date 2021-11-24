@@ -12,3 +12,4 @@ const int kBoxMaterialShiness = 30;
 const float kBoxMaterialKd = 0.5;
 const float kBoxMaterialKs = 0.5;
 const glm::vec3 kBoxColor = { 0.0f / 256.0f, 153.0f / 256.0f, 255.0f };
+const glm::vec3 kVec3Zero = {0,0,0};

@@ -25,5 +25,6 @@ namespace Migine {
 		float GetVolume() const;
 		glm::vec3 GetCenter() const;
 		void EnlargeBy(const AABB* toEnlargeBy);
+		void Resize(const AABB* child0, const AABB* child1);
 	};
 }

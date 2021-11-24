@@ -3,6 +3,7 @@
 #include <Core/Engine.h>
 #include <Component/Transform/Transform.h>
 #include <Component/Camera/Camera.h>
+
 #include <Migine/Renderers/BaseRenderer.h>
 
 namespace Migine {
@@ -10,7 +11,9 @@ namespace Migine {
 	public:
 
 		EngineComponents::Transform transform;
+		// memory managed by Resource Manager
 		Mesh* mesh;
+		// memory managed by Resource Manager
 		BaseRenderer* renderer;
 
 		RenderedObject(Mesh* mesh, BaseRenderer* renderer,

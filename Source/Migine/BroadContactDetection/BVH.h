@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Migine/GameObjects/GameObject.h>
+//#include <Migine/GameObjects/GameObject.h>
 #include <Migine/BroadContactDetection/AABB.h>
 #include <Migine/BroadContactDetection/RenderedWraperForAABB.h>
 
@@ -11,18 +11,20 @@
 
 
 namespace Migine {
+	class GameObject;
+
 	class BVH {
+		friend class GameObject;
+
 		class Node {
 		public:
-			static Node null;
+			// memory managed by the BVH managing this Node
 			Node* parent = nullptr;
 			AABB boundingVolume;
 			union {
+				// memory managed by the BVH managing this Node
 				Node* children[2] = {nullptr, nullptr};
-				//struct {
-				//GameObject* boundedObject[2];// = { nullptr, nullptr };
-					//void* ceva = nullptr;
-				//};
+				// memory managed by someone else
 				GameObject* boundedObject;
 			};
 
@@ -33,12 +35,16 @@ namespace Migine {
 			bool IsLeaf();
 			int GetIndexInParent();
 			int GetIndexOfChild(Node* child);
+			int GetIndexOfBrother(Node* child);
+			Node* GetBrother(Node* child);
 			void RepalceChild(Node* oldChild, Node* newChild);
+			void Refit(); // TODO find better verb
 			friend class NodeLess;
 		};
 		//static Node nullNode;
 
 		class EnlargedVolumeGreater {
+			// memory managed by someone else
 			const AABB* addedVolume;
 			std::unordered_map<const Node*, float> cache;
 
@@ -51,6 +57,7 @@ namespace Migine {
 			bool operator() (const Node* lhs, const Node* rhs);
 		};
 
+		// memory managed by this
 		Node* tree_root = nullptr; // TODO change name to bvhRoot
 		std::unordered_map<Node*, RenderedWraperForAABB> rws4aabbs;
 
@@ -60,9 +67,12 @@ namespace Migine {
 
 		void Insert(GameObject* gameObject);
 		void Insert(Node* root, GameObject* gameObject);
+		void Remove(GameObject* gameObject);
+		void RemoveLeaf(Node* leaf);
 		void DeleteTree(Node* root);
 		void RenderAll(EngineComponents::Camera* camera);
 		void Print(std::ostream& outStream);
+		void Update(GameObject* gameObject); // TODO find better name
 
 	private:
 		void RenderAllRecursive(EngineComponents::Camera* camera, Node* root);

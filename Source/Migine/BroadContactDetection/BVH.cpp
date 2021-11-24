@@ -1,4 +1,6 @@
 #include "BVH.h"
+#include <Migine/GameObjects/GameObject.h>
+
 #include <Core/GPU/Mesh.h>
 
 #include <queue>
@@ -38,15 +40,27 @@ int BVH::Node::GetIndexInParent() {
 	return (parent->children[1] == this) ? 1 : 0;
 }
 
-int BVH::Node::GetIndexOfChild(Node* child)
-{
+int BVH::Node::GetIndexOfChild(Node* child) {
 	int index = (children[1] == child) ? 1 : 0;
 	assert(children[index] == child);
 	return index;
 }
 
+int BVH::Node::GetIndexOfBrother(Node* child) {
+	return !GetIndexOfChild(child);
+}
+
+BVH::Node* BVH::Node::GetBrother(Node* child)
+{
+	return children[GetIndexOfBrother(child)];
+}
+
 void BVH::Node::RepalceChild(Node* oldChild, Node* newChild) {
 	children[GetIndexOfChild(oldChild)] = newChild;
+}
+
+void BVH::Node::Refit() {
+	boundingVolume.Resize(&children[0]->boundingVolume, &children[1]->boundingVolume);
 }
 
 BVH::~BVH() {
@@ -98,6 +112,7 @@ bool BVH::EnlargedVolumeGreater::operator()(const Node* lhs, const Node* rhs) {
 void BVH::Insert(Node* root, GameObject* gameObject) {
 	AABB aabbForGameObj(gameObject);
 	Node* newLeafNode = new Node(gameObject, &aabbForGameObj, nullptr);
+	gameObject->bvhNode = newLeafNode;
 	if (!tree_root) {
 		tree_root = newLeafNode;
 	}
@@ -133,11 +148,43 @@ void BVH::Insert(Node* root, GameObject* gameObject) {
 			} while (root);
 		}
 		/*
-		* TODO repair upwards
+		* TODO optimize upwards
 		*/
-		Print(cout);
+		//Print(cout);
 	}
 }
+
+void BVH::Remove(GameObject* gameObject) {
+	RemoveLeaf(gameObject->bvhNode);
+	gameObject->bvhNode = nullptr;
+}
+
+void BVH::RemoveLeaf(Node* leaf) {
+	if (leaf == tree_root) {
+		tree_root = nullptr;
+	} else {
+		Node* grandParent = leaf->parent->parent;
+		Node* brother = leaf->parent->GetBrother(leaf);
+		if (!grandParent) {
+			tree_root = brother;
+			tree_root->parent = nullptr;
+		} else {
+
+			grandParent->RepalceChild(leaf->parent, brother);
+			brother->parent = grandParent;
+			do {
+				grandParent->Refit();
+				grandParent = grandParent->parent;
+			} while (grandParent);
+			/*
+			* Maybe optimize upwards?
+			*/
+		}
+		delete leaf->parent;
+	}
+	delete leaf;
+}
+
 
 void BVH::DeleteTree(Node* root) {
 	if (!root->IsLeaf()) {
@@ -156,6 +203,12 @@ void BVH::Print(std::ostream& outStream) {
 	outStream << i++ << "\n";
 	PrintRecursive(outStream, tree_root, 0);
 	outStream << "\n";
+}
+
+void BVH::Update(GameObject* gameObject) {
+	// TODO foloseste un volum mai strans si unul mai mare, daca volumul mai stramt nu iese din ala mare nu modifica
+	Remove(gameObject);
+	Insert(gameObject);
 }
 
 void BVH::RenderAllRecursive(Camera* camera, Node* root) {

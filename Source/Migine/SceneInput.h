@@ -8,10 +8,11 @@ namespace Migine {
 	class SceneInput : public InputController
 	{
 	public:
-		SceneInput(BaseScene* camera);
-		void OnKeyPress(int key, int mods) override;
-
-	public:
+		// memory managed by someone else
 		BaseScene* scene;
+
+		SceneInput(BaseScene* camera);
+
+		void OnKeyPress(int key, int mods) override;
 	};
 }

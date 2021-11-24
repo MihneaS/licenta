@@ -28,16 +28,22 @@ namespace Migine {
 		glm::vec3 lightDirection;
 
 	public:
+		// memory managed by this
 		EngineComponents::Camera* camera;
 	private:
+		// memory managed by this
 		InputController* cameraInput;
 
 		bool drawGroundPlane;
+		// memory managed by this
 		Mesh* xozPlane;
+		// memory managed by this
 		Mesh* simpleLine;
+		// memory managed by this
 		EngineComponents::Transform* objectModel;
 	protected:
 		BVH bvh;
+		//memory managed by this
 		std::vector<Migine::GameObject*> gameObjects;
 
 

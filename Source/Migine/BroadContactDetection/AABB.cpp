@@ -36,12 +36,7 @@ AABB::AABB(GameObject* boundedObject) {
 }
 
 AABB::AABB(const AABB* child0, const AABB* child1) {
-	minPos.x = min(child0->minPos.x, child1->minPos.x);
-	maxPos.x = max(child0->maxPos.x, child1->maxPos.x);
-	minPos.y = min(child0->minPos.y, child1->minPos.y);
-	maxPos.y = max(child0->maxPos.y, child1->maxPos.y);
-	minPos.z = min(child0->minPos.z, child1->minPos.z);
-	maxPos.z = max(child0->maxPos.z, child1->maxPos.z);
+	Resize(child0, child1);
 }
 
 float AABB::GetVolume() const {
@@ -55,10 +50,14 @@ glm::vec3 Migine::AABB::GetCenter() const
 }
 
 void AABB::EnlargeBy(const AABB* toEnlargeBy) {
-	minPos.x = min(minPos.x, toEnlargeBy->minPos.x);
-	maxPos.x = max(maxPos.x, toEnlargeBy->maxPos.x);
-	minPos.y = min(minPos.y, toEnlargeBy->minPos.y);
-	maxPos.y = max(maxPos.y, toEnlargeBy->maxPos.y);
-	minPos.z = min(minPos.z, toEnlargeBy->minPos.z);
-	maxPos.z = max(maxPos.z, toEnlargeBy->maxPos.z);
+	Resize(this, toEnlargeBy);
+}
+
+void AABB::Resize(const AABB* child0, const AABB* child1) {
+	minPos.x = min(child0->minPos.x, child1->minPos.x);
+	maxPos.x = max(child0->maxPos.x, child1->maxPos.x);
+	minPos.y = min(child0->minPos.y, child1->minPos.y);
+	maxPos.y = max(child0->maxPos.y, child1->maxPos.y);
+	minPos.z = min(child0->minPos.z, child1->minPos.z);
+	maxPos.z = max(child0->maxPos.z, child1->maxPos.z);
 }

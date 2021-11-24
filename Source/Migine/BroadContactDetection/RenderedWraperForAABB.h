@@ -8,6 +8,7 @@
 
 namespace Migine {
 	class RenderedWraperForAABB : public RenderedObject {
+		// memory managed by someone else
 		AABB* aabb;
 	public:
 		RenderedWraperForAABB(AABB* aabb, glm::vec3 color = kAABBColor, int lineWidth = kDefaultLineWidth);

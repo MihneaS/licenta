@@ -7,13 +7,6 @@
 
 namespace Migine {
 	class SimpleLighting : public BaseRenderer {
-	public:
-		SimpleLighting(const Shader* shader, RenderedObject* renderedObject,
-			glm::vec3* lightPosition, glm::vec3* lightDirection, int materialShininess, float materialKd, float materialKs,
-			glm::vec3 color);
-
-		virtual void Render(const EngineComponents::Camera* camera) override;
-
 	private:
 		int loc_light_position;
 		int loc_light_direction;
@@ -33,6 +26,12 @@ namespace Migine {
 		float materialKs;
 		glm::vec3 color;
 
+	public:
+		SimpleLighting(const Shader* shader, RenderedObject* renderedObject,
+			glm::vec3* lightPosition, glm::vec3* lightDirection, int materialShininess, float materialKd, float materialKs,
+			glm::vec3 color);
+
+		virtual void Render(const EngineComponents::Camera* camera) override;
 	};
 
 }
