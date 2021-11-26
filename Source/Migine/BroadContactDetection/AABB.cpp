@@ -61,3 +61,13 @@ void AABB::Resize(const AABB* child0, const AABB* child1) {
 	minPos.z = min(child0->minPos.z, child1->minPos.z);
 	maxPos.z = max(child0->maxPos.z, child1->maxPos.z);
 }
+
+bool AABB::DoesIntersect(const AABB* other) {
+	return contains(other->minPos) || contains(other->maxPos);
+}
+
+bool AABB::contains(glm::vec3 point) {
+	return minPos.x < point.x && point.x < maxPos.x &&
+	       minPos.y < point.y && point.y < maxPos.y &&
+	       minPos.z < point.z && point.z < maxPos.z;
+}
