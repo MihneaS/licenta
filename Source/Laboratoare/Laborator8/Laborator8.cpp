@@ -57,7 +57,7 @@ void Laborator8::Init()
 
 	//create test Migine::Sphere
 	{
-		RegisterGameObject(new Migine::Sphere({ -2,2,-2 }, { 2,0.5,1 }, EulerAnglesDegToQuat({ 45, 0, 45 })));
+		RegisterGameObject(new Migine::Sphere({ -2,2,-2 }));
 	}
 
 

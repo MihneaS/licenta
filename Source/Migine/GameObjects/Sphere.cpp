@@ -18,4 +18,5 @@ using std::max;
 Sphere::Sphere(vec3 position, vec3 scale, quat rotation) :
 	GameObject(GetMesh<MeshId::sphere>(), new SimpleRenderer(GetShader<ShaderId::vertexNormal>(), this),
 		position, scale, rotation) {
+	assert(scale == vec3({ 1, 1, 1 })); // sa fac detectia de coliziuni intre elipsoide e prea greu, asa ca nu permit elipsoide
 }
