@@ -3,11 +3,14 @@
 //#include <Migine/GameObjects/GameObject.h>
 #include <Migine/BroadContactDetection/AABB.h>
 #include <Migine/BroadContactDetection/RenderedWraperForAABB.h>
+#include <Migine/utils.h>
 
 #include <Component/SimpleScene.h>
 #include <Component/Camera/Camera.h>
 
 #include <unordered_map>
+#include <unordered_set>
+#include <tuple>
 
 
 namespace Migine {
@@ -65,23 +68,41 @@ namespace Migine {
 		public:
 			bool operator() (const Node* lhs, const Node* rhs);
 		};
+		template <class T>
+		struct TupleOrderlessEqualTo {
+			bool operator()(std::tuple<T, T>& lhs, std::tuple<T, T>& rhs) const {
+				return lhs.first == rhs.first && lhs.second == rhs.second ||
+				       lhs.first == rhs.second && lhs.second == rhs.first;
+			}
+		};
 
+		typedef ManhattanDistanceGreater NodeGreater; // easy to switch Greater
 		// memory managed by this
 		Node* tree_root = nullptr; // TODO change name to bvhRoot
 		std::unordered_map<Node*, RenderedWraperForAABB> rws4aabbs;
+		std::unordered_map<GameObject*, std::unordered_set<GameObject*> > contactsGraph;
+		std::unordered_set<std::tuple<GameObject*, GameObject*>, Migine::TupleHasher<GameObject*, GameObject*> > contactsCache;
 
 	public:
 		BVH() = default;
 		~BVH();
 
 		void Insert(GameObject* gameObject);
-		void Insert(Node* root, GameObject* gameObject);
 		void Remove(GameObject* gameObject);
-		void RemoveLeaf(Node* leaf);
-		void DeleteTree(Node* root);
 		void RenderAll(EngineComponents::Camera* camera);
 		void Print(std::ostream& outStream);
 		void Update(GameObject* gameObject); // TODO find better name
+		void CacheContacts(GameObject* gameObject);
+		void CacheContactsAndInsert(GameObject* gameObject);
+		void EraseGameObjectFromAllContacts(GameObject* gameobject);
+		size_t GetContactCount();
+
+	private:
+		void Insert(Node* root, GameObject* gameObject, AABB* boundingVolume = nullptr);
+		void RemoveLeaf(Node* leaf);
+		void DeleteTree(Node* root);
+		void CacheContact(GameObject* obj0, GameObject* obj1);
+		void RemoveContact(GameObject* obj0, GameObject* obj1);
 
 	private:
 		void RenderAllRecursive(EngineComponents::Camera* camera, Node* root);

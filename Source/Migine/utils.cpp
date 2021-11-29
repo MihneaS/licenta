@@ -48,7 +48,7 @@ void Migine::PrintFps(float deltaTime) {
 	}
 }
 
-int Migine::ContinousPrint(std::string s, int index) {
+int Migine::ContinousPrint(const std::string s, int index) {
 	static vector<string> toBePrinted;
 	static int printedCharactersCount = 0;//vector<int> printedCharactersPerSS;
 	if (index == kNoIndex) {
@@ -69,4 +69,12 @@ int Migine::ContinousPrint(std::string s, int index) {
 	cout << ss.str();
 
 	return index;
+}
+
+Printer::Printer() {
+	continousPrintIndex = ContinousPrint("", kNoIndex);
+}
+
+void Printer::Print(const std::string s) {
+	ContinousPrint(s, continousPrintIndex);
 }

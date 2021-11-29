@@ -9,10 +9,16 @@
 #include <iostream>
 
 using namespace Migine;
+
 using std::priority_queue;
 using std::vector;
 using std::cout;
+using std::swap;
+using std::tuple;
+using std::make_tuple;
+
 using glm::vec3;
+
 using EngineComponents::Camera;
 
 //BVH::Node::Node(GameObject* boundedObject, AABB* boundingVolume, Node* parent) :
@@ -70,7 +76,8 @@ BVH::~BVH() {
 }
 
 void BVH::Insert(GameObject* gameObject) {
-	Insert(tree_root, gameObject);
+	//Insert(tree_root, gameObject);
+	CacheContactsAndInsert(gameObject);
 }
 
 BVH::EnlargedVolumeGreater::EnlargedVolumeGreater(const AABB* addedVolume) :
@@ -90,6 +97,7 @@ float BVH::EnlargedVolumeGreater::GetEnlargedVolume(const Node* toEnlarge) {
 
 bool BVH::EnlargedVolumeGreater::operator()(const Node* lhs, const Node* rhs) {
 	// lhs < rhs is true => rhs is more important
+	// lhs > rhs is true => lhs is more important
 	float lhsVolume = lhs->boundingVolume.GetVolume();
 	float rhsVolume = rhs->boundingVolume.GetVolume();
 	float lhsEnlargedVolume = GetEnlargedVolume(lhs);
@@ -106,12 +114,17 @@ bool BVH::EnlargedVolumeGreater::operator()(const Node* lhs, const Node* rhs) {
 	bool lhsVolumeDidntEnlarge = lhsVolume == lhsEnlargedVolume;
 	bool rhsVolumeDidntEnlarge = rhsVolume == rhsEnlargedVolume;
 	return lhsVolumeDidntEnlarge == rhsVolumeDidntEnlarge && (lhsEnlargedVolume > rhsEnlargedVolume) ||
-		!lhsVolumeDidntEnlarge && rhsVolumeDidntEnlarge;
+	       !lhsVolumeDidntEnlarge && rhsVolumeDidntEnlarge;
 }
 
-void BVH::Insert(Node* root, GameObject* gameObject) {
-	AABB aabbForGameObj(gameObject);
-	Node* newLeafNode = new Node(gameObject, &aabbForGameObj, nullptr);
+void BVH::Insert(Node* root, GameObject* gameObject, AABB* boundingVolume) {
+	//AABB aabbForGameObj(gameObject);
+	bool deleteBoundingVolume = false;
+	if (boundingVolume == nullptr) {
+		boundingVolume = new AABB(gameObject);
+		deleteBoundingVolume = true;
+	}
+	Node* newLeafNode = new Node(gameObject, boundingVolume, nullptr);
 	gameObject->bvhNode = newLeafNode;
 	if (!tree_root) {
 		tree_root = newLeafNode;
@@ -119,8 +132,8 @@ void BVH::Insert(Node* root, GameObject* gameObject) {
 	else {
 		//EnlargedVolumeGreater greater(&aabbForGameObj);
 		//priority_queue<Node*, vector<Node*>, EnlargedVolumeGreater> pq(greater);
-		ManhattanDistanceGreater greater(&aabbForGameObj);
-		priority_queue<Node*, vector<Node*>, ManhattanDistanceGreater> pq(greater);
+		NodeGreater greater(boundingVolume);
+		priority_queue<Node*, vector<Node*>, NodeGreater> pq(greater);
 		while (!root->IsLeaf()) {
 			/* 
 			* aici godot (care se inspira din bullet) selecteaza pur si simplu "copilul mai apropiat",
@@ -145,7 +158,7 @@ void BVH::Insert(Node* root, GameObject* gameObject) {
 
 			root = root->parent;
 			do {
-				root->boundingVolume.EnlargeBy(&aabbForGameObj);
+				root->boundingVolume.EnlargeBy(boundingVolume);
 				root = root->parent;
 			} while (root);
 		}
@@ -154,11 +167,15 @@ void BVH::Insert(Node* root, GameObject* gameObject) {
 		*/
 		//Print(cout);
 	}
+	if (deleteBoundingVolume) {
+		delete boundingVolume;
+	}
 }
 
 void BVH::Remove(GameObject* gameObject) {
 	RemoveLeaf(gameObject->bvhNode);
 	gameObject->bvhNode = nullptr;
+	EraseGameObjectFromAllContacts(gameObject);
 }
 
 void BVH::RemoveLeaf(Node* leaf) {
@@ -196,6 +213,26 @@ void BVH::DeleteTree(Node* root) {
 	delete root;
 }
 
+void BVH::CacheContact(GameObject* obj0, GameObject* obj1) {
+	if (obj0 < obj1) {
+		contactsCache.insert(make_tuple(obj0, obj1));
+	} else {
+		contactsCache.insert(make_tuple(obj1, obj0));
+	}
+	contactsGraph[obj0].insert(obj1);
+	contactsGraph[obj1].insert(obj0);
+}
+
+void BVH::RemoveContact(GameObject* obj0, GameObject* obj1) {
+	if (obj0 < obj1) {
+		contactsCache.erase(make_tuple(obj0, obj1));
+	} else {
+		contactsCache.erase(make_tuple(obj1, obj0));
+	}
+	contactsGraph[obj0].erase(obj1);
+	contactsGraph[obj1].erase(obj0);
+}
+
 void BVH::RenderAll(Camera* camera) {
 	RenderAllRecursive(camera, tree_root);
 }
@@ -211,9 +248,82 @@ void BVH::Update(GameObject* gameObject) {
 	// TODO foloseste un volum mai strans si unul mai mare, daca volumul mai stramt nu iese din ala mare nu modifica
 	Remove(gameObject);
 	Insert(gameObject);
+
+}
+
+#include <queue>;
+using std::queue;
+
+void BVH::CacheContacts(GameObject* gameObject) {
+	if (tree_root == nullptr) {
+		return;
+	}
+	AABB aabbForGameObj(gameObject);
+	queue<Node*> q;
+	q.push(tree_root);
+	do {
+		Node* n = q.front();
+		q.pop();
+		if (n->boundingVolume.DoesIntersect(&aabbForGameObj)) {
+			if (n->IsLeaf()) {
+				CacheContact(gameObject, n->boundedObject);
+			} else {
+				q.push(n->children[0]);
+				q.push(n->children[1]);
+			}
+		}
+	} while (!q.empty());
+}
+
+void BVH::CacheContactsAndInsert(GameObject* gameObject) {
+	Node* bestInsertionPlace = tree_root;
+	AABB aabbForGameObj(gameObject);
+	if (tree_root != nullptr) {
+		NodeGreater greater(&aabbForGameObj);
+		queue<Node*> q;
+		q.push(tree_root);
+		do {
+			Node* node = q.front();
+			q.pop();
+			if (node->boundingVolume.DoesIntersect(&aabbForGameObj)) {
+				if (greater(node, bestInsertionPlace)) {
+					bestInsertionPlace = node;
+				}
+				if (node->IsLeaf()) {
+					CacheContact(gameObject, node->boundedObject);
+				} else {
+					q.push(node->children[0]);
+					q.push(node->children[1]);
+				}
+			}
+		} while (!q.empty());
+	}
+	Insert(bestInsertionPlace, gameObject, &aabbForGameObj);
+}
+
+void BVH::EraseGameObjectFromAllContacts(GameObject* gameObject) {
+	auto iteratorContacts = contactsGraph.find(gameObject);
+	if (iteratorContacts != contactsGraph.end()) {
+		for (GameObject* otherGameObject : contactsGraph.at(gameObject)) {
+			contactsGraph.at(otherGameObject).erase(gameObject);
+			if (gameObject < otherGameObject) {
+				contactsCache.erase(make_tuple(gameObject, otherGameObject));
+			} else {
+				contactsCache.erase(make_tuple(otherGameObject, gameObject));
+			}
+		}
+		contactsGraph.erase(gameObject);
+	}
+}
+
+size_t Migine::BVH::GetContactCount() {
+	return contactsCache.size();
 }
 
 void BVH::RenderAllRecursive(Camera* camera, Node* root) {
+	if (root == nullptr) {
+		return;
+	}
 	auto it = rws4aabbs.find(root);
 	if (it == rws4aabbs.end()) {
 		rws4aabbs.emplace(root, &root->boundingVolume);

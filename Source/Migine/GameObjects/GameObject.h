@@ -6,6 +6,8 @@
 
 #include <Core/Engine.h>
 
+#include <string>
+
 namespace Migine {
 
 	class GameObject : public RenderedObject {
@@ -17,6 +19,7 @@ namespace Migine {
 	public:
 		glm::vec3 speed = {0,0,0};
 		glm::quat angularSpeed = glm::quat();
+		std::string name;
 
 	public:
 		GameObject(Mesh* mesh, BaseRenderer* renderer,

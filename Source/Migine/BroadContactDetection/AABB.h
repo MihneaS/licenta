@@ -26,7 +26,7 @@ namespace Migine {
 		glm::vec3 GetCenter() const;
 		void EnlargeBy(const AABB* toEnlargeBy);
 		void Resize(const AABB* child0, const AABB* child1);
-		bool DoesIntersect(const AABB* other);
-		bool Contains(glm::vec3 point);
+		bool DoesIntersect(const AABB* other) const;
+		bool Contains(glm::vec3 point) const;
 	};
 }

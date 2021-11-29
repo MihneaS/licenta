@@ -4,6 +4,7 @@
 #include <Core/GPU/Mesh.h>
 
 #include <Migine/BaseScene.h>
+#include <Migine/utils.h>
 
 class Laborator8 : public Migine::BaseScene
 {
@@ -36,4 +37,6 @@ class Laborator8 : public Migine::BaseScene
 
 		glm::vec3 lightPosition;
 		glm::vec3 lightDirection;
+
+		Migine::Printer printer1;
 };

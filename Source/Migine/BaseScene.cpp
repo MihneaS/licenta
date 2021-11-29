@@ -27,7 +27,8 @@ BaseScene::~BaseScene()
 
 void BaseScene::RegisterGameObject(GameObject* gameObject) {
 	gameObjects.push_back(gameObject);
-	bvh.Insert(gameObject);
+	//bvh.Insert(gameObject);
+	bvh.CacheContactsAndInsert(gameObject);
 }
 
 void BaseScene::InitResources()

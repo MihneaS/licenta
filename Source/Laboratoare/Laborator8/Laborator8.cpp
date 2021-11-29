@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <sstream>
 
 #include <Core/Engine.h>
 
@@ -22,6 +23,8 @@ using EngineComponents::Camera;
 using namespace Migine;
 
 Migine::GameObject* tmp;
+Migine::GameObject* tmp2;
+
 
 Laborator8::Laborator8() {
 }
@@ -70,6 +73,12 @@ void Laborator8::Init()
 		RegisterGameObject(s);
 		tmp = s;
 	}
+	{
+		auto b = new Migine::Box({ 0, 8, -2 }, { 20, 0.2, 20 });
+		b->name = "Acoperitor";
+		RegisterGameObject(b);
+		tmp2 = b;
+	}
 
 	for (auto gameObject : gameObjects) {
 		gameObject->Init();
@@ -90,22 +99,32 @@ void Laborator8::FrameStart()
 
 void Laborator8::Update(float deltaTimeSeconds)
 {
-	OldUpdate(deltaTimeSeconds);
+	float capedDeltaTime = min(deltaTimeSeconds, 1.0f / 20);
+	OldUpdate(capedDeltaTime);
 	for (auto gameObject : gameObjects) {
-		bool hasMoved = gameObject->Integrate(deltaTimeSeconds);
+		bool hasMoved = gameObject->Integrate(capedDeltaTime);
 		if (hasMoved) {
 			bvh.Update(gameObject);
 		}
 	}
 	static float t = 0;
-	t += deltaTimeSeconds;
+	t += capedDeltaTime;
 	tmp->speed = { 0, sin(t), 0 };
+	if (tmp2->transform.GetWorldPosition().y >= 7) {
+		tmp2->speed = { 0, -0.3, 0 };
+	} else if (tmp2->transform.GetWorldPosition().y <= -1) {
+
+		tmp2->speed = { 0, 0.3, 0 };
+	}
 	for (auto gameObject : gameObjects) {
 		gameObject->Render(this->GetSceneCamera());
 	}
 	bvh.RenderAll(camera);
 
 	PrintFps(deltaTimeSeconds);
+	stringstream ss;
+	ss << " number of contacts:" << bvh.GetContactCount() << " ";
+	printer1.Print(ss.str());
 }
 
 void Laborator8::FrameEnd()

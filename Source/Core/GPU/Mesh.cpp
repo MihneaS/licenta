@@ -10,10 +10,12 @@ using namespace std;
 
 static_assert(sizeof(aiColor4D) == sizeof(glm::vec4), "WARNING! glm::vec4 and aiColor4D size differs!");
 
+namespace Migine {
 #define MIGINE_X(id, name) {Migine::MeshId::id, name},
-std::unordered_map<Migine::MeshId, const char*> meshIdToIdNames = {
-	MIGINE_MESH_IDS
-};
+	std::unordered_map<Migine::MeshId, const char*> meshIdToIdNames = {
+		MIGINE_MESH_IDS
+	};
+}
 
 Mesh::Mesh(Migine::MeshId id) :
 	id(id) {
