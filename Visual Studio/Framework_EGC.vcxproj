@@ -34,9 +34,9 @@
     <ClCompile Include="..\Source\Laboratoare\Laborator8\Laborator8.cpp" />
     <ClCompile Include="..\Source\Main.cpp" />
     <ClCompile Include="..\Source\Migine\BaseScene.cpp" />
-    <ClCompile Include="..\Source\Migine\BroadContactDetection\AABB.cpp" />
-    <ClCompile Include="..\Source\Migine\BroadContactDetection\BVH.cpp" />
-    <ClCompile Include="..\Source\Migine\BroadContactDetection\RenderedWraperForAABB.cpp" />
+    <ClCompile Include="..\Source\Migine\ContactDetection\AABB.cpp" />
+    <ClCompile Include="..\Source\Migine\ContactDetection\BVH.cpp" />
+    <ClCompile Include="..\Source\Migine\ContactDetection\RenderedWraperForAABB.cpp" />
     <ClCompile Include="..\Source\Migine\GameObjects\Box.cpp" />
     <ClCompile Include="..\Source\Migine\GameObjects\GameObject.cpp" />
     <ClCompile Include="..\Source\Migine\GameObjects\Sphere.cpp" />
@@ -69,10 +69,10 @@
     <ClInclude Include="..\Source\Laboratoare\LabList.h" />
     <ClInclude Include="..\Source\Laboratoare\Laborator8\Laborator8.h" />
     <ClInclude Include="..\Source\Migine\BaseScene.h" />
-    <ClInclude Include="..\Source\Migine\BroadContactDetection\AABB.h" />
-    <ClInclude Include="..\Source\Migine\BroadContactDetection\BVH.h" />
-    <ClInclude Include="..\Source\Migine\BroadContactDetection\RenderedWraperForAABB.h" />
     <ClInclude Include="..\Source\Migine\constants.h" />
+    <ClInclude Include="..\Source\Migine\ContactDetection\AABB.h" />
+    <ClInclude Include="..\Source\Migine\ContactDetection\BVH.h" />
+    <ClInclude Include="..\Source\Migine\ContactDetection\RenderedWraperForAABB.h" />
     <ClInclude Include="..\Source\Migine\define.h" />
     <ClInclude Include="..\Source\Migine\GameObjects\Box.h" />
     <ClInclude Include="..\Source\Migine\GameObjects\GameObject.h" />

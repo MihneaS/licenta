@@ -3,7 +3,7 @@
 #include <Component/Camera/Camera.h>
 
 #include <Migine/RenderedObject.h>
-#include <Migine/BroadContactDetection/AABB.h>
+#include <Migine/ContactDetection/AABB.h>
 #include <Migine/constants.h>
 
 namespace Migine {

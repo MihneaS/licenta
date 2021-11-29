@@ -37,7 +37,7 @@
     <Filter Include="Migine\GameObjects">
       <UniqueIdentifier>{9aadbaae-7946-43af-a090-f2ad088c624c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Migine\BroadContactDetection">
+    <Filter Include="Migine\ContactDetection">
       <UniqueIdentifier>{a59a9af8-cf6e-401c-ac62-866a34b4547c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -112,20 +112,20 @@
     <ClCompile Include="..\Source\Migine\ResourceManager.cpp">
       <Filter>Migine</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Migine\BroadContactDetection\AABB.cpp">
-      <Filter>Migine\BroadContactDetection</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Migine\BroadContactDetection\BVH.cpp">
-      <Filter>Migine\BroadContactDetection</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Migine\BaseScene.cpp">
       <Filter>Migine</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Migine\SceneInput.cpp">
       <Filter>Migine</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Migine\BroadContactDetection\RenderedWraperForAABB.cpp">
-      <Filter>Migine\BroadContactDetection</Filter>
+    <ClCompile Include="..\Source\Migine\ContactDetection\AABB.cpp">
+      <Filter>Migine\ContactDetection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Migine\ContactDetection\BVH.cpp">
+      <Filter>Migine\ContactDetection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Migine\ContactDetection\RenderedWraperForAABB.cpp">
+      <Filter>Migine\ContactDetection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -219,20 +219,20 @@
     <ClInclude Include="..\Source\Migine\ResourceManager.h">
       <Filter>Migine</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Migine\BroadContactDetection\AABB.h">
-      <Filter>Migine\BroadContactDetection</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Migine\BroadContactDetection\BVH.h">
-      <Filter>Migine\BroadContactDetection</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Migine\BaseScene.h">
       <Filter>Migine</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Migine\SceneInput.h">
       <Filter>Migine</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Migine\BroadContactDetection\RenderedWraperForAABB.h">
-      <Filter>Migine\BroadContactDetection</Filter>
+    <ClInclude Include="..\Source\Migine\ContactDetection\AABB.h">
+      <Filter>Migine\ContactDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Migine\ContactDetection\BVH.h">
+      <Filter>Migine\ContactDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Migine\ContactDetection\RenderedWraperForAABB.h">
+      <Filter>Migine\ContactDetection</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

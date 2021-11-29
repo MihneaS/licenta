@@ -1,8 +1,8 @@
 #pragma once
 
 //#include <Migine/GameObjects/GameObject.h>
-#include <Migine/BroadContactDetection/AABB.h>
-#include <Migine/BroadContactDetection/RenderedWraperForAABB.h>
+#include <Migine/ContactDetection/AABB.h>
+#include <Migine/ContactDetection/RenderedWraperForAABB.h>
 #include <Migine/utils.h>
 
 #include <Component/SimpleScene.h>

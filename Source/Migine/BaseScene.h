@@ -11,7 +11,7 @@ namespace EngineComponents
 }
 
 #include <Migine/GameObjects/GameObject.h>
-#include <Migine/BroadContactDetection/BVH.h>
+#include <Migine/ContactDetection/BVH.h>
 
 #include <Core/World.h>
 

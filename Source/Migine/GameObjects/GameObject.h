@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Migine/RenderedObject.h>
-#include <Migine/BroadContactDetection/AABB.h>
-#include <Migine/BroadContactDetection/BVH.h>
+#include <Migine/ContactDetection/AABB.h>
+#include <Migine/ContactDetection/BVH.h>
 
 #include <Core/Engine.h>
 
