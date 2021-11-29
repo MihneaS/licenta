@@ -123,7 +123,7 @@ void Laborator8::Update(float deltaTimeSeconds)
 
 	PrintFps(deltaTimeSeconds);
 	stringstream ss;
-	ss << " number of contacts:" << bvh.GetContactCount() << " ";
+	ss << " number of broad contacts:" << bvh.GetContactCount() << " ";
 	printer1.Print(ss.str());
 }
 
