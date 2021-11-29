@@ -35,8 +35,13 @@
     <ClCompile Include="..\Source\Main.cpp" />
     <ClCompile Include="..\Source\Migine\BaseScene.cpp" />
     <ClCompile Include="..\Source\Migine\ContactDetection\AABB.cpp" />
+    <ClCompile Include="..\Source\Migine\ContactDetection\BaseCollider.cpp" />
+    <ClCompile Include="..\Source\Migine\ContactDetection\BoxCollider.cpp" />
     <ClCompile Include="..\Source\Migine\ContactDetection\BVH.cpp" />
+    <ClCompile Include="..\Source\Migine\ContactDetection\Collision.cpp" />
+    <ClCompile Include="..\Source\Migine\ContactDetection\FineCollisionDetection.cpp" />
     <ClCompile Include="..\Source\Migine\ContactDetection\RenderedWraperForAABB.cpp" />
+    <ClCompile Include="..\Source\Migine\ContactDetection\SphereCollider.cpp" />
     <ClCompile Include="..\Source\Migine\GameObjects\Box.cpp" />
     <ClCompile Include="..\Source\Migine\GameObjects\GameObject.cpp" />
     <ClCompile Include="..\Source\Migine\GameObjects\Sphere.cpp" />
@@ -71,8 +76,13 @@
     <ClInclude Include="..\Source\Migine\BaseScene.h" />
     <ClInclude Include="..\Source\Migine\constants.h" />
     <ClInclude Include="..\Source\Migine\ContactDetection\AABB.h" />
+    <ClInclude Include="..\Source\Migine\ContactDetection\BaseCollider.h" />
+    <ClInclude Include="..\Source\Migine\ContactDetection\BoxCollider.h" />
     <ClInclude Include="..\Source\Migine\ContactDetection\BVH.h" />
+    <ClInclude Include="..\Source\Migine\ContactDetection\Collision.h" />
+    <ClInclude Include="..\Source\Migine\ContactDetection\FineCollisionDetection.h" />
     <ClInclude Include="..\Source\Migine\ContactDetection\RenderedWraperForAABB.h" />
+    <ClInclude Include="..\Source\Migine\ContactDetection\SphereCollider.h" />
     <ClInclude Include="..\Source\Migine\define.h" />
     <ClInclude Include="..\Source\Migine\GameObjects\Box.h" />
     <ClInclude Include="..\Source\Migine\GameObjects\GameObject.h" />
@@ -101,13 +111,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>ClangCL</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>ClangCL</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -120,7 +130,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>ClangCL</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -197,6 +207,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -216,7 +227,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -236,6 +247,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -257,7 +269,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -127,6 +127,21 @@
     <ClCompile Include="..\Source\Migine\ContactDetection\RenderedWraperForAABB.cpp">
       <Filter>Migine\ContactDetection</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\Migine\ContactDetection\BaseCollider.cpp">
+      <Filter>Migine\ContactDetection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Migine\ContactDetection\BoxCollider.cpp">
+      <Filter>Migine\ContactDetection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Migine\ContactDetection\SphereCollider.cpp">
+      <Filter>Migine\ContactDetection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Migine\ContactDetection\FineCollisionDetection.cpp">
+      <Filter>Migine\ContactDetection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Migine\ContactDetection\Collision.cpp">
+      <Filter>Migine\ContactDetection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Core\World.h">
@@ -232,6 +247,21 @@
       <Filter>Migine\ContactDetection</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Migine\ContactDetection\RenderedWraperForAABB.h">
+      <Filter>Migine\ContactDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Migine\ContactDetection\BaseCollider.h">
+      <Filter>Migine\ContactDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Migine\ContactDetection\BoxCollider.h">
+      <Filter>Migine\ContactDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Migine\ContactDetection\SphereCollider.h">
+      <Filter>Migine\ContactDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Migine\ContactDetection\FineCollisionDetection.h">
+      <Filter>Migine\ContactDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Migine\ContactDetection\Collision.h">
       <Filter>Migine\ContactDetection</Filter>
     </ClInclude>
   </ItemGroup>
