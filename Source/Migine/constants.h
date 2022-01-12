@@ -5,7 +5,7 @@
 
 
 constexpr glm::vec3 kDefaultColor = { 1,0,1 };
-constexpr int kDefaultLineWidth = 5;
+constexpr float kDefaultLineWidth = 5;
 constexpr glm::vec3 kAABBColor = { 0.1,0.6,0.1 };
 constexpr float kDegToRad = glm::pi<float>() / 180.0f;
 constexpr int kBoxMaterialShiness = 30;

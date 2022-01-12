@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BaseRenderer.h"
-#include <Component/Transform/Transform.h>
 #include <Migine/RenderedObject.h>
 
 using namespace Migine;

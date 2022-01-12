@@ -9,6 +9,7 @@
 using namespace Migine;
 using glm::quat;
 using glm::vec3;
+using glm::vec4;
 using std::cout;
 using std::stringstream;
 using std::string;
@@ -28,53 +29,21 @@ quat Migine::EulerAnglesDegToQuat(vec3 eulerAngles)
 	return EulerAnglesToQuat(eulerAngles * kDegToRad);
 }
 
-
-
-void Migine::PrintFps(float deltaTime) {
-	// time is in seconds
-	static float timeSinceLastPrint = 0;
-	static int framesSinceLastPrint = 0;
-	static int continousPrintIndex = kNoIndex;
-
-	stringstream ss;
-
-	timeSinceLastPrint += deltaTime;
-	framesSinceLastPrint++;
-	if (timeSinceLastPrint >= 0.66) {
-		ss << framesSinceLastPrint / timeSinceLastPrint << " fps";
-		continousPrintIndex = ContinousPrint(ss.str(), continousPrintIndex);
-		timeSinceLastPrint = 0;
-		framesSinceLastPrint = 0;
-	}
+vec4 Migine::PositionToVec4(vec3 v) {
+	return {v.x, v.y, v.z, 1};
 }
 
-int Migine::ContinousPrint(const std::string s, int index) {
-	static vector<string> toBePrinted;
-	static int printedCharactersCount = 0;//vector<int> printedCharactersPerSS;
-	if (index == kNoIndex) {
-		index = toBePrinted.size();
-		toBePrinted.push_back(s);
-	}
-	else {
-		toBePrinted[index] = s;
-	}
+static int printedCharactersCount = 0;
+void Migine::ContinousPrint(const std::string s) {
 	stringstream ss;
-	for (int i = 0; i < printedCharactersCount; i++) {
-		ss << "\b";
-	}
-	for (auto s : toBePrinted) {
-		ss << s << ";";
-	}
-	printedCharactersCount = ss.str().size();
+	ss << s;
+	printedCharactersCount += ss.str().size();
 	cout << ss.str();
-
-	return index;
 }
 
-Printer::Printer() {
-	continousPrintIndex = ContinousPrint("", kNoIndex);
-}
-
-void Printer::Print(const std::string s) {
-	ContinousPrint(s, continousPrintIndex);
+void Migine::ContinousPrintLineReset() {
+	for (int i = 0; i < printedCharactersCount; i++) {
+		cout << "\b";
+	}
+	printedCharactersCount = 0;
 }

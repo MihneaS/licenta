@@ -1,6 +1,8 @@
 #include "RenderedWraperForAABB.h"
 
 #include <Migine/ResourceManager.h>
+#include <Core/GPU/Mesh.h>
+#include <Core/GPU/Shader.h>
 
 using namespace Migine;
 using glm::vec3;

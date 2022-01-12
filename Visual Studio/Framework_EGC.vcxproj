@@ -39,11 +39,11 @@
     <ClCompile Include="..\Source\Migine\ContactDetection\BoxCollider.cpp" />
     <ClCompile Include="..\Source\Migine\ContactDetection\BVH.cpp" />
     <ClCompile Include="..\Source\Migine\ContactDetection\Collision.cpp" />
-    <ClCompile Include="..\Source\Migine\ContactDetection\FineCollisionDetection.cpp" />
     <ClCompile Include="..\Source\Migine\ContactDetection\RenderedWraperForAABB.cpp" />
     <ClCompile Include="..\Source\Migine\ContactDetection\SphereCollider.cpp" />
     <ClCompile Include="..\Source\Migine\GameObjects\Box.cpp" />
     <ClCompile Include="..\Source\Migine\GameObjects\GameObject.cpp" />
+    <ClCompile Include="..\Source\Migine\GameObjects\RigidBody.cpp" />
     <ClCompile Include="..\Source\Migine\GameObjects\Sphere.cpp" />
     <ClCompile Include="..\Source\Migine\RenderedObject.cpp" />
     <ClCompile Include="..\Source\Migine\Renderers\BaseRenderer.cpp" />
@@ -74,18 +74,19 @@
     <ClInclude Include="..\Source\Laboratoare\LabList.h" />
     <ClInclude Include="..\Source\Laboratoare\Laborator8\Laborator8.h" />
     <ClInclude Include="..\Source\Migine\BaseScene.h" />
+    <ClInclude Include="..\Source\Migine\Camera.h" />
     <ClInclude Include="..\Source\Migine\constants.h" />
     <ClInclude Include="..\Source\Migine\ContactDetection\AABB.h" />
     <ClInclude Include="..\Source\Migine\ContactDetection\BaseCollider.h" />
     <ClInclude Include="..\Source\Migine\ContactDetection\BoxCollider.h" />
     <ClInclude Include="..\Source\Migine\ContactDetection\BVH.h" />
     <ClInclude Include="..\Source\Migine\ContactDetection\Collision.h" />
-    <ClInclude Include="..\Source\Migine\ContactDetection\FineCollisionDetection.h" />
     <ClInclude Include="..\Source\Migine\ContactDetection\RenderedWraperForAABB.h" />
     <ClInclude Include="..\Source\Migine\ContactDetection\SphereCollider.h" />
     <ClInclude Include="..\Source\Migine\define.h" />
     <ClInclude Include="..\Source\Migine\GameObjects\Box.h" />
     <ClInclude Include="..\Source\Migine\GameObjects\GameObject.h" />
+    <ClInclude Include="..\Source\Migine\GameObjects\RigidBody.h" />
     <ClInclude Include="..\Source\Migine\GameObjects\Sphere.h" />
     <ClInclude Include="..\Source\Migine\RenderedObject.h" />
     <ClInclude Include="..\Source\Migine\Renderers\BaseRenderer.h" />
@@ -94,6 +95,7 @@
     <ClInclude Include="..\Source\Migine\Renderers\WireframeRenderer.h" />
     <ClInclude Include="..\Source\Migine\ResourceManager.h" />
     <ClInclude Include="..\Source\Migine\SceneInput.h" />
+    <ClInclude Include="..\Source\Migine\Transform.h" />
     <ClInclude Include="..\Source\Migine\utils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -111,26 +113,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>ClangCL</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>ClangCL</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>ClangCL</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>ClangCL</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -202,12 +204,12 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -222,12 +224,12 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -244,10 +246,10 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -266,10 +268,10 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

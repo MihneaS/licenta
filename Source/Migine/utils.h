@@ -11,15 +11,10 @@
 namespace Migine {
 	glm::quat EulerAnglesToQuat(glm::vec3 eulerAngles);
 	glm::quat EulerAnglesDegToQuat(glm::vec3 eulerAngles);
+    glm::vec4 PositionToVec4(glm::vec3 v);
 	void PrintFps(float deltaTime);
-	int ContinousPrint(const std::string s, int index);
-    class Printer {
-        int continousPrintIndex = kNoIndex;
-
-    public:
-        Printer();
-        void Print(const std::string s);
-    };
+    void ContinousPrint(const std::string s);
+    void ContinousPrintLineReset();
 // credits to answer from https://stackoverflow.com/questions/7110301/generic-hash-for-tuples-in-unordered-map-unordered-set
         namespace {
             // Code from boost
@@ -58,5 +53,4 @@ namespace Migine {
                 return seed;
             }
         };
-
 }

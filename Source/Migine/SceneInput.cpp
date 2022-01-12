@@ -7,8 +7,6 @@
 #include <Migine/BaseScene.h>
 #include <Migine/SceneInput.h>
 
-#include <Component/Transform/Transform.h>
-
 using namespace Migine;
 
 Migine::SceneInput::SceneInput(BaseScene *scene)

@@ -7,10 +7,10 @@ namespace Migine {
 	class WireframeRenderer final : public BaseRenderer {
 	public:
 		glm::vec3 color;
-		int lineWidth;
+		float lineWidth;
 
 		WireframeRenderer(Shader* shader, RenderedObject* renderedObject,
-				glm::vec3 color = kDefaultColor, int lineWidth = kDefaultLineWidth);
+				glm::vec3 color = kDefaultColor, float lineWidth = kDefaultLineWidth);
 
 		void Render(const EngineComponents::Camera* camera) override;
 	};

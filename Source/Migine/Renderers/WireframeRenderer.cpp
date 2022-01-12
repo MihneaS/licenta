@@ -1,14 +1,12 @@
 #include "WireframeRenderer.h"
-#include <Component/Transform/Transform.h>
+#include <Migine/Transform.h>
 #include <Migine/RenderedObject.h>
 
 using namespace Migine;
-using EngineComponents::Camera;
-using EngineComponents::Transform;
 using glm::vec3;
 using glm::quat;
 
-WireframeRenderer::WireframeRenderer(Shader* shader, RenderedObject* renderedObject, vec3 color, int lineWidth) :
+WireframeRenderer::WireframeRenderer(Shader* shader, RenderedObject* renderedObject, vec3 color, float lineWidth) :
 	BaseRenderer(shader, renderedObject), color(color), lineWidth(lineWidth) {
 }
 

@@ -2,8 +2,9 @@
 
 #include <Core/Engine.h>
 #include <Migine/Renderers/BaseRenderer.h>
+#include <Migine/Camera.h>
 #include <Component/SimpleScene.h>
-#include <Component/Transform/Transform.h>
+
 
 namespace Migine {
 	class SimpleLighting : public BaseRenderer {
@@ -31,7 +32,7 @@ namespace Migine {
 			glm::vec3* lightPosition, glm::vec3* lightDirection, int materialShininess, float materialKd, float materialKs,
 			glm::vec3 color);
 
-		virtual void Render(const EngineComponents::Camera* camera) override;
+		virtual void Render(const Camera* camera) override;
 	};
 
 }

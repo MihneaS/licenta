@@ -37,6 +37,4 @@ class Laborator8 : public Migine::BaseScene
 
 		glm::vec3 lightPosition;
 		glm::vec3 lightDirection;
-
-		Migine::Printer printer1;
 };

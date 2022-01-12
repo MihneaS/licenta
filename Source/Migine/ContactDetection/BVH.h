@@ -4,9 +4,10 @@
 #include <Migine/ContactDetection/AABB.h>
 #include <Migine/ContactDetection/RenderedWraperForAABB.h>
 #include <Migine/utils.h>
+#include <Migine/define.h>
 
 #include <Component/SimpleScene.h>
-#include <Component/Camera/Camera.h>
+#include <Migine/Camera.h>
 
 #include <unordered_map>
 #include <unordered_set>
@@ -14,10 +15,10 @@
 
 
 namespace Migine {
-	class GameObject;
+	class BaseCollider;
 
 	class BVH {
-		friend class GameObject;
+		friend class BaseCollider;
 
 		class Node {
 		public:
@@ -28,11 +29,10 @@ namespace Migine {
 				// memory managed by the BVH managing this Node
 				Node* children[2] = {nullptr, nullptr};
 				// memory managed by someone else
-				GameObject* boundedObject;
+				BaseCollider* boundedObject;
 			};
 
-			//Node(GameObject* gameObject, Node* parent);
-			Node(GameObject* gameObject, AABB* boundingVolume, Node* parent);
+			Node(BaseCollider* boundedObject, AABB* boundingVolume, Node* parent);
 			Node(Node* child0, Node* child1, Node* parent);
 
 			bool IsLeaf();
@@ -68,44 +68,44 @@ namespace Migine {
 		public:
 			bool operator() (const Node* lhs, const Node* rhs);
 		};
-		template <class T>
-		struct TupleOrderlessEqualTo {
-			bool operator()(std::tuple<T, T>& lhs, std::tuple<T, T>& rhs) const {
-				return lhs.first == rhs.first && lhs.second == rhs.second ||
-				       lhs.first == rhs.second && lhs.second == rhs.first;
-			}
-		};
 
-		typedef ManhattanDistanceGreater NodeGreater; // easy to switch Greater
+		//typedef ManhattanDistanceGreater NodeGreater; // easy to switch Greater
+		typedef EnlargedVolumeGreater NodeGreater; // easy to switch Greater
+
 		// memory managed by this
 		Node* tree_root = nullptr; // TODO change name to bvhRoot
 		std::unordered_map<Node*, RenderedWraperForAABB> rws4aabbs;
-		std::unordered_map<GameObject*, std::unordered_set<GameObject*> > contactsGraph;
-		std::unordered_set<std::tuple<GameObject*, GameObject*>, Migine::TupleHasher<GameObject*, GameObject*> > contactsCache;
+		std::unordered_map<BaseCollider*, std::unordered_set<BaseCollider*> > contactsGraph;
+		std::unordered_set<std::tuple<BaseCollider*, BaseCollider*>, Migine::TupleHasher<BaseCollider*, BaseCollider*> > contactsCache;
+#ifdef DEBUGGING
+	public:
+		static int insertionCount;
+		static int AABBIntersectionOperationsCount;
+#endif // DEBUGGING
 
 	public:
 		BVH() = default;
 		~BVH();
 
-		void Insert(GameObject* gameObject);
-		void Remove(GameObject* gameObject);
-		void RenderAll(EngineComponents::Camera* camera);
+		void Insert(BaseCollider* collider);
+		void Remove(BaseCollider* collider);
+		void RenderAll(Camera* camera);
 		void Print(std::ostream& outStream);
-		void Update(GameObject* gameObject); // TODO find better name
-		void CacheContacts(GameObject* gameObject);
-		void CacheContactsAndInsert(GameObject* gameObject);
-		void EraseGameObjectFromAllContacts(GameObject* gameobject);
+		void Update(BaseCollider* collider); // TODO find better name
+		void CacheContacts(BaseCollider* collider);
+		void CacheContactsAndInsert(BaseCollider* collider);
+		void EraseFromAllContacts(BaseCollider* collider);
 		size_t GetContactCount();
 
 	private:
-		void Insert(Node* root, GameObject* gameObject, AABB* boundingVolume = nullptr);
+		void Insert(Node* root, BaseCollider* collider, AABB* boundingVolume = nullptr);
 		void RemoveLeaf(Node* leaf);
 		void DeleteTree(Node* root);
-		void CacheContact(GameObject* obj0, GameObject* obj1);
-		void RemoveContact(GameObject* obj0, GameObject* obj1);
+		void CacheContact(BaseCollider* collider0, BaseCollider* collider1);
+		void RemoveContact(BaseCollider* colldier0, BaseCollider* collider1);
 
 	private:
-		void RenderAllRecursive(EngineComponents::Camera* camera, Node* root);
+		void RenderAllRecursive(Camera* camera, Node* root);
 		void PrintRecursive(std::ostream& outStream, Node* root, int level);
 	};
 }

@@ -8,12 +8,11 @@
 #include <Migine/SceneInput.h>
 
 #include <Core/Engine.h>
-#include <Component/Transform/Transform.h>
+#include <Migine/Transform.h>
 
 #include <Migine/ResourceManager.h>
 
 using namespace std;
-using namespace EngineComponents;
 using namespace Migine;
 
 BaseScene::BaseScene()
@@ -27,8 +26,7 @@ BaseScene::~BaseScene()
 
 void BaseScene::RegisterGameObject(GameObject* gameObject) {
 	gameObjects.push_back(gameObject);
-	//bvh.Insert(gameObject);
-	bvh.CacheContactsAndInsert(gameObject);
+	bvh.CacheContactsAndInsert(gameObject->collider);
 }
 
 void BaseScene::InitResources()

@@ -38,7 +38,6 @@ Laborator8::~Laborator8() {
 void Laborator8::Init()
 {
 	ResourceManager* rm = ResourceManager::GetInstance();
-
 	
 
 	//Light & material properties
@@ -52,29 +51,29 @@ void Laborator8::Init()
 
 	// create test Migine::Box
 	{
-		RegisterGameObject(new Migine::Box({ 2,2,-2 }, { 1,2,1 }, EulerAnglesDegToQuat({45, 0, 45})));
+		RegisterGameObject(new Migine::Box({2, 2, -2}, {1, 2, 1}, EulerAnglesDegToQuat({45, 0, 45})));
 	}
 
 	//create test Migine::Sphere
 	{
-		RegisterGameObject(new Migine::Sphere({ -2,2,-2 }));
+		RegisterGameObject(new Migine::Sphere({-2, 2, -2}));
 	}
 
 
 	{
-		RegisterGameObject(new Migine::Sphere({ 2, 5, 0}));
-		RegisterGameObject(new Migine::Sphere({ -2, 5, 0 }));
-		RegisterGameObject(new Migine::Sphere({ 0, 5, 2 }));
-		RegisterGameObject(new Migine::Sphere({ 0, 5, -2 }));
-		RegisterGameObject(new Migine::Sphere({ 6, 5, 0 }));
+		RegisterGameObject(new Migine::Sphere({2, 5, 0}));
+		RegisterGameObject(new Migine::Sphere({-2, 5, 0}));
+		RegisterGameObject(new Migine::Sphere({0, 5, 2}));
+		RegisterGameObject(new Migine::Sphere({0, 5, -2}));
+		RegisterGameObject(new Migine::Sphere({6, 5, 0}));
 	}
 	{
-		Migine::Sphere* s = new Migine::Sphere({ -6, 5, 0 });
+		Migine::Sphere* s = new Migine::Sphere({-6, 5, 0});
 		RegisterGameObject(s);
 		tmp = s;
 	}
 	{
-		auto b = new Migine::Box({ 0, 8, -2 }, { 20, 0.2, 20 });
+		auto b = new Migine::Box({0, 8, -2}, {20, 0.2, 20});
 		b->name = "Acoperitor";
 		RegisterGameObject(b);
 		tmp2 = b;
@@ -104,7 +103,7 @@ void Laborator8::Update(float deltaTimeSeconds)
 	for (auto gameObject : gameObjects) {
 		bool hasMoved = gameObject->Integrate(capedDeltaTime);
 		if (hasMoved) {
-			bvh.Update(gameObject);
+			bvh.Update(gameObject->collider);
 		}
 	}
 	static float t = 0;
@@ -121,10 +120,26 @@ void Laborator8::Update(float deltaTimeSeconds)
 	}
 	bvh.RenderAll(camera);
 
-	PrintFps(deltaTimeSeconds);
-	stringstream ss;
-	ss << " number of broad contacts:" << bvh.GetContactCount() << " ";
-	printer1.Print(ss.str());
+	static float lastPrintingTime = 0;
+	static float totalTime = 0;
+	static int totalFrames = 0;
+	static int framesSincePrinting = 0;
+	framesSincePrinting++;
+	totalFrames++;
+	totalTime += deltaTimeSeconds;
+	if (float deltaTimePrinting = totalTime - lastPrintingTime; deltaTimePrinting > 0.66) {
+		stringstream ss;
+		ss << "fps:" << framesSincePrinting / deltaTimePrinting << ";";
+		framesSincePrinting = 0;
+		lastPrintingTime = totalTime;
+		ss << " broad contacts:" << bvh.GetContactCount() << ";";
+		ss << " insertions:" << bvh.insertionCount << ";";
+		ss << " broad intersection checks:" << bvh.AABBIntersectionOperationsCount << ";";
+		ss << " time:" << totalTime << ";";
+		ss << " frames:" << totalFrames << ";";
+		ContinousPrintLineReset();
+		ContinousPrint(ss.str());
+	}
 }
 
 void Laborator8::FrameEnd()

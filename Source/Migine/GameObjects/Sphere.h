@@ -5,6 +5,8 @@
 namespace Migine {
 	class Sphere : public GameObject {
 	public:
-		Sphere(glm::vec3 position = { 0,0,0 }, glm::vec3 scale = { 1,1,1 }, glm::quat rotation = glm::quat());
+		Sphere(glm::vec3 position = { 0,0,0 }, float diameter = 1, glm::quat rotation = glm::quat());
+	private:
+		Sphere(glm::vec3 position, float diameter, glm::quat rotation, Mesh* mesh);
 	};
 }

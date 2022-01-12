@@ -3,14 +3,14 @@
 #include <ostream>
 
 #include <Core/Engine.h>
-#include <Component/Transform/Transform.h>
+#include <Migine/Transform.h>
 #include <Component/SimpleScene.h>
 
 #include <Migine/Renderers/WireframeRenderer.h>
 #include <Migine/RenderedObject.h>
 
 namespace Migine {
-	class GameObject;
+	class BaseCollider;
 
 	class AABB {
 	public:
@@ -18,7 +18,8 @@ namespace Migine {
 		glm::vec3 maxPos;
 
 		AABB(glm::vec3 minPos, glm::vec3 maxPos);
-		AABB(GameObject *boundedObject);
+		AABB(BaseCollider *collider);
+		AABB(Mesh* mesh, Transform* transform);
 		AABB(const AABB* child0, const AABB* child1);
 		AABB() = delete;
 
@@ -28,5 +29,6 @@ namespace Migine {
 		void Resize(const AABB* child0, const AABB* child1);
 		bool DoesIntersect(const AABB* other) const;
 		bool Contains(glm::vec3 point) const;
+		//static std::tuple<glm::vec3, glm::vec3> obtainMinPosMaxPos(Mesh* mesh, Transform* transform);
 	};
 }

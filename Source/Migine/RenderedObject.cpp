@@ -1,8 +1,6 @@
 #include "RenderedObject.h"
 
 using namespace Migine;
-using EngineComponents::Transform;
-using EngineComponents::Camera;
 using glm::vec3;
 using glm::quat;
 
@@ -12,7 +10,7 @@ RenderedObject::RenderedObject(Mesh* mesh, BaseRenderer* renderer, const vec3 po
 	transform.SetWorldPosition(position);
 	transform.SetWorldRotationAndScale(rotation, scale);
 }
-RenderedObject::RenderedObject(Mesh* mesh, BaseRenderer* renderer, const EngineComponents::Transform& transform) :
+RenderedObject::RenderedObject(Mesh* mesh, BaseRenderer* renderer, const Transform& transform) :
 	mesh(mesh), transform(transform), renderer(renderer) {
 }
 

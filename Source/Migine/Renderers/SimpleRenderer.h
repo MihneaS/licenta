@@ -2,15 +2,14 @@
 
 #include <Core/Engine.h>
 #include <Migine/Renderers/BaseRenderer.h>
-#include <Component/SimpleScene.h>
-#include <Component/Transform/Transform.h>
+#include <Migine/Camera.h>
 
 namespace Migine {
 	class SimpleRenderer : public BaseRenderer {
 	public:
 		SimpleRenderer(const Shader* shader, RenderedObject* renderedObject);
 
-		virtual void Render(const EngineComponents::Camera* camera) override;
+		virtual void Render(const Camera* camera) override;
 
 	private:
 		GLint loc_model_matrix;

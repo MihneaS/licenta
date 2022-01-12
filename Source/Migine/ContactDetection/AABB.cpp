@@ -5,6 +5,7 @@
 #include <Migine/ResourceManager.h>
 #include <vector>
 #include <algorithm>
+#include <tuple>
 
 using namespace Migine;
 using glm::vec3;
@@ -13,16 +14,28 @@ using glm::mat4;
 using std::vector;
 using std::min;
 using std::max;
+using std::tuple;
+
+
 
 AABB::AABB(vec3 minPos, vec3 maxPos) :
 	minPos(minPos), maxPos(maxPos) {
+	assert(minPos.x <= maxPos.x);
+	assert(minPos.y <= maxPos.y);
+	assert(minPos.z <= maxPos.z);
 }
 
-AABB::AABB(GameObject* boundedObject) {
+AABB::AABB(BaseCollider* collider) {
+	auto [minPos, maxPos] = collider->ProvideAABBParameters();
+	*this = AABB(minPos, maxPos);
+}
+
+
+AABB::AABB(Mesh* mesh, Transform* transform) {
 	vector<vec4> points;
-	points.reserve(boundedObject->mesh->positions.size());
-	for (auto p : boundedObject->mesh->positions) {
-		points.emplace_back(boundedObject->transform.GetModel() * vec4(p.x, p.y, p.z, 1));
+	points.reserve(mesh->positions.size());
+	for (auto p : mesh->positions) {
+		points.emplace_back(transform->GetModel() * vec4(p.x, p.y, p.z, 1));
 	}
 	minPos = maxPos = points[0];
 	for (int i = 1; i < points.size(); i++) {
@@ -63,6 +76,7 @@ void AABB::Resize(const AABB* child0, const AABB* child1) {
 }
 
 bool AABB::DoesIntersect(const AABB* other) const {
+	BVH::AABBIntersectionOperationsCount++;
 	return (minPos.x <= other->maxPos.x && maxPos.x >= other->minPos.x) &&
 	       (minPos.y <= other->maxPos.y && maxPos.y >= other->minPos.y) &&
 	       (minPos.z <= other->maxPos.z && maxPos.z >= other->minPos.z);
@@ -73,3 +87,22 @@ bool AABB::Contains(glm::vec3 point) const{
 	       minPos.y < point.y && point.y < maxPos.y &&
 	       minPos.z < point.z && point.z < maxPos.z;
 }
+
+//tuple<vec3, vec3> AABB::obtainMinPosMaxPos(Mesh* mesh, Transform* transform) {
+//	vector<vec4> points;
+//	points.reserve(mesh->positions.size());
+//	for (auto p : mesh->positions) {
+//		points.emplace_back(transform->GetModel() * vec4(p.x, p.y, p.z, 1));
+//	}
+//	vec3 minPos = points[0];
+//	vec3 maxPos = points[0];
+//	for (int i = 1; i < points.size(); i++) {
+//		minPos.x = min(minPos.x, points[i].x);
+//		maxPos.x = max(maxPos.x, points[i].x);
+//		minPos.y = min(minPos.y, points[i].y);
+//		maxPos.y = max(maxPos.y, points[i].y);
+//		minPos.z = min(minPos.z, points[i].z);
+//		maxPos.z = max(maxPos.z, points[i].z);
+//	}
+//	return {minPos, maxPos};
+//}

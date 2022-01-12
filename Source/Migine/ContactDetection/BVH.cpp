@@ -1,5 +1,6 @@
 #include "BVH.h"
-#include <Migine/GameObjects/GameObject.h>
+#include <Migine/ContactDetection/BaseCollider.h>
+#include <Migine/define.h>
 
 #include <Core/GPU/Mesh.h>
 
@@ -7,11 +8,13 @@
 #include <vector>
 #include <cassert>
 #include <iostream>
+#include <queue>
 
 using namespace Migine;
 
 using std::priority_queue;
 using std::vector;
+using std::queue;
 using std::cout;
 using std::swap;
 using std::tuple;
@@ -19,12 +22,12 @@ using std::make_tuple;
 
 using glm::vec3;
 
-using EngineComponents::Camera;
+#ifdef DEBUGGING
+int BVH::insertionCount = 0;
+int BVH::AABBIntersectionOperationsCount = 0;
+#endif // DEBUGGING
 
-//BVH::Node::Node(GameObject* boundedObject, AABB* boundingVolume, Node* parent) :
-//	boundingVolume(*boundingVolume), parent(parent), boundedObject(boundedObject) {
-//}
-BVH::Node::Node(GameObject* boundedObject, AABB* boundingVolume, Node* parent) :
+BVH::Node::Node(BaseCollider* boundedObject, AABB* boundingVolume, Node* parent) :
 	parent(parent), boundingVolume(*boundingVolume){
 	//children[0] = nullptr;
 	children[1] = nullptr;
@@ -75,9 +78,10 @@ BVH::~BVH() {
 	}
 }
 
-void BVH::Insert(GameObject* gameObject) {
-	//Insert(tree_root, gameObject);
-	CacheContactsAndInsert(gameObject);
+void BVH::Insert(BaseCollider* collider) {
+	//Insert(tree_root, collider);
+	CacheContactsAndInsert(collider);
+	BVH::insertionCount++;
 }
 
 BVH::EnlargedVolumeGreater::EnlargedVolumeGreater(const AABB* addedVolume) :
@@ -117,15 +121,14 @@ bool BVH::EnlargedVolumeGreater::operator()(const Node* lhs, const Node* rhs) {
 	       !lhsVolumeDidntEnlarge && rhsVolumeDidntEnlarge;
 }
 
-void BVH::Insert(Node* root, GameObject* gameObject, AABB* boundingVolume) {
-	//AABB aabbForGameObj(gameObject);
+void BVH::Insert(Node* root, BaseCollider* collider, AABB* boundingVolume) {
 	bool deleteBoundingVolume = false;
 	if (boundingVolume == nullptr) {
-		boundingVolume = new AABB(gameObject);
+		boundingVolume = new AABB(collider);
 		deleteBoundingVolume = true;
 	}
-	Node* newLeafNode = new Node(gameObject, boundingVolume, nullptr);
-	gameObject->bvhNode = newLeafNode;
+	Node* newLeafNode = new Node(collider, boundingVolume, nullptr);
+	collider->bvhNode = newLeafNode;
 	if (!tree_root) {
 		tree_root = newLeafNode;
 	}
@@ -172,10 +175,10 @@ void BVH::Insert(Node* root, GameObject* gameObject, AABB* boundingVolume) {
 	}
 }
 
-void BVH::Remove(GameObject* gameObject) {
-	RemoveLeaf(gameObject->bvhNode);
-	gameObject->bvhNode = nullptr;
-	EraseGameObjectFromAllContacts(gameObject);
+void BVH::Remove(BaseCollider* collider) {
+	RemoveLeaf(collider->bvhNode);
+	collider->bvhNode = nullptr;
+	EraseFromAllContacts(collider);
 }
 
 void BVH::RemoveLeaf(Node* leaf) {
@@ -213,24 +216,24 @@ void BVH::DeleteTree(Node* root) {
 	delete root;
 }
 
-void BVH::CacheContact(GameObject* obj0, GameObject* obj1) {
-	if (obj0 < obj1) {
-		contactsCache.insert(make_tuple(obj0, obj1));
+void BVH::CacheContact(BaseCollider* collider0, BaseCollider* collider1) {
+	if (collider0 < collider1) {
+		contactsCache.insert(make_tuple(collider0, collider1));
 	} else {
-		contactsCache.insert(make_tuple(obj1, obj0));
+		contactsCache.insert(make_tuple(collider1, collider0));
 	}
-	contactsGraph[obj0].insert(obj1);
-	contactsGraph[obj1].insert(obj0);
+	contactsGraph[collider0].insert(collider1);
+	contactsGraph[collider1].insert(collider0);
 }
 
-void BVH::RemoveContact(GameObject* obj0, GameObject* obj1) {
-	if (obj0 < obj1) {
-		contactsCache.erase(make_tuple(obj0, obj1));
+void BVH::RemoveContact(BaseCollider* collider0, BaseCollider* collider1) {
+	if (collider0 < collider1) {
+		contactsCache.erase(make_tuple(collider0, collider1));
 	} else {
-		contactsCache.erase(make_tuple(obj1, obj0));
+		contactsCache.erase(make_tuple(collider1, collider0));
 	}
-	contactsGraph[obj0].erase(obj1);
-	contactsGraph[obj1].erase(obj0);
+	contactsGraph[collider0].erase(collider1);
+	contactsGraph[collider1].erase(collider0);
 }
 
 void BVH::RenderAll(Camera* camera) {
@@ -244,21 +247,18 @@ void BVH::Print(std::ostream& outStream) {
 	outStream << "\n";
 }
 
-void BVH::Update(GameObject* gameObject) {
+void BVH::Update(BaseCollider* collider) {
 	// TODO foloseste un volum mai strans si unul mai mare, daca volumul mai stramt nu iese din ala mare nu modifica
-	Remove(gameObject);
-	Insert(gameObject);
+	Remove(collider);
+	Insert(collider);
 
 }
 
-#include <queue>;
-using std::queue;
-
-void BVH::CacheContacts(GameObject* gameObject) {
+void BVH::CacheContacts(BaseCollider* collider) {
 	if (tree_root == nullptr) {
 		return;
 	}
-	AABB aabbForGameObj(gameObject);
+	AABB aabbForGameObj(collider);
 	queue<Node*> q;
 	q.push(tree_root);
 	do {
@@ -266,7 +266,7 @@ void BVH::CacheContacts(GameObject* gameObject) {
 		q.pop();
 		if (n->boundingVolume.DoesIntersect(&aabbForGameObj)) {
 			if (n->IsLeaf()) {
-				CacheContact(gameObject, n->boundedObject);
+				CacheContact(collider, n->boundedObject);
 			} else {
 				q.push(n->children[0]);
 				q.push(n->children[1]);
@@ -275,9 +275,9 @@ void BVH::CacheContacts(GameObject* gameObject) {
 	} while (!q.empty());
 }
 
-void BVH::CacheContactsAndInsert(GameObject* gameObject) {
+void BVH::CacheContactsAndInsert(BaseCollider* collider) {
 	Node* bestInsertionPlace = tree_root;
-	AABB aabbForGameObj(gameObject);
+	AABB aabbForGameObj(collider);
 	if (tree_root != nullptr) {
 		NodeGreater greater(&aabbForGameObj);
 		queue<Node*> q;
@@ -290,7 +290,7 @@ void BVH::CacheContactsAndInsert(GameObject* gameObject) {
 					bestInsertionPlace = node;
 				}
 				if (node->IsLeaf()) {
-					CacheContact(gameObject, node->boundedObject);
+					CacheContact(collider, node->boundedObject);
 				} else {
 					q.push(node->children[0]);
 					q.push(node->children[1]);
@@ -298,25 +298,24 @@ void BVH::CacheContactsAndInsert(GameObject* gameObject) {
 			}
 		} while (!q.empty());
 	}
-	Insert(bestInsertionPlace, gameObject, &aabbForGameObj);
+	Insert(bestInsertionPlace, collider, &aabbForGameObj);
 }
 
-void BVH::EraseGameObjectFromAllContacts(GameObject* gameObject) {
-	auto iteratorContacts = contactsGraph.find(gameObject);
-	if (iteratorContacts != contactsGraph.end()) {
-		for (GameObject* otherGameObject : contactsGraph.at(gameObject)) {
-			contactsGraph.at(otherGameObject).erase(gameObject);
-			if (gameObject < otherGameObject) {
-				contactsCache.erase(make_tuple(gameObject, otherGameObject));
+void BVH::EraseFromAllContacts(BaseCollider* collider) {
+	if (auto iteratorContacts = contactsGraph.find(collider); iteratorContacts != contactsGraph.end()) {
+		for (BaseCollider* other : contactsGraph.at(collider)) {
+			contactsGraph.at(other).erase(collider);
+			if (collider < other) {
+				contactsCache.erase(make_tuple(collider, other));
 			} else {
-				contactsCache.erase(make_tuple(otherGameObject, gameObject));
+				contactsCache.erase(make_tuple(other, collider));
 			}
 		}
-		contactsGraph.erase(gameObject);
+		contactsGraph.erase(collider);
 	}
 }
 
-size_t Migine::BVH::GetContactCount() {
+size_t BVH::GetContactCount() {
 	return contactsCache.size();
 }
 
