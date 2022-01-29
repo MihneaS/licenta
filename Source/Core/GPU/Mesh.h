@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <unordered_map>
+#include <string>
 
 #include <assimp/Importer.hpp>		// C++ importer interface
 #include <assimp/scene.h>			// Output data structure
@@ -65,21 +66,22 @@ struct MeshEntry
 	unsigned int materialIndex;
 };
 
-namespace Migine {
+namespace migine {
 #define MIGINE_MESH_IDS \
-MIGINE_X(plane, "plane")\
-MIGINE_X(line, "line")\
-MIGINE_X(boxWireframe, "boxWireframe") \
-MIGINE_X(box, "box")\
-MIGINE_X(sphere, "sphere")
+MIGINE_X(plane, "plane"s)\
+MIGINE_X(line, "line"s)\
+MIGINE_X(box_wireframe, "boxWireframe"s) \
+MIGINE_X(box, "box"s)\
+MIGINE_X(sphere, "sphere"s)
 
 #define MIGINE_X(id, name) id,
-	enum class MeshId {
+	enum class Mesh_id {
 		MIGINE_MESH_IDS
 	};
 #undef MIGINE_X
 
-	extern std::unordered_map<MeshId, const char*> meshIdToIdNames;
+	extern std::unordered_map<Mesh_id, const std::string> mesh_id_to_id_names;
+
 }
 
 
@@ -88,7 +90,7 @@ class Mesh
 	typedef unsigned int GLenum;
 
 	public:
-		Mesh(Migine::MeshId id);
+		Mesh(migine::Mesh_id id);
 		virtual ~Mesh();
 
 		void ClearData();
@@ -123,7 +125,7 @@ class Mesh
 		void Render() const;
 
 		const GPUBuffers* GetBuffers() const;
-		Migine::MeshId GetId() const;
+		migine::Mesh_id get_id() const;
 
 	protected:
 		void InitFromData();
@@ -133,7 +135,7 @@ class Mesh
 		bool InitFromScene(const aiScene* pScene);
 
 	private:
-		Migine::MeshId id;
+		migine::Mesh_id id;
 		glm::vec3 halfSize;
 		glm::vec3 meshCenter;
 

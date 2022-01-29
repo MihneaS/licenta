@@ -9,11 +9,11 @@
 #define MAX_2D_TEXTURES		16
 #define INVALID_LOC			-1
 
-namespace Migine {
-	enum class ShaderId {
+namespace migine {
+	enum class Shader_id {
 		color,
-		vertexNormal,
-		vertexColor,
+		vertex_normal,
+		vertex_color,
 		simple,
 		lab8
 	};
@@ -22,10 +22,10 @@ namespace Migine {
 class Shader
 {
 	public:
-		Shader(Migine::ShaderId id);
+		Shader(migine::Shader_id id);
 		~Shader();
 
-		Migine::ShaderId GetId() const;
+		migine::Shader_id get_id() const;
 		GLuint GetProgramID() const;
 
 		void Use() const;
@@ -84,7 +84,7 @@ class Shader
 			GLenum type;
 		};
 
-		Migine::ShaderId id;
+		migine::Shader_id id;
 		std::vector<ShaderFile> shaderFiles;
 		std::list<std::function<void()>> loadObservers;
 };

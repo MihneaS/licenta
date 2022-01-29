@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 #include <Core/Engine.h>
 #include <Migine/Renderers/BaseRenderer.h>
 #include <Migine/Camera.h>
@@ -36,3 +36,4 @@ namespace Migine {
 	};
 
 }
+*/

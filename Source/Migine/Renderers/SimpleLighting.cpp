@@ -1,5 +1,5 @@
 #include "SimpleLighting.h"
-
+/*
 #include <Core/Engine.h>
 #include <Migine/RenderedObject.h>
 
@@ -49,7 +49,7 @@ void SimpleLighting::Render(const EngineComponents::Camera* camera) {
 
 	//mesh->Render();
 }
-
+*/
 
 
 

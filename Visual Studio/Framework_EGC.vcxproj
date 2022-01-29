@@ -31,28 +31,30 @@
     <ClCompile Include="..\Source\Core\Window\WindowObject.cpp" />
     <ClCompile Include="..\Source\Core\World.cpp" />
     <ClCompile Include="..\Source\include\gl.cpp" />
-    <ClCompile Include="..\Source\Laboratoare\Laborator8\Laborator8.cpp" />
     <ClCompile Include="..\Source\Main.cpp" />
-    <ClCompile Include="..\Source\Migine\BaseScene.cpp" />
-    <ClCompile Include="..\Source\Migine\ContactDetection\AABB.cpp" />
-    <ClCompile Include="..\Source\Migine\ContactDetection\BaseCollider.cpp" />
-    <ClCompile Include="..\Source\Migine\ContactDetection\BoxCollider.cpp" />
-    <ClCompile Include="..\Source\Migine\ContactDetection\BVH.cpp" />
-    <ClCompile Include="..\Source\Migine\ContactDetection\Collision.cpp" />
-    <ClCompile Include="..\Source\Migine\ContactDetection\RenderedWraperForAABB.cpp" />
-    <ClCompile Include="..\Source\Migine\ContactDetection\SphereCollider.cpp" />
-    <ClCompile Include="..\Source\Migine\GameObjects\Box.cpp" />
-    <ClCompile Include="..\Source\Migine\GameObjects\GameObject.cpp" />
-    <ClCompile Include="..\Source\Migine\GameObjects\RigidBody.cpp" />
-    <ClCompile Include="..\Source\Migine\GameObjects\Sphere.cpp" />
-    <ClCompile Include="..\Source\Migine\RenderedObject.cpp" />
-    <ClCompile Include="..\Source\Migine\Renderers\BaseRenderer.cpp" />
     <ClCompile Include="..\Source\Migine\Renderers\SimpleLighting.cpp" />
-    <ClCompile Include="..\Source\Migine\Renderers\SimpleRenderer.cpp" />
-    <ClCompile Include="..\Source\Migine\Renderers\WireframeRenderer.cpp" />
-    <ClCompile Include="..\Source\Migine\ResourceManager.cpp" />
-    <ClCompile Include="..\Source\Migine\SceneInput.cpp" />
-    <ClCompile Include="..\Source\Migine\utils.cpp" />
+    <ClCompile Include="source\migine\Contact_detection\AABB.cpp" />
+    <ClCompile Include="source\migine\Contact_detection\BVH.cpp" />
+    <ClCompile Include="source\migine\Game_objects\Components\Has_mesh.cpp" />
+    <ClCompile Include="source\migine\Game_objects\Components\Has_shader.cpp" />
+    <ClCompile Include="source\migine\Game_objects\Components\Has_transform.cpp" />
+    <ClCompile Include="source\migine\Contact_detection\Collision.cpp" />
+    <ClCompile Include="source\migine\Game_objects\Components\Has_id.cpp" />
+    <ClCompile Include="source\migine\Game_objects\Components\Transform.cpp" />
+    <ClCompile Include="source\migine\Game_objects\Contact_detection\Box_collider.cpp" />
+    <ClCompile Include="source\migine\Game_objects\Contact_detection\std_hash_extensions.cpp" />
+    <ClCompile Include="source\migine\Game_objects\Contact_detection\Rigid_body.cpp" />
+    <ClCompile Include="source\migine\Game_objects\Contact_detection\Sphere_collider.cpp" />
+    <ClCompile Include="source\migine\Game_objects\Game_object.cpp" />
+    <ClCompile Include="source\migine\Game_objects\Rendering\Simple_renderer.cpp" />
+    <ClCompile Include="source\migine\Game_objects\Rendering\Wireframe_renderer.cpp" />
+    <ClCompile Include="source\migine\Game_objects\shapes\Box.cpp" />
+    <ClCompile Include="source\migine\Game_objects\shapes\Sphere.cpp" />
+    <ClCompile Include="source\migine\Resource_manager.cpp" />
+    <ClCompile Include="source\migine\scenes\Scene_01.cpp" />
+    <ClCompile Include="source\migine\scenes\Scene_input.cpp" />
+    <ClCompile Include="source\migine\scenes\Scene_base.cpp" />
+    <ClCompile Include="source\migine\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Component\CameraInput.h" />
@@ -72,36 +74,51 @@
     <ClInclude Include="..\Source\include\math.h" />
     <ClInclude Include="..\Source\include\utils.h" />
     <ClInclude Include="..\Source\Laboratoare\LabList.h" />
-    <ClInclude Include="..\Source\Laboratoare\Laborator8\Laborator8.h" />
-    <ClInclude Include="..\Source\Migine\BaseScene.h" />
-    <ClInclude Include="..\Source\Migine\Camera.h" />
-    <ClInclude Include="..\Source\Migine\constants.h" />
-    <ClInclude Include="..\Source\Migine\ContactDetection\AABB.h" />
-    <ClInclude Include="..\Source\Migine\ContactDetection\BaseCollider.h" />
-    <ClInclude Include="..\Source\Migine\ContactDetection\BoxCollider.h" />
-    <ClInclude Include="..\Source\Migine\ContactDetection\BVH.h" />
-    <ClInclude Include="..\Source\Migine\ContactDetection\Collision.h" />
-    <ClInclude Include="..\Source\Migine\ContactDetection\RenderedWraperForAABB.h" />
-    <ClInclude Include="..\Source\Migine\ContactDetection\SphereCollider.h" />
-    <ClInclude Include="..\Source\Migine\define.h" />
-    <ClInclude Include="..\Source\Migine\GameObjects\Box.h" />
-    <ClInclude Include="..\Source\Migine\GameObjects\GameObject.h" />
-    <ClInclude Include="..\Source\Migine\GameObjects\RigidBody.h" />
-    <ClInclude Include="..\Source\Migine\GameObjects\Sphere.h" />
-    <ClInclude Include="..\Source\Migine\RenderedObject.h" />
-    <ClInclude Include="..\Source\Migine\Renderers\BaseRenderer.h" />
     <ClInclude Include="..\Source\Migine\Renderers\SimpleLighting.h" />
-    <ClInclude Include="..\Source\Migine\Renderers\SimpleRenderer.h" />
-    <ClInclude Include="..\Source\Migine\Renderers\WireframeRenderer.h" />
-    <ClInclude Include="..\Source\Migine\ResourceManager.h" />
-    <ClInclude Include="..\Source\Migine\SceneInput.h" />
-    <ClInclude Include="..\Source\Migine\Transform.h" />
-    <ClInclude Include="..\Source\Migine\utils.h" />
+    <ClInclude Include="source\migine\Camera.h" />
+    <ClInclude Include="source\migine\constants.h" />
+    <ClInclude Include="source\migine\Contact_detection\AABB.h" />
+    <ClInclude Include="source\migine\Contact_detection\BVH.h" />
+    <ClInclude Include="source\migine\define.h" />
+    <ClInclude Include="source\migine\Game_objects\Components\Has_name.h" />
+    <ClInclude Include="source\migine\Game_objects\Components\Mesh.h" />
+    <ClInclude Include="source\migine\Game_objects\Components\Shader.h" />
+    <ClInclude Include="source\migine\Game_objects\Components\Has_mesh.h" />
+    <ClInclude Include="source\migine\Game_objects\Components\Transform.h" />
+    <ClInclude Include="source\migine\Game_objects\Contact_detection\Box_collider.h" />
+    <ClInclude Include="source\migine\Game_objects\Contact_detection\Collider_base.h" />
+    <ClInclude Include="source\migine\Contact_detection\Collision.h" />
+    <ClInclude Include="source\migine\Game_objects\Contact_detection\Rigid_body.h" />
+    <ClInclude Include="source\migine\Game_objects\Contact_detection\Sphere_collider.h" />
+    <ClInclude Include="source\migine\Game_objects\Game_object.h" />
+    <ClInclude Include="source\migine\Game_objects\Components\Has_shader.h" />
+    <ClInclude Include="source\migine\Game_objects\Components\Has_transform.h" />
+    <ClInclude Include="source\migine\Game_objects\Components\Has_id.h" />
+    <ClInclude Include="source\migine\Game_objects\Rendering\Renderer_base.h" />
+    <ClInclude Include="source\migine\Game_objects\Rendering\Simple_renderer.h" />
+    <ClInclude Include="source\migine\Game_objects\Rendering\Wireframe_renderer.h" />
+    <ClInclude Include="source\migine\Game_objects\shapes\Box.h" />
+    <ClInclude Include="source\migine\Game_objects\shapes\Sphere.h" />
+    <ClInclude Include="source\migine\Resource_manager.h" />
+    <ClInclude Include="source\migine\scenes\Scene_01.h" />
+    <ClInclude Include="source\migine\scenes\Scene_input.h" />
+    <ClInclude Include="source\migine\scenes\Scene_base.h" />
+    <ClInclude Include="source\migine\utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Source\Laboratoare\Laborator8\Shaders\FragmentShader.glsl" />
     <None Include="..\Source\Laboratoare\Laborator8\Shaders\VertexShader.glsl" />
     <None Include="ClassDiagram.cd" />
+    <None Include="source\gsl\gsl" />
+    <None Include="source\gsl\gsl_algorithm" />
+    <None Include="source\gsl\gsl_assert" />
+    <None Include="source\gsl\gsl_byte" />
+    <None Include="source\gsl\gsl_util" />
+    <None Include="source\gsl\multi_span" />
+    <None Include="source\gsl\pointers" />
+    <None Include="source\gsl\span" />
+    <None Include="source\gsl\span_ext" />
+    <None Include="source\gsl\string_span" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FB43B467-42CC-458C-9556-597B025830F7}</ProjectGuid>
@@ -178,25 +195,25 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>..\Source;..\libs\;..\libs\Engine\;$(IncludePath)</IncludePath>
+    <IncludePath>..\Source;..\libs\;..\libs\Engine\;source\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>..\Source;..\libs\;..\libs\Engine\;$(IncludePath)</IncludePath>
+    <IncludePath>..\Source;..\libs\;..\libs\Engine\;source\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>..\Source;..\libs\;..\libs\Engine\;$(IncludePath)</IncludePath>
+    <IncludePath>..\Source;..\libs\;..\libs\Engine\;source\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>..\Source;..\libs\;..\libs\Engine\;$(IncludePath)</IncludePath>
+    <IncludePath>..\Source;..\libs\;..\libs\Engine\;source\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

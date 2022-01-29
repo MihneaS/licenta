@@ -10,14 +10,14 @@ using namespace std;
 
 static_assert(sizeof(aiColor4D) == sizeof(glm::vec4), "WARNING! glm::vec4 and aiColor4D size differs!");
 
-namespace Migine {
-#define MIGINE_X(id, name) {Migine::MeshId::id, name},
-	std::unordered_map<Migine::MeshId, const char*> meshIdToIdNames = {
+namespace migine {
+#define MIGINE_X(id, name) {migine::Mesh_id::id, name},
+	std::unordered_map<migine::Mesh_id, const string> mesh_id_to_id_names = {
 		MIGINE_MESH_IDS
 	};
 }
 
-Mesh::Mesh(Migine::MeshId id) :
+Mesh::Mesh(migine::Mesh_id id) :
 	id(id) {
 	useMaterial = true;
 	glDrawMode = GL_TRIANGLES;
@@ -36,7 +36,7 @@ const GPUBuffers * Mesh::GetBuffers() const
 	return buffers;
 }
 
-Migine::MeshId Mesh::GetId() const {
+migine::Mesh_id Mesh::get_id() const {
 	return id;
 }
 

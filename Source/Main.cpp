@@ -5,7 +5,7 @@ using namespace std;
 
 #include <Core/Engine.h>
 
-#include <Laboratoare/LabList.h>
+#include <migine/scenes/Scene_01.h>
 
 int main(int argc, char **argv)
 {
@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 	WindowObject* window = Engine::Init(wp);
 
 	// Create a new 3D world and start running it
-	World *world = new Laborator8();
+	World *world = new migine::Scene_01();
 	world->Init();
 	world->Run();
 

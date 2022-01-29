@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Shader::Shader(Migine::ShaderId id) :
+Shader::Shader(migine::Shader_id id) :
 	id(id) {
 	program = 0;
 	shaderFiles.reserve(5);
@@ -17,7 +17,7 @@ Shader::~Shader()
 	glDeleteProgram(program);
 }
 
-Migine::ShaderId Shader::GetId() const
+migine::Shader_id Shader::get_id() const
 {
 	return id;
 }
