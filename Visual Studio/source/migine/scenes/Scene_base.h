@@ -37,9 +37,9 @@ namespace migine {
 		Scene_base();
 		~Scene_base();// TODO elibereaza resursele
 
-		void FrameStart() override;
-		void Update(float deltaTimeSeconds) override;
-		void FrameEnd() override;
+		void frame_start() override;
+		void update(float delta_time_seconds) override;
+		void frame_end() override;
 
 		template<class T>
 		void register_game_object(std::unique_ptr<T> game_object) {

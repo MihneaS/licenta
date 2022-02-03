@@ -20,8 +20,8 @@ int main(int argc, char **argv)
 
 	// Create a new 3D world and start running it
 	World *world = new migine::Scene_01();
-	world->Init();
-	world->Run();
+	world->init();
+	world->run();
 
 	// Signals to the Engine to release the OpenGL context
 	Engine::Exit();

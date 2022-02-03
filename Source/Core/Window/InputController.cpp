@@ -6,20 +6,20 @@ InputController::InputController()
 {
 	window = Engine::GetWindow();
 	window->SubscribeToEvents(this);
-	isAttached = true;
+	is_attached = true;
 }
 
 InputController::~InputController()
 {
 }
 
-bool InputController::IsActive() const
+bool InputController::is_active() const
 {
-	return isAttached;
+	return is_attached;
 }
 
-void InputController::SetActive(bool value)
+void InputController::set_active(bool value)
 {
-	isAttached = value;
+	is_attached = value;
 	value ? window->SubscribeToEvents(this) : window->UnsubscribeFromEvents(this);
 }

@@ -291,7 +291,7 @@ void WindowObject::UpdateObservers()
 	{
 		resizeEvent = false;
 		for (auto obs : observers) {
-			obs->OnWindowResize(props.resolution.x, props.resolution.y);
+			obs->on_window_resize(props.resolution.x, props.resolution.y);
 		}
 	}
 
@@ -300,7 +300,7 @@ void WindowObject::UpdateObservers()
 	{
 		mouseMoveEvent = false;
 		for (auto obs : observers) {
-			obs->OnMouseMove(props.cursorPos.x, props.cursorPos.y, mouseDeltaX, mouseDeltaY);
+			obs->on_mouse_move(props.cursorPos.x, props.cursorPos.y, mouseDeltaX, mouseDeltaY);
 		}
 	}
 
@@ -310,7 +310,7 @@ void WindowObject::UpdateObservers()
 	{
 		auto pressEvent = mouseButtonAction & mouseButtonStates;
 		for (auto obs : observers) {
-			obs->OnMouseBtnPress(props.cursorPos.x, props.cursorPos.y, pressEvent, keyMods);
+			obs->on_mouse_btn_press(props.cursorPos.x, props.cursorPos.y, pressEvent, keyMods);
 		}
 	}
 
@@ -319,7 +319,7 @@ void WindowObject::UpdateObservers()
 	if (releaseEvent)
 	{
 		for (auto obs : observers) {
-			obs->OnMouseBtnRelease(props.cursorPos.x, props.cursorPos.y, releaseEvent, keyMods);
+			obs->on_mouse_btn_release(props.cursorPos.x, props.cursorPos.y, releaseEvent, keyMods);
 		}
 	}
 
@@ -327,7 +327,7 @@ void WindowObject::UpdateObservers()
 	if (scrollEvent) {
 		scrollEvent = false;
 		for (auto obs : observers) {
-			obs->OnMouseScroll(props.cursorPos.x, props.cursorPos.y, mouseScrollDeltaX, mouseScrollDeltaY);
+			obs->on_mouse_scroll(props.cursorPos.x, props.cursorPos.y, mouseScrollDeltaX, mouseScrollDeltaY);
 		}
 	}
 
@@ -336,14 +336,14 @@ void WindowObject::UpdateObservers()
 	{
 		for (int i = 0; i < registeredKeyEvents; i++) {
 			for (auto obs : observers)
-				keyStates[keyEvents[i]] ? obs->OnKeyPress(keyEvents[i], keyMods) : obs->OnKeyRelease(keyEvents[i], keyMods);
+				keyStates[keyEvents[i]] ? obs->on_key_press(keyEvents[i], keyMods) : obs->on_key_release(keyEvents[i], keyMods);
 		}
 		registeredKeyEvents = 0;
 	}
 
 	// Continuous events
 	for (auto obs : observers) {
-			obs->OnInputUpdate(static_cast<float>(deltaFrameTime), keyMods);
+			obs->on_input_update(static_cast<float>(deltaFrameTime), keyMods);
 	}
 
 	mouseButtonAction = 0;

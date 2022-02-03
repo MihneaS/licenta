@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <memory>
 #include <algorithm>
+#include <sstream>
 
 #include <Component/CameraInput.h>
 #include <Component/Transform/Transform.h>
@@ -22,6 +23,7 @@ using std::unique_ptr;
 using std::make_unique;
 using std::move;
 using std::min;
+using std::stringstream;
 
 namespace migine {
 
@@ -128,7 +130,7 @@ namespace migine {
 		glEnable(GL_DEPTH_TEST);
 	}
 
-	void Scene_base::FrameStart() {
+	void Scene_base::frame_start() {
 		// clears the color buffer (using the previously set color) and depth buffer
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -138,7 +140,7 @@ namespace migine {
 		glViewport(0, 0, resolution.x, resolution.y);
 	}
 
-	void Scene_base::Update(float deltaTimeSeconds) {
+	void Scene_base::update(float deltaTimeSeconds) {
 
 		float caped_delta_time = min(deltaTimeSeconds, 1.0f / 20);
 		for (auto& collider : colliders) {
@@ -146,15 +148,6 @@ namespace migine {
 			if (has_moved) {
 				bvh.update(collider);
 			}
-		}
-		static float t = 0;
-		t += caped_delta_time;
-		//tmp->speed = {0, sin(t), 0};
-		if (tmp2->transform.get_world_position().y >= 7) {
-			//tmp2->speed = {0, -0.3, 0};
-		} else if (tmp2->transform.get_world_position().y <= -1) {
-
-			//tmp2->speed = {0, 0.3, 0};
 		}
 		for (auto& renderer : renderers) {
 			renderer->render(this->get_scene_camera());
@@ -183,7 +176,7 @@ namespace migine {
 		}
 	}
 
-	void Scene_base::FrameEnd() {
+	void Scene_base::frame_end() {
 	}
 
 	void Scene_base::draw_coordinat_system() {

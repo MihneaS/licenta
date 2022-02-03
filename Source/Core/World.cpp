@@ -6,56 +6,56 @@
 
 World::World()
 {
-	previousTime = 0;
-	elapsedTime = 0;
-	deltaTime = 0;
+	previous_time = 0;
+	elapsed_time = 0;
+	delta_time = 0;
 	paused = false;
-	shouldClose = false;
+	should_close = false;
 
 	window = Engine::GetWindow();
 }
 
-void World::Run()
+void World::run()
 {
 	if (!window)
 		return;
 
 	while (!window->ShouldClose())
 	{
-		LoopUpdate();
+		loop_update();
 	}
 }
 
-void World::Pause()
+void World::pause()
 {
 	paused = !paused;
 }
 
-void World::Exit()
+void World::exit()
 {
-	shouldClose = true;
+	should_close = true;
 	window->Close();
 }
 
-double World::GetLastFrameTime()
+double World::get_last_frame_time()
 {
-	return deltaTime;
+	return delta_time;
 }
 
-void World::ComputeFrameDeltaTime()
+void World::compute_frame_delta_time()
 {
-	elapsedTime = Engine::GetElapsedTime();
-	deltaTime = elapsedTime - previousTime;
-	previousTime = elapsedTime;
+	elapsed_time = Engine::GetElapsedTime();
+	delta_time = elapsed_time - previous_time;
+	previous_time = elapsed_time;
 }
 
-void World::LoopUpdate()
+void World::loop_update()
 {
 	// Polls and buffers the events
 	window->PollEvents();
 
 	// Computes frame deltaTime in seconds
-	ComputeFrameDeltaTime();
+	compute_frame_delta_time();
 
 	// Calls the methods of the instance of InputController in the following order
 	// OnWindowResize, OnMouseMove, OnMouseBtnPress, OnMouseBtnRelease, OnMouseScroll, OnKeyPress, OnMouseScroll, OnInputUpdate
@@ -63,9 +63,9 @@ void World::LoopUpdate()
 	window->UpdateObservers();
 
 	// Frame processing
-	FrameStart();
-	Update(static_cast<float>(deltaTime));
-	FrameEnd();
+	frame_start();
+	update(static_cast<float>(delta_time));
+	frame_end();
 
 	// Swap front and back buffers - image will be displayed to the screen
 	window->SwapBuffers();

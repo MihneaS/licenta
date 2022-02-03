@@ -12,25 +12,25 @@ class World : public InputController
 	public:
 		World();
 		virtual ~World() {};
-		virtual void Init() {};
-		virtual void FrameStart() {};
-		virtual void Update(float deltaTimeSeconds) {};
-		virtual void FrameEnd() {};
+		virtual void init() {};
+		virtual void frame_start() {};
+		virtual void update(float delta_time_seconds) {};
+		virtual void frame_end() {};
 
-		virtual void Run() final;
-		virtual void Pause() final;
-		virtual void Exit() final;
+		virtual void run() final;
+		virtual void pause() final;
+		virtual void exit() final;
 
-		virtual double GetLastFrameTime() final;
-
-	private:
-		void ComputeFrameDeltaTime();
-		void LoopUpdate();
+		virtual double get_last_frame_time() final;
 
 	private:
-		double previousTime;
-		double elapsedTime;
-		double deltaTime;
+		void compute_frame_delta_time();
+		void loop_update();
+
+	private:
+		double previous_time;
+		double elapsed_time;
+		double delta_time;
 		bool paused;
-		bool shouldClose;
+		bool should_close;
 };

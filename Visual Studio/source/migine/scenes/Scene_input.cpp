@@ -9,7 +9,7 @@ namespace migine {
 	Scene_input::Scene_input(Scene_base& scene) : scene(scene) {
 	}
 
-	void Scene_input::OnKeyPress(int key, int mods) {
+	void Scene_input::on_key_press(int key, int mods) {
 		//if (key == GLFW_KEY_F3)
 		//	scene.draw_ground_plane = !scene.draw_ground_plane;
 
@@ -17,6 +17,6 @@ namespace migine {
 		//	scene->ReloadShaders();
 
 		if (key == GLFW_KEY_ESCAPE)
-			scene.Exit();
+			scene.exit();
 	}
 }

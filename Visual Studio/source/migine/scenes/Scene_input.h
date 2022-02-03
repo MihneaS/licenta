@@ -13,6 +13,6 @@ namespace migine {
 
 		Scene_input(Scene_base& camera);
 
-		void OnKeyPress(int key, int mods) override;
+		void on_key_press(int key, int mods) override;
 	};
 }

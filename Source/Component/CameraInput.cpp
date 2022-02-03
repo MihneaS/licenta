@@ -15,7 +15,7 @@ CameraInput::CameraInput(Camera *camera)
 	this->camera = camera;
 }
 
-void CameraInput::OnInputUpdate(float deltaTime, int mods)
+void CameraInput::on_input_update(float deltaTime, int mods)
 {
 	if (!window->MouseHold(GLFW_MOUSE_BUTTON_RIGHT)) return;
 
@@ -42,13 +42,13 @@ void CameraInput::OnInputUpdate(float deltaTime, int mods)
 	camera->Update();
 }
 
-void CameraInput::OnKeyPress(int key, int mods) {
+void CameraInput::on_key_press(int key, int mods) {
 	if (mods) return;
 	if (key == GLFW_KEY_C)
 		camera->Log();
 }
 
-void CameraInput::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY) {
+void CameraInput::on_mouse_move(int mouseX, int mouseY, int deltaX, int deltaY) {
 
 	if (window->MouseHold(GLFW_MOUSE_BUTTON_RIGHT))
 	{
@@ -58,7 +58,7 @@ void CameraInput::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY) {
 	}
 }
 
-void CameraInput::OnMouseBtnPress(int mouseX, int mouseY, int button, int mods)
+void CameraInput::on_mouse_btn_press(int mouseX, int mouseY, int button, int mods)
 {
 	if (IS_BIT_SET(button, GLFW_MOUSE_BUTTON_RIGHT))
 	{
@@ -66,7 +66,7 @@ void CameraInput::OnMouseBtnPress(int mouseX, int mouseY, int button, int mods)
 	}
 }
 
-void CameraInput::OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods)
+void CameraInput::on_mouse_btn_release(int mouseX, int mouseY, int button, int mods)
 {
 	if (IS_BIT_SET(button, GLFW_MOUSE_BUTTON_RIGHT))
 	{

@@ -3,7 +3,6 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <sstream>
 #include <algorithm>
 
 #include <Core/Engine.h>
@@ -19,7 +18,6 @@
 using glm::vec3;
 using glm::quat;
 
-using std::stringstream;
 using std::move;
 using std::make_unique;
 using std::min;
@@ -43,7 +41,7 @@ namespace migine {
 	Scene_01::~Scene_01() {
 	}
 
-	void Scene_01::Init() {
+	void Scene_01::init() {
 		Resource_manager& rm = get_resource_manager();
 
 		// create test Migine::Box
@@ -108,106 +106,27 @@ namespace migine {
 
 	}
 
-	void Scene_01::FrameStart() {
-		Scene_base::FrameStart();
+	void Scene_01::frame_start() {
+		Scene_base::frame_start();
 	}
 
-	void Scene_01::Update(float deltaTimeSeconds) {
-		float caped_delta_time = min(deltaTimeSeconds, 1.0f / 20);
-
+	void Scene_01::update(float deltaTimeSeconds) {
+		Scene_base::update(deltaTimeSeconds);
+		float caped_delta_time = min(deltaTimeSeconds, 1.0f / 20); // TODO nu e ok sa fie si aici si in Scene_base::update
 		old_update(caped_delta_time);
-		for (auto& collider : colliders) {
-			bool has_moved = collider->integrate(caped_delta_time);
-			if (has_moved) {
-				bvh.update(collider);
-			}
-		}
-		static float t = 0;
-		t += caped_delta_time;
-		//tmp->speed = {0, sin(t), 0};
-		if (tmp2->transform.get_world_position().y >= 7) {
-			//tmp2->speed = {0, -0.3, 0};
-		} else if (tmp2->transform.get_world_position().y <= -1) {
-
-			//tmp2->speed = {0, 0.3, 0};
-		}
-		for (auto& renderer : renderers) {
-			renderer->render(this->get_scene_camera());
-		}
-		bvh.render_all(*camera);
-
-		static float last_printing_time = 0;
-		static float total_time = 0;
-		static int total_frames = 0;
-		static int frames_since_printing = 0;
-		frames_since_printing++;
-		total_frames++;
-		total_time += deltaTimeSeconds;
-		if (float delta_time_printing = total_time - last_printing_time; delta_time_printing > 0.66) {
-			stringstream ss;
-			ss << "fps:" << frames_since_printing / delta_time_printing << ";";
-			frames_since_printing = 0;
-			last_printing_time = total_time;
-			ss << " broad contacts:" << bvh.get_contact_count() << ";";
-			ss << " insertions:" << bvh.insertion_count << ";";
-			ss << " broad intersection checks:" << bvh.aabb_intersection_operations_count << ";";
-			ss << " time:" << total_time << ";";
-			ss << " frames:" << total_frames << ";";
-			continous_print_line_reset();
-			continous_print(ss.str());
-		}
-		//float caped_delta_time = min(deltaTimeSeconds, 1.0f / 20);
-		//old_update(caped_delta_time);
-		//for (auto& collider : colliders) {
-			//bool has_moved = collider->integrate(caped_delta_time);
-			//if (has_moved) {
-				//bvh.update(collider);
-			//}
-		//}
-		//static float t = 0;
-		//t += caped_delta_time;
-		////tmp->speed = {0, sin(t), 0};
-		//if (tmp2->transform.get_world_position().y >= 7) {
-			////tmp2->speed = {0, -0.3, 0};
-		//} else if (tmp2->transform.get_world_position().y <= -1) {
-
-			////tmp2->speed = {0, 0.3, 0};
-		//}
-		//for (auto& renderer : renderers) {
-			//renderer->render(this->get_scene_camera());
-		//}
-		//bvh.render_all(*camera);
-
-		//static float last_printing_time = 0;
-		//static float total_time = 0;
-		//static int total_frames = 0;
-		//static int frames_since_printing = 0;
-		//frames_since_printing++;
-		//total_frames++;
-		//total_time += deltaTimeSeconds;
-		//if (float delta_time_printing = total_time - last_printing_time; delta_time_printing > 0.66) {
-			//stringstream ss;
-			//ss << "fps:" << frames_since_printing / delta_time_printing << ";";
-			//frames_since_printing = 0;
-			//last_printing_time = total_time;
-			//ss << " broad contacts:" << bvh.get_contact_count() << ";";
-			//ss << " insertions:" << bvh.insertion_count << ";";
-			//ss << " broad intersection checks:" << bvh.aabb_intersection_operations_count << ";";
-			//ss << " time:" << total_time << ";";
-			//ss << " frames:" << total_frames << ";";
-			//continous_print_line_reset();
-			//continous_print(ss.str());
-		//}
 	}
 
-	void Scene_01::FrameEnd() {
+	void Scene_01::frame_end() {
 		draw_coordinat_system();
+		Scene_base::frame_end();
 	}
 
 	void Scene_01::render_simple_mesh(const Mesh& mesh, const Shader& shader, const glm::mat4& model_matrix, glm::vec3 color) {
 		if (!shader.GetProgramID()) {
 			return;
 		}
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		// render an object using the specified shader and the specified position
 		glUseProgram(shader.program);
@@ -260,7 +179,7 @@ namespace migine {
 	// Documentation for the input functions can be found in: "/Source/Core/Window/InputController.h" or
 	// https://github.com/UPB-Graphics/Framework-EGC/blob/master/Source/Core/Window/InputController.h
 
-	void Scene_01::OnInputUpdate(float deltaTime, int mods) {
+	void Scene_01::on_input_update(float deltaTime, int mods) {
 		float speed = 2;
 
 		if (!window->MouseHold(GLFW_MOUSE_BUTTON_RIGHT)) {
@@ -279,30 +198,30 @@ namespace migine {
 		}
 	}
 
-	void Scene_01::OnKeyPress(int key, int mods) {
+	void Scene_01::on_key_press(int key, int mods) {
 		// add key press event
 	}
 
-	void Scene_01::OnKeyRelease(int key, int mods) {
+	void Scene_01::on_key_release(int key, int mods) {
 		// add key release event
 	}
 
-	void Scene_01::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY) {
+	void Scene_01::on_mouse_move(int mouseX, int mouseY, int deltaX, int deltaY) {
 		// add mouse move event
 	}
 
-	void Scene_01::OnMouseBtnPress(int mouseX, int mouseY, int button, int mods) {
+	void Scene_01::on_mouse_btn_press(int mouseX, int mouseY, int button, int mods) {
 		// add mouse button press event
 	}
 
-	void Scene_01::OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods) {
+	void Scene_01::on_mouse_btn_release(int mouseX, int mouseY, int button, int mods) {
 		// add mouse button release event
 	}
 
-	void Scene_01::OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY) {
+	void Scene_01::on_mouse_scroll(int mouseX, int mouseY, int offsetX, int offsetY) {
 	}
 
-	void Scene_01::OnWindowResize(int width, int height) {
+	void Scene_01::on_window_resize(int width, int height) {
 	}
 
 	void Scene_01::old_update(float delta_time_seconds) {

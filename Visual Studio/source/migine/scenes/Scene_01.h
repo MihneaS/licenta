@@ -12,23 +12,23 @@ namespace migine {
 		Scene_01();
 		~Scene_01();
 
-		void Init() override;
+		void init() override;
 
-		void FrameStart() override;
-		void Update(float deltaTimeSeconds) override;
-		void old_update(float deltaTimeSeconds);
-		void FrameEnd() override;
+		void frame_start() override;
+		void update(float delta_time_seconds) override;
+		void old_update(float delta_time_seconds);
+		void frame_end() override;
 
 		void render_simple_mesh(const Mesh& mesh, const Shader& shader, const glm::mat4& model_matrix, glm::vec3 color = glm::vec3(1));
 
-		void OnInputUpdate(float deltaTime, int mods) override;
-		void OnKeyPress(int key, int mods) override;
-		void OnKeyRelease(int key, int mods) override;
-		void OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY) override;
-		void OnMouseBtnPress(int mouseX, int mouseY, int button, int mods) override;
-		void OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods) override;
-		void OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY) override;
-		void OnWindowResize(int width, int height) override;
+		void on_input_update(float delta_time, int mods) override;
+		void on_key_press(int key, int mods) override;
+		void on_key_release(int key, int mods) override;
+		void on_mouse_move(int mouse_x, int mouse_y, int delta_x, int delta_y) override;
+		void on_mouse_btn_press(int mouse_x, int mouse_y, int button, int mods) override;
+		void on_mouse_btn_release(int mouse_x, int mouse_y, int button, int mods) override;
+		void on_mouse_scroll(int mouse_x, int mouse_y, int offset_x, int offset_y) override;
+		void on_window_resize(int width, int height) override;
 
 	public:
 		unsigned int material_shininess;
