@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Collider_base.h"
-#include <migine/Game_objects/Components/Has_mesh.h>
+#include <migine/game_objects/components/Has_mesh.h>
 
 #include <unordered_map>
 #include <vector>

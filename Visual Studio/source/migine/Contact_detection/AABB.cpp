@@ -1,7 +1,7 @@
 #include "AABB.h"
 
-#include <migine/Game_objects/Contact_detection/Collider_base.h>
-#include <Migine/Resource_manager.h>
+#include <migine/game_objects/contact_detection/Collider_base.h>
+#include <migine/Resource_manager.h>
 
 #include <cassert>
 

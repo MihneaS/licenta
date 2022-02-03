@@ -1,13 +1,13 @@
 #pragma once
 
-#include <migine/Game_objects/Components/Transform.h>
-#include <migine/Game_objects/Components/Mesh.h>
+#include <migine/game_objects/components/Transform.h>
+#include <migine/game_objects/components/Mesh.h>
 #include <migine/define.h>
 
 #include <gsl/gsl>
 
 #ifdef DEBUGGING
-#include <migine/Game_objects/Rendering/Wireframe_renderer.h>
+#include <migine/game_objects/rendering/Wireframe_renderer.h>
 #endif
 
 namespace migine {

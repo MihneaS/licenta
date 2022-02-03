@@ -1,9 +1,9 @@
 #pragma once
 
-#include <migine/Game_objects/Game_object.h>
-#include <migine/Game_objects/Contact_detection/Box_collider.h>
-#include <migine/Game_objects/Rendering/Simple_renderer.h>
-#include <migine/Game_objects/Contact_detection/Rigid_body.h>
+#include <migine/game_objects/Game_object.h>
+#include <migine/game_objects/contact_detection/Box_collider.h>
+#include <migine/game_objects/rendering/Simple_renderer.h>
+#include <migine/game_objects/physics/Rigid_body.h>
 
 namespace migine {
 	class Box : public Game_object, public Box_collider, public Simple_renderer { //, public Rigid_body{

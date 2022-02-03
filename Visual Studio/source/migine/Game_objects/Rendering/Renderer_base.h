@@ -1,9 +1,9 @@
 #pragma once
 
 #include <migine/Camera.h>
-#include <migine/Game_objects/Components/Has_shader.h>
-#include <migine/Game_objects/Components/Has_mesh.h>
-#include <migine/Game_objects/Components/Has_transform.h>
+#include <migine/game_objects/components/Has_shader.h>
+#include <migine/game_objects/components/Has_mesh.h>
+#include <migine/game_objects/components/Has_transform.h>
 
 #include <stddef.h>
 

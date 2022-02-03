@@ -1,6 +1,6 @@
 #include "BVH.h"
 
-#include <migine/Game_objects/Contact_detection/Collider_base.h>
+#include <migine/game_objects/contact_detection/Collider_base.h>
 #include <migine/define.h>
 
 #include <vector>

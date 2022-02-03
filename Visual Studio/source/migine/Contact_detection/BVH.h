@@ -1,6 +1,6 @@
 #pragma once
 
-#include <migine/Contact_detection/AABB.h>
+#include <migine/contact_detection/AABB.h>
 #include <migine/utils.h>
 #include <migine/Camera.h>
 #include <migine/define.h>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Collider_base.h"
-#include <Migine/Game_objects/Components/Has_mesh.h>
+#include <migine/game_objects/components/Has_mesh.h>
 
 namespace migine {
 	class Sphere_collider: public Collider_base, virtual public Has_mesh {

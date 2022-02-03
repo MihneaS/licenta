@@ -10,8 +10,8 @@
 
 #include <utility>
 
-#include <migine/Game_objects/shapes/Box.h>
-#include <migine/Game_objects/shapes/Sphere.h>
+#include <migine/game_objects/shapes/Box.h>
+#include <migine/game_objects/shapes/Sphere.h>
 #include <migine/utils.h>
 #include <migine/Resource_manager.h>
 #include <migine/define.h>
@@ -19,10 +19,10 @@
 using glm::vec3;
 using glm::quat;
 
-using std::min;
 using std::stringstream;
 using std::move;
 using std::make_unique;
+using std::min;
 
 using std::cout;
 
@@ -32,7 +32,12 @@ namespace migine {
 	Sphere* tmp;
 
 
-	Scene_01::Scene_01() {
+	Scene_01::Scene_01() :
+			light_position(glm::vec3(0, 1, 1)),
+			light_direction(glm::vec3(0, -1, 0)),
+			material_shininess(30),
+			material_kd(0.5),
+			material_ks(0.5) {
 	}
 
 	Scene_01::~Scene_01() {
@@ -40,16 +45,6 @@ namespace migine {
 
 	void Scene_01::Init() {
 		Resource_manager& rm = get_resource_manager();
-
-
-		//Light & material properties
-		{
-			light_position = glm::vec3(0, 1, 1);
-			light_direction = glm::vec3(0, -1, 0);
-			material_shininess = 30;
-			material_kd = 0.5;
-			material_ks = 0.5;
-		}
 
 		// create test Migine::Box
 		{
@@ -114,17 +109,12 @@ namespace migine {
 	}
 
 	void Scene_01::FrameStart() {
-		// clears the color buffer (using the previously set color) and depth buffer
-		glClearColor(0, 0, 0, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glm::ivec2 resolution = window->GetResolution();
-		// sets the screen area where to draw
-		glViewport(0, 0, resolution.x, resolution.y);
+		Scene_base::FrameStart();
 	}
 
 	void Scene_01::Update(float deltaTimeSeconds) {
 		float caped_delta_time = min(deltaTimeSeconds, 1.0f / 20);
+
 		old_update(caped_delta_time);
 		for (auto& collider : colliders) {
 			bool has_moved = collider->integrate(caped_delta_time);
@@ -134,12 +124,12 @@ namespace migine {
 		}
 		static float t = 0;
 		t += caped_delta_time;
-		tmp->speed = {0, sin(t), 0};
+		//tmp->speed = {0, sin(t), 0};
 		if (tmp2->transform.get_world_position().y >= 7) {
-			tmp2->speed = {0, -0.3, 0};
+			//tmp2->speed = {0, -0.3, 0};
 		} else if (tmp2->transform.get_world_position().y <= -1) {
 
-			tmp2->speed = {0, 0.3, 0};
+			//tmp2->speed = {0, 0.3, 0};
 		}
 		for (auto& renderer : renderers) {
 			renderer->render(this->get_scene_camera());
@@ -166,6 +156,48 @@ namespace migine {
 			continous_print_line_reset();
 			continous_print(ss.str());
 		}
+		//float caped_delta_time = min(deltaTimeSeconds, 1.0f / 20);
+		//old_update(caped_delta_time);
+		//for (auto& collider : colliders) {
+			//bool has_moved = collider->integrate(caped_delta_time);
+			//if (has_moved) {
+				//bvh.update(collider);
+			//}
+		//}
+		//static float t = 0;
+		//t += caped_delta_time;
+		////tmp->speed = {0, sin(t), 0};
+		//if (tmp2->transform.get_world_position().y >= 7) {
+			////tmp2->speed = {0, -0.3, 0};
+		//} else if (tmp2->transform.get_world_position().y <= -1) {
+
+			////tmp2->speed = {0, 0.3, 0};
+		//}
+		//for (auto& renderer : renderers) {
+			//renderer->render(this->get_scene_camera());
+		//}
+		//bvh.render_all(*camera);
+
+		//static float last_printing_time = 0;
+		//static float total_time = 0;
+		//static int total_frames = 0;
+		//static int frames_since_printing = 0;
+		//frames_since_printing++;
+		//total_frames++;
+		//total_time += deltaTimeSeconds;
+		//if (float delta_time_printing = total_time - last_printing_time; delta_time_printing > 0.66) {
+			//stringstream ss;
+			//ss << "fps:" << frames_since_printing / delta_time_printing << ";";
+			//frames_since_printing = 0;
+			//last_printing_time = total_time;
+			//ss << " broad contacts:" << bvh.get_contact_count() << ";";
+			//ss << " insertions:" << bvh.insertion_count << ";";
+			//ss << " broad intersection checks:" << bvh.aabb_intersection_operations_count << ";";
+			//ss << " time:" << total_time << ";";
+			//ss << " frames:" << total_frames << ";";
+			//continous_print_line_reset();
+			//continous_print(ss.str());
+		//}
 	}
 
 	void Scene_01::FrameEnd() {

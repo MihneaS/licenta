@@ -14,7 +14,6 @@ namespace migine {
 
 		void Init() override;
 
-	private:
 		void FrameStart() override;
 		void Update(float deltaTimeSeconds) override;
 		void old_update(float deltaTimeSeconds);
@@ -31,6 +30,7 @@ namespace migine {
 		void OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY) override;
 		void OnWindowResize(int width, int height) override;
 
+	public:
 		unsigned int material_shininess;
 		float material_kd;
 		float material_ks;

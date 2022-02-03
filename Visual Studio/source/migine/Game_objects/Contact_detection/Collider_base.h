@@ -1,11 +1,11 @@
 #pragma once
 
-#include <migine/Game_objects/Components/Has_transform.h>
-#include <migine/Game_objects/Components/Has_name.h>
-#include <migine/Game_objects/Components/Has_id.h>
-#include <migine/Contact_detection/Collision.h>
-#include <migine/Contact_detection/BVH.h>
-#include <migine/Game_objects/Contact_detection/Rigid_body.h>
+#include <migine/game_objects/components/Has_transform.h>
+#include <migine/game_objects/components/Has_name.h>
+#include <migine/game_objects/components/Has_id.h>
+#include <migine/contact_detection/Collision.h>
+#include <migine/contact_detection/BVH.h>
+#include <migine/game_objects/physics/Rigid_body.h>
 #include <migine/define.h>
 
 #include <tuple>

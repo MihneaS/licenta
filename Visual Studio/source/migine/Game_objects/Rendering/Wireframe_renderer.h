@@ -1,6 +1,6 @@
 #pragma once
 
-#include <migine/Game_objects/Rendering/Renderer_base.h>
+#include <migine/game_objects/rendering/Renderer_base.h>
 #include <migine/constants.h>
 
 namespace migine {

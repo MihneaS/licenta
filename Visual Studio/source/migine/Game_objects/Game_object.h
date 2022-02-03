@@ -1,7 +1,7 @@
 #pragma once
 
 #include <migine/define.h>
-#include <migine/Game_objects/Components/Has_name.h>
+#include <migine/game_objects/components/Has_name.h>
 
 namespace migine {
 	class Game_object 
@@ -11,7 +11,7 @@ namespace migine {
 	{
 	public:
 		Game_object() = default;
-		virtual ~Game_object() = default;
+		virtual ~Game_object() = default; // TODO replace with = 0
 
 		virtual void init();
 		virtual void update();

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <memory>
+#include <algorithm>
 
 #include <Component/CameraInput.h>
 #include <Component/Transform/Transform.h>
@@ -11,15 +12,16 @@
 #include "Scene_input.h"
 
 #include <Core/Engine.h>
-#include <migine/Game_objects/Components/Transform.h>
+#include <migine/game_objects/components/Transform.h>
 
 #include <migine/Resource_manager.h>
-#include <migine/Game_objects/Contact_detection/Collider_base.h>
+#include <migine/game_objects/contact_detection/Collider_base.h>
 
 using std::vector;
 using std::unique_ptr;
 using std::make_unique;
 using std::move;
+using std::min;
 
 namespace migine {
 
@@ -30,7 +32,7 @@ namespace migine {
 	Scene_base::~Scene_base() {
 	}
 
-	void Scene_base::register_game_object(unique_ptr<Game_object> game_object) {
+	void Scene_base::register_game_object2(unique_ptr<Game_object> game_object) {
 		if (Collider_base* collider_ptr = dynamic_cast<Collider_base*>(game_object.get()); collider_ptr) {
 			bvh.cache_contacts_and_insert(collider_ptr);
 			colliders.push_back(collider_ptr);
@@ -40,6 +42,7 @@ namespace migine {
 		}
 		if (Rigid_body* rigid_body = dynamic_cast<Rigid_body*>(game_object.get()); rigid_body) {
 			rigid_bodies.push_back(rigid_body);
+			// TODO add gravity and drag based on class (gl with that)
 		}
 		game_objects.push_back(move(game_object));
 	}
@@ -123,6 +126,64 @@ namespace migine {
 		// Default rendering mode will use depth buffer
 		glDepthMask(GL_TRUE);
 		glEnable(GL_DEPTH_TEST);
+	}
+
+	void Scene_base::FrameStart() {
+		// clears the color buffer (using the previously set color) and depth buffer
+		glClearColor(0, 0, 0, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glm::ivec2 resolution = window->GetResolution();
+		// sets the screen area where to draw
+		glViewport(0, 0, resolution.x, resolution.y);
+	}
+
+	void Scene_base::Update(float deltaTimeSeconds) {
+
+		float caped_delta_time = min(deltaTimeSeconds, 1.0f / 20);
+		for (auto& collider : colliders) {
+			bool has_moved = collider->integrate(caped_delta_time);
+			if (has_moved) {
+				bvh.update(collider);
+			}
+		}
+		static float t = 0;
+		t += caped_delta_time;
+		//tmp->speed = {0, sin(t), 0};
+		if (tmp2->transform.get_world_position().y >= 7) {
+			//tmp2->speed = {0, -0.3, 0};
+		} else if (tmp2->transform.get_world_position().y <= -1) {
+
+			//tmp2->speed = {0, 0.3, 0};
+		}
+		for (auto& renderer : renderers) {
+			renderer->render(this->get_scene_camera());
+		}
+		bvh.render_all(*camera);
+
+		static float last_printing_time = 0;
+		static float total_time = 0;
+		static int total_frames = 0;
+		static int frames_since_printing = 0;
+		frames_since_printing++;
+		total_frames++;
+		total_time += deltaTimeSeconds;
+		if (float delta_time_printing = total_time - last_printing_time; delta_time_printing > 0.66) {
+			stringstream ss;
+			ss << "fps:" << frames_since_printing / delta_time_printing << ";";
+			frames_since_printing = 0;
+			last_printing_time = total_time;
+			ss << " broad contacts:" << bvh.get_contact_count() << ";";
+			ss << " insertions:" << bvh.insertion_count << ";";
+			ss << " broad intersection checks:" << bvh.aabb_intersection_operations_count << ";";
+			ss << " time:" << total_time << ";";
+			ss << " frames:" << total_frames << ";";
+			continous_print_line_reset();
+			continous_print(ss.str());
+		}
+	}
+
+	void Scene_base::FrameEnd() {
 	}
 
 	void Scene_base::draw_coordinat_system() {
