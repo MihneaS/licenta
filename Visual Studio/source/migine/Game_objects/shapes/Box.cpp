@@ -9,7 +9,7 @@ using glm::mat3;
 namespace migine {
 	Box::Box(vec3 position, vec3 scale, quat rotation) :
 		Has_mesh(get_mesh<Mesh_id::box>()), Has_shader(get_shader<Shader_id::vertex_normal>()), Has_transform(position, scale, rotation) {
-		set_mass(1);
+		//set_mass(1);
 		compute_inverse_inertia_tensor();
 	}
 

@@ -83,6 +83,8 @@ namespace migine {
 		{
 			auto s = make_unique<Sphere>(vec3{-6, 5, 0});
 			tmp = s.get();
+			force_registry.add(static_cast<gsl::not_null<Rigid_body*>>(s.get()), make_unique<Test_cos_force_generator>());
+			s->set_inverse_mass(1);
 #ifdef DEBUGGING
 			tmp->name = "sfera miscatoare";
 #endif // DEBUGGING
@@ -90,6 +92,8 @@ namespace migine {
 		}
 		{
 			auto b = make_unique<Box>(vec3{0, 8, -2}, vec3{20, 0.2, 20});
+			b->set_inverse_mass(1);
+			force_registry.add(static_cast<gsl::not_null<Rigid_body*>>(b.get()), make_unique<Linear_speed_generator>(-1, 7, 0.3));
 #ifdef DEBUGGING
 			b->name = "acoperitor";
 #endif // DEBUGGING

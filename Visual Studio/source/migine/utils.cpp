@@ -44,7 +44,7 @@ namespace migine {
 
 	void continous_print_line_reset() {
 		for (int i = 0; i < printed_characters_count; i++) {
-			cout << "\b";
+			cout << "\b \b\b";
 		}
 		printed_characters_count = 0;
 	}
@@ -77,6 +77,10 @@ namespace migine {
 		q2 *= q;
 		q2 *= 0.5;
 		return q2;
+	}
+
+	float get_elapsed_time() {
+		return glfwGetTime();
 	}
 
 	void _transform_inertia_tensor(mat3& iitWorld, const mat3& iitBody, const mat4& rotmat) {

@@ -14,6 +14,7 @@ namespace migine {
 		bool has_moved = false;
 
 		// Calculate linear acceleration from force inputs.
+		vec3 acceleration = constant_acceleration;
 		acceleration += force_accumulator * get_inverse_mass();
 		// Calculate angular acceleration from torque inputs.
 		vec3 angular_acceleration = inverse_inertia_tensor_world * torque_accumulator;
@@ -53,6 +54,10 @@ namespace migine {
 
 	void Rigid_body::set_inverse_mass(float inverse_mass) {
 		this->inverse_mass = inverse_mass;
+	}
+
+	vec3 Rigid_body::get_constant_acceleration() {
+		return constant_acceleration;
 	}
 
 	const glm::mat3& Rigid_body::get_inverse_invertia_tensor() {

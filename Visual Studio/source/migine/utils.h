@@ -16,6 +16,7 @@ namespace migine {
     void continous_print_line_reset();
     void inverse_inplace(glm::mat3& mat);
     glm::quat quat_add_vec3(glm::quat q, glm::vec3 v);
+    float get_elapsed_time();
 
     inline void _transform_inertia_tensor(glm::mat3& iitWorld, const glm::mat3& iitBody, const glm::mat4& rotmat);
 

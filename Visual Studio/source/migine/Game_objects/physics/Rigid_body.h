@@ -19,6 +19,7 @@ namespace migine {
 		void set_mass(float mass);
 		float get_inverse_mass();
 		void set_inverse_mass(float inverse_mass);
+		glm::vec3 get_constant_acceleration();
 		const glm::mat3& get_inverse_invertia_tensor();
 		glm::vec3 get_velocity();
 		glm::quat get_angular_velocity();
@@ -41,7 +42,8 @@ namespace migine {
 
 		glm::vec3 velocity = k_vec3_zero;
 		glm::vec3 angular_velocity = k_vec3_zero;
-		glm::vec3 acceleration = k_vec3_zero;
+		glm::vec3 constant_acceleration = k_vec3_zero; // = k_default_gravity;
+		//glm::vec3 last_frame_acceleration = k_vec3_zero;
 		//glm::vec3 angular_acceleration = k_vec3_zero;
 		glm::vec3 force_accumulator = k_vec3_zero;
 		glm::vec3 torque_accumulator = k_vec3_zero;

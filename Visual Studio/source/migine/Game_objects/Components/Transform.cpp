@@ -90,7 +90,7 @@ namespace migine {
 		orientation = quat_add_vec3(orientation, rotation);
 	}
 	void Transform::internal_update() {
-		orientation /= orientation.length(); // TODO poate mai rar
+		// orientation /= orientation.length(); // this line is wrong, it reduces the orientation  // TODO poate mai rar
 		compute_world_model();
 	}
 }

@@ -167,22 +167,27 @@ namespace migine {
 
 		// print stats
 		static float last_printing_time = 0;
-		static float total_time = 0;
 		static int total_frames = 0;
 		static int frames_since_printing = 0;
+		//static float sin_sum = 0;
+		//static float sin_now;
 		frames_since_printing++;
 		total_frames++;
-		total_time += delta_time_seconds;
-		if (float delta_time_printing = total_time - last_printing_time; delta_time_printing > 0.66) {
+		float current_time = get_elapsed_time();
+		//sin_now = sin(total_time);
+		//sin_sum += sin_now;
+		if (float delta_time_printing = current_time - last_printing_time; delta_time_printing > 0.66) {
 			stringstream ss;
 			ss << "fps:" << frames_since_printing / delta_time_printing << ";";
 			frames_since_printing = 0;
-			last_printing_time = total_time;
+			last_printing_time = current_time;
 			ss << " broad contacts:" << bvh.get_contact_count() << ";";
 			ss << " insertions:" << bvh.insertion_count << ";";
 			ss << " broad intersection checks:" << bvh.aabb_intersection_operations_count << ";";
-			ss << " time:" << total_time << ";";
+			ss << " time:" << current_time << ";";
 			ss << " frames:" << total_frames << ";";
+			//ss << " sin_now:" << sin_now << ";";
+			//ss << " sin_sum:" << sin_sum << ";";
 			continous_print_line_reset();
 			continous_print(ss.str());
 		}

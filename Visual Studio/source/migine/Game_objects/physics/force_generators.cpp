@@ -1,6 +1,8 @@
 #include "force_generators.h"
 #include <migine/game_objects/physics/Rigid_body.h>
 
+#include <cmath>
+
 using glm::vec3;
 using glm::normalize;
 
@@ -8,6 +10,7 @@ using gsl::not_null;
 
 using std::unique_ptr;
 using std::move;
+using std::cos;
 
 namespace migine {
 	Force_registry::Entry::Entry(gsl::not_null<Rigid_body*> obj, std::unique_ptr<Force_generator_base> force_generator) :
@@ -55,6 +58,7 @@ namespace migine {
 		force *= -drag_coeff;
 		obj->add_force(force);
 	}
+
 	void Test_bouyant_force_generator::update_force(gsl::not_null<Rigid_body*> obj, float delta_time) {
 		float y = obj->transform.get_world_position().y;
 		static float multiplier = 3;
@@ -63,5 +67,35 @@ namespace migine {
 		} else if (obj->transform.get_world_position().y < 0) {
 			obj->add_force(-multiplier * y * k_default_gravity);
 		}
+	}
+
+	void Test_cos_force_generator::update_force(gsl::not_null<Rigid_body*> obj, float delta_time) {
+		total_time += delta_time;
+		static float multiplier = 1;
+		obj->add_force({0, multiplier * cos(total_time), 0});
+	}
+
+	Linear_speed_generator::Linear_speed_generator(float min_y, float max_y, float desired_speed) :
+		min_y(min_y), max_y(max_y), desired_speed(desired_speed) {
+	}
+	
+	void Linear_speed_generator::update_force(gsl::not_null<Rigid_body*> obj, float delta_time) {
+		float y = obj->transform.get_world_position().y;
+		float velocity_y = obj->get_velocity().y;
+		float speed_target = desired_speed;
+		if (y > max_y) {
+			speed_target = -desired_speed;
+		} else if (y < min_y) {
+			speed_target = desired_speed;
+		} else if (velocity_y > 0) {
+			speed_target = desired_speed;
+		} else {
+			speed_target = -desired_speed;
+		}
+		obj->add_force(obtain_force_for_desired_velocity(obj, delta_time, {0, speed_target, 0}));
+	}
+	
+	vec3 Force_generator_base::obtain_force_for_desired_velocity(not_null<Rigid_body*> obj, float delta_time, vec3 desired_velocity) {
+		return (desired_velocity - obj->get_velocity() - obj->get_constant_acceleration() * delta_time) / (delta_time * obj->get_inverse_mass());
 	}
 }

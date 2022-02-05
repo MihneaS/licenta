@@ -15,6 +15,8 @@ namespace migine {
 		virtual ~Force_generator_base() = default;
 
 		virtual void update_force(gsl::not_null<Rigid_body*> obj, float delta_time) = 0;
+	protected:
+		glm::vec3 obtain_force_for_desired_velocity(gsl::not_null<Rigid_body*> obj, float delta_time, glm::vec3 desired_velocity);
 	};
 
 	class Force_registry {
@@ -59,5 +61,27 @@ namespace migine {
 		~Test_bouyant_force_generator() override = default;
 
 		void update_force(gsl::not_null<Rigid_body*> obj, float delta_time) override;
+	};
+
+	class Test_cos_force_generator: public Force_generator_base {
+	public:
+		~Test_cos_force_generator() override = default;
+
+		void update_force(gsl::not_null<Rigid_body*> obj, float delta_time) override;
+	private:
+		float total_time = 0;
+	};
+
+	class Linear_speed_generator: public Force_generator_base {
+	public:
+		Linear_speed_generator(float min_y, float max_y, float desired_speed);
+		~Linear_speed_generator() override = default;
+
+		void update_force(gsl::not_null<Rigid_body*> obj, float delta_time) override;
+
+	private:
+		float min_y;
+		float max_y;
+		float desired_speed;
 	};
 }
