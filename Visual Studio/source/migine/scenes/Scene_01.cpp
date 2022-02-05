@@ -25,10 +25,8 @@ using std::min;
 using std::cout;
 
 namespace migine {
-
 	Box* tmp2;
 	Sphere* tmp;
-
 
 	Scene_01::Scene_01() :
 			light_position(glm::vec3(0, 1, 1)),
@@ -59,7 +57,6 @@ namespace migine {
 			(*game_objects.rbegin())->name = "sfera jos";
 #endif // DEBUGGING
 		}
-
 
 		{
 			register_game_object(move(make_unique<Sphere>(vec3{2, 5, 0})));

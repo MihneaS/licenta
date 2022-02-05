@@ -14,6 +14,11 @@ namespace migine {
     glm::vec4 position_to_vec4(glm::vec3 v);
     void continous_print(const std::string s);
     void continous_print_line_reset();
+    void inverse_inplace(glm::mat3& mat);
+    glm::quat quat_add_vec3(glm::quat q, glm::vec3 v);
+
+    inline void _transform_inertia_tensor(glm::mat3& iitWorld, const glm::mat3& iitBody, const glm::mat4& rotmat);
+
     // credits to answer from https://stackoverflow.com/questions/7110301/generic-hash-for-tuples-in-unordered-map-unordered-set
     namespace {
         // Code from boost

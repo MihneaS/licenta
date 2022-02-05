@@ -40,7 +40,7 @@ namespace migine {
 	vec3 Gravity_generator::gravity = k_default_gravity;
 
 	void Gravity_generator::update_force(not_null<Rigid_body*> obj, float delta_time) {
-		obj->add_force(gravity * obj->get_mass());
+		obj->add_force(gravity * obj->get_inverse_mass());
 	}
 
 	Drag_generator::Drag_generator(float k1, float k2) :
@@ -54,5 +54,14 @@ namespace migine {
 		force = normalize(force);
 		force *= -drag_coeff;
 		obj->add_force(force);
+	}
+	void Test_bouyant_force_generator::update_force(gsl::not_null<Rigid_body*> obj, float delta_time) {
+		float y = obj->transform.get_world_position().y;
+		static float multiplier = 3;
+		if (y < -1) {
+			obj->add_force(-multiplier*k_default_gravity);
+		} else if (obj->transform.get_world_position().y < 0) {
+			obj->add_force(-multiplier * y * k_default_gravity);
+		}
 	}
 }

@@ -21,6 +21,7 @@
 #include <type_traits>
 #include <functional>
 #include <memory>
+#include <utility>
 
 namespace EngineComponents {
 	class Transform;
@@ -44,17 +45,17 @@ namespace migine {
 		template<class T>
 		void register_game_object(std::unique_ptr<T> game_object) {
 			static_assert(std::is_base_of<Game_object, T>());
-			if constexpr (std::is_base_of<Collider_base, T>()) {
-				Collider_base* collider = static_cast<Collider_base*>(game_object.get());
-				bvh.cache_contacts_and_insert(collider);
-				colliders.push_back(collider);
-			}
 			if constexpr (std::is_base_of<Renderer_base, T>()) {
 				renderers.push_back(static_cast<Renderer_base*>(game_object.get()));
 			}
 			if constexpr (std::is_base_of<Rigid_body, T>()) {
 				gsl::not_null<Rigid_body*> rigid_body = static_cast<Rigid_body*>(game_object.get());
-				rigid_bodies.push_back(rigid_body);
+				Collider_base* collider = nullptr;
+				if constexpr (std::is_base_of<Collider_base, T>()) {
+					collider = static_cast<Collider_base*>(game_object.get());
+					bvh.insert(collider);
+				}
+				bodies_and_colliders.push_back(std::make_pair(rigid_body, collider));
 				auto initial_force_generators = get_initial_force_generators<T>();
 				for (auto& force_generator : initial_force_generators) {
 					force_registry.add(rigid_body, move(force_generator));
@@ -62,6 +63,8 @@ namespace migine {
 			}
 			game_objects.push_back(move(game_object));
 		}
+
+		// deprecated
 		void register_game_object2(std::unique_ptr<Game_object> game_object);
 
 		glm::vec3 light_position;
@@ -89,8 +92,7 @@ namespace migine {
 		// use unique. make it a const vector, as resizeing will invalidate all teh references... or use a list or something
 		std::vector<std::unique_ptr<Game_object>> game_objects;
 		std::vector<gsl::not_null<Renderer_base*>> renderers;
-		std::vector<gsl::not_null<Rigid_body*>> rigid_bodies;
-		std::vector<gsl::not_null<Collider_base*>> colliders;
+		std::vector<std::pair<gsl::not_null<Rigid_body*>, Collider_base*>> bodies_and_colliders;
 		Force_registry force_registry;
 
 	private:

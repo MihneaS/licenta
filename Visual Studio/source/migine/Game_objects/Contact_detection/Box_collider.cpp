@@ -6,7 +6,6 @@
 #include <vector>
 #include <numeric>
 
-
 using glm::vec3;
 using glm::vec4;
 using glm::quat;
@@ -18,7 +17,6 @@ using std::vector;
 using std::accumulate;
 
 namespace migine {
-
 	Collision Box_collider::check_collision(const Collider_base& other) const {
 		return other.check_collision(*this);
 	}

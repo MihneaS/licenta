@@ -10,9 +10,11 @@ namespace migine {
 	template<class T>
 	std::vector<std::unique_ptr<Force_generator_base>> get_initial_force_generators() {
 		static_assert(std::is_base_of<Rigid_body, T>());
-		std::vector<std::unique_ptr<Force_generator_base>> ret(2);
+		std::vector<std::unique_ptr<Force_generator_base>> ret;
+		ret.reserve(2);
 		ret.push_back(make_unique<Gravity_generator>());
-		ret.push_back(make_unique<Drag_generator>(0.5f, 0.5f));
+		//ret.push_back(make_unique<Drag_generator>(0.5f, 0.5f));
+		ret.push_back(make_unique<Test_bouyant_force_generator>());
 		return ret;
 	}
 }

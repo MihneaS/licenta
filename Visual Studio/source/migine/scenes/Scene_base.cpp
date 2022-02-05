@@ -24,6 +24,7 @@ using std::make_unique;
 using std::move;
 using std::min;
 using std::stringstream;
+using std::pair;
 
 namespace migine {
 
@@ -37,13 +38,13 @@ namespace migine {
 	void Scene_base::register_game_object2(unique_ptr<Game_object> game_object) {
 		if (Collider_base* collider_ptr = dynamic_cast<Collider_base*>(game_object.get()); collider_ptr) {
 			bvh.cache_contacts_and_insert(collider_ptr);
-			colliders.push_back(collider_ptr);
+			//colliders.push_back(collider_ptr);
 		}
 		if (Renderer_base* renderer_ptr = dynamic_cast<Renderer_base*>(game_object.get()); renderer_ptr) {
 			renderers.push_back(renderer_ptr);
 		}
 		if (Rigid_body* rigid_body = dynamic_cast<Rigid_body*>(game_object.get()); rigid_body) {
-			rigid_bodies.push_back(rigid_body);
+			//rigid_bodies.push_back(rigid_body);
 			// TODO add gravity and drag based on class (gl with that)
 		}
 		game_objects.push_back(move(game_object));
@@ -140,27 +141,38 @@ namespace migine {
 		glViewport(0, 0, resolution.x, resolution.y);
 	}
 
-	void Scene_base::update(float deltaTimeSeconds) {
+	void Scene_base::update(float delta_time_seconds) {
+		// cap delta time
+		float caped_delta_time = min(delta_time_seconds, 1.0f / 20);
 
-		float caped_delta_time = min(deltaTimeSeconds, 1.0f / 20);
-		for (auto& collider : colliders) {
-			bool has_moved = collider->integrate(caped_delta_time);
+		// apply forces
+		force_registry.update_forces(caped_delta_time);
+		// move bodies and update colliders in bvh
+		for (auto& bc_pair : bodies_and_colliders) {
+			auto rigid_body = get<gsl::not_null<Rigid_body*>>(bc_pair);
+			bool has_moved = rigid_body->integrate(caped_delta_time);
 			if (has_moved) {
-				bvh.update(collider);
+				auto collider = get<Collider_base*>(bc_pair);
+				if (collider) {
+					bvh.update(collider);
+				}
 			}
 		}
+
+		// render
 		for (auto& renderer : renderers) {
 			renderer->render(this->get_scene_camera());
 		}
 		bvh.render_all(*camera);
 
+		// print stats
 		static float last_printing_time = 0;
 		static float total_time = 0;
 		static int total_frames = 0;
 		static int frames_since_printing = 0;
 		frames_since_printing++;
 		total_frames++;
-		total_time += deltaTimeSeconds;
+		total_time += delta_time_seconds;
 		if (float delta_time_printing = total_time - last_printing_time; delta_time_printing > 0.66) {
 			stringstream ss;
 			ss << "fps:" << frames_since_printing / delta_time_printing << ";";

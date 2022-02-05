@@ -19,15 +19,36 @@ namespace migine {
 		void set_mass(float mass);
 		float get_inverse_mass();
 		void set_inverse_mass(float inverse_mass);
+		const glm::mat3& get_inverse_invertia_tensor();
 		glm::vec3 get_velocity();
 		glm::quat get_angular_velocity();
 		void add_force(glm::vec3 force);
-		void reset_forces();
+		void add_force_at_point(glm::vec3 force, glm::vec3 point);
+		void add_force_at_body_point(glm::vec3 force, glm::vec3 point);
+		void add_torque(glm::vec3 torque);
+		void clear_force_accum();
+		void clear_torque_accum();
+		void clear_accumulators();
+		void calculate_derived_data();
+
+	protected:
+		void set_inertia_tensor(const glm::mat3& inerta_tensor);
+		void set_inverse_inertia_tensor(const glm::mat3& inverse_inertia_tensor);
+		virtual void compute_inverse_inertia_tensor() = 0; // TODO recompute when scale or mass change
+		void compute_inverse_inertia_tensor_world();
 
 	private:
-		glm::vec3 velocity = {0, 0, 0};
-		glm::quat angular_velocity = glm::quat();
-		glm::vec3 force_acumulator = {0, 0, 0};
+
+		glm::vec3 velocity = k_vec3_zero;
+		glm::vec3 angular_velocity = k_vec3_zero;
+		glm::vec3 acceleration = k_vec3_zero;
+		//glm::vec3 angular_acceleration = k_vec3_zero;
+		glm::vec3 force_accumulator = k_vec3_zero;
+		glm::vec3 torque_accumulator = k_vec3_zero;
 		float inverse_mass = 0;
+		glm::mat3 inverse_inertia_tensor = k_i3;
+		glm::mat3 inverse_inertia_tensor_world = k_i3;
+		float linear_damping = 0.995f;
+		float angular_damping = 0.995f;
 	};
 }

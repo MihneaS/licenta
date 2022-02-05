@@ -18,7 +18,6 @@ using std::tuple;
 using gsl::not_null;
 
 namespace migine {
-
 	AABB::AABB(tuple<vec3, vec3> min_pos_max_pos) :
 		AABB(get<0>(min_pos_max_pos), get<1>(min_pos_max_pos)) {
 	}
@@ -29,9 +28,9 @@ namespace migine {
 		, renderer(get_shader<Shader_id::color>(), get_mesh<Mesh_id::box_wireframe>())
 #endif
 	{
-		assert(min_pos.x <= max_pos.x);
-		assert(min_pos.y <= max_pos.y);
-		assert(min_pos.z <= max_pos.z);
+		assert(min_pos.x <= max_pos.x, "AABB constructor: given min X is greater then given max X");
+		assert(min_pos.y <= max_pos.y, "AABB constructor: given min Y is greater then given max Y");
+		assert(min_pos.z <= max_pos.z, "AABB constructor: given min Z is greater then given max Z");
 	}
 
 	AABB::AABB(not_null<const Collider_base*> collider) :
@@ -116,5 +115,4 @@ namespace migine {
 		renderer.render(camera);
 	}
 #endif
-
 }

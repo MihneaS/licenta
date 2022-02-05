@@ -1,6 +1,5 @@
 #include "Wireframe_renderer.h"
 
-
 using glm::vec3;
 using glm::quat;
 

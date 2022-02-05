@@ -16,7 +16,5 @@ namespace migine {
 		GLint loc_model_matrix;
 		int loc_view_matrix;
 		int loc_projection_matrix;
-
 	};
-
 }

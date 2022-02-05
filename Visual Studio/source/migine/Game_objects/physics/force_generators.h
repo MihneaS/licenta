@@ -53,4 +53,11 @@ namespace migine {
 		float k1;
 		float k2;
 	};
+
+	class Test_bouyant_force_generator: public Force_generator_base {
+	public:
+		~Test_bouyant_force_generator() override = default;
+
+		void update_force(gsl::not_null<Rigid_body*> obj, float delta_time) override;
+	};
 }

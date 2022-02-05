@@ -25,7 +25,6 @@ namespace migine {
 
 		std::unordered_map<Mesh_id, std::unique_ptr<const Mesh>> meshes;
 		std::unordered_map<Shader_id, std::unique_ptr<const Shader>> shaders;
-
 	};
 
 	Resource_manager& get_resource_manager();

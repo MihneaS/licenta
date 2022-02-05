@@ -13,5 +13,6 @@ namespace migine {
 	constexpr glm::vec3 k_box_color = {0.0f / 256.0f, 153.0f / 256.0f, 255.0f};
 	constexpr glm::vec3 k_vec3_zero = {0,0,0};
 	constexpr int k_no_index = -1;
-	constexpr glm::vec3 k_default_gravity = {0, -9.81, 0};
+	constexpr glm::vec3 k_default_gravity = {0, -0.02, 0};//{0, -9.81, 0};
+	const glm::mat3 k_i3 = glm::mat3();
 }
