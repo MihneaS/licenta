@@ -8,8 +8,9 @@
 #include <migine/game_objects/physics/Rigid_body.h>
 #include <migine/define.h>
 
+#include <vector>
 #include <tuple>
-#include <string>
+#include <memory>
 
 namespace migine {
 	class Box_collider;
@@ -23,9 +24,9 @@ namespace migine {
 		friend class BVH;
 
 	public:
-		virtual Collision check_collision(const Collider_base& other) const = 0; // for double dispatch T.T which I hate
-		virtual Collision check_collision(const Box_collider& other) const = 0;
-		virtual Collision check_collision(const Sphere_collider& other) const = 0;
+		virtual std::vector<std::unique_ptr<Collision>> check_collision(const Collider_base& other) const = 0; // for double dispatch T.T which I hate
+		virtual std::vector<std::unique_ptr<Collision>> check_collision(const Box_collider& other) const = 0;
+		virtual std::vector<std::unique_ptr<Collision>> check_collision(const Sphere_collider& other) const = 0;
 
 		virtual std::tuple<glm::vec3, glm::vec3> provide_aabb_parameters() const = 0;
 

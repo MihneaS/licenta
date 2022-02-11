@@ -8,12 +8,13 @@ using glm::vec3;
 using glm::vec4;
 using glm::quat;
 using glm::toMat4;
+using glm::rotate;
 
 /*
 namespace migine {
-	Transform::Transform(const vec3& position, const vec3& scale, const quat& rotation) {
+	Transform::Transform(const vec3& position, const vec3& scale, const quat& orientation) {
 		world_model = glm::scale(world_model, scale);
-		rotate(rotation);
+		rotate(orientation);
 		translate(position);
 	}
 	
@@ -29,15 +30,15 @@ namespace migine {
 */
 
 namespace migine {
-	Transform::Transform(vec3 position, vec3 scale, glm::quat rotation) :
-		world_position(position), scale(scale),  orientation(rotation) {
+	Transform::Transform(vec3 position, vec3 scale, glm::quat orientation) :
+		world_position(position), scale(scale),  orientation(orientation) {
 		internal_update();
 	}
 
 	void Transform::change_state_with_delta (vec3 delta_pos, vec3 relative_scale_change, vec3 delta_rot) {
 		world_position += delta_pos;
 		scale *= relative_scale_change;
-		orientation = quat_add_vec3(orientation, delta_rot);
+		orientation *= euler_angles_to_quat(delta_rot);
 
 		compute_world_model();
 	}
@@ -80,17 +81,41 @@ namespace migine {
 	const mat4& Transform::get_model() const {
 		return world_model;
 	}
+
 	vec3 Transform::get_point_in_world_space(vec3 point) const {
 		return world_model * position_to_vec4(point);
 	}
+
 	void Transform::change_position_with_delta(vec3 delta_pos) {
 		world_position += delta_pos;
 	}
+
 	void Transform::change_orientation_with_delta(vec3 rotation) {
-		orientation = quat_add_vec3(orientation, rotation);
+		orientation *= euler_angles_to_quat(rotation);
 	}
+
 	void Transform::internal_update() {
 		// orientation /= orientation.length(); // this line is wrong, it reduces the orientation  // TODO poate mai rar
 		compute_world_model();
+	}
+
+	glm::vec3 Transform::transform_to_local(glm::vec3 point) const {
+		return inverse(get_model()) * position_to_vec4(point);
+	}
+
+	glm::vec3 Transform::get_axis(int axis) const {
+		return get_model()[axis];
+	}
+
+	template<> glm::vec3 Transform::get_axis<Axis::ox>() const {
+		return get_axis(0);
+	}
+
+	template<> glm::vec3 Transform::get_axis<Axis::oy>() const {
+		return get_axis(1);
+	}
+
+	template<> glm::vec3 Transform::get_axis<Axis::oz>() const {
+		return get_axis(2);
 	}
 }

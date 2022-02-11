@@ -74,6 +74,7 @@ namespace migine {
 
 		//typedef ManhattanDistanceGreater NodeGreater; // easy to switch Greater
 		typedef Enlarged_volume_greater Node_greater; // easy to switch Greater
+		typedef std::unordered_set<std::tuple<gsl::not_null<const Collider_base*>, gsl::not_null<const Collider_base*>>, migine::Tuple_hasher<const Collider_base*, const Collider_base*>> contacts_cache_t;
 
 	public:
 		BVH() = default;
@@ -85,6 +86,7 @@ namespace migine {
 		void cache_contacts(gsl::not_null<const Collider_base*> collider);
 		void cache_contacts_and_insert(gsl::not_null<Collider_base*> collider);
 		void erase_from_all_contacts(gsl::not_null<const Collider_base*> collider);
+		const contacts_cache_t& get_contacts() const;
 		size_t get_contact_count() const;
 
 #ifdef DEBUGGING
@@ -102,9 +104,13 @@ namespace migine {
 		void remove_contact(gsl::not_null<const Collider_base*> colldier0, gsl::not_null<const Collider_base*> collider1);
 		void print_recursive(std::ostream& out_stream, Node* root, int level) const;
 
+		bool less_for_unique_cache_entry(gsl::not_null<const Collider_base*> lhs, gsl::not_null<const Collider_base*> rhs) const;
+
 		std::unique_ptr<Node> bvh_root;
 		std::unordered_map<gsl::not_null<const Collider_base*>, std::unordered_set<gsl::not_null<const Collider_base*>>> contacts_graph;
-		std::unordered_set<std::tuple<gsl::not_null<const Collider_base*>, gsl::not_null<const Collider_base*>>, migine::Tuple_hasher<const Collider_base*, const Collider_base*>> contacts_cache;
+		contacts_cache_t contacts_cache;
+
+		int get_graph_size() const;
 
 #ifdef DEBUGGING
 		void render_all_recursive(const Camera& camera, Node* root) const;

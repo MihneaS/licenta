@@ -65,11 +65,14 @@ namespace migine {
 
 	class Test_cos_force_generator: public Force_generator_base {
 	public:
+		Test_cos_force_generator(glm::vec3 axis = {0,1,0}, float multiplier = 1);
 		~Test_cos_force_generator() override = default;
 
 		void update_force(gsl::not_null<Rigid_body*> obj, float delta_time) override;
 	private:
 		float total_time = 0;
+		float multiplier;
+		glm::vec3 axis;
 	};
 
 	class Linear_speed_generator: public Force_generator_base {

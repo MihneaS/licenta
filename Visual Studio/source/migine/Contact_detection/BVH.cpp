@@ -210,7 +210,7 @@ namespace migine {
 	}
 
 	void BVH::cache_contact(not_null<const Collider_base*> collider0, not_null<const Collider_base*> collider1) {
-		if (collider0->id < collider1->id) {
+		if (less_for_unique_cache_entry(collider0, collider1)) {
 			contacts_cache.insert(make_tuple(collider0, collider1));
 		} else {
 			contacts_cache.insert(make_tuple(collider1, collider0));
@@ -220,7 +220,7 @@ namespace migine {
 	}
 
 	void BVH::remove_contact(not_null<const Collider_base*> collider0, not_null<const Collider_base*> collider1) {
-		if (collider0 < collider1) {
+		if (less_for_unique_cache_entry(collider0, collider1)) {
 			contacts_cache.erase(make_tuple(collider0, collider1));
 		} else {
 			contacts_cache.erase(make_tuple(collider1, collider0));
@@ -294,10 +294,15 @@ namespace migine {
 		if (auto iterator_contacts = contacts_graph.find(collider); iterator_contacts != contacts_graph.end()) {
 			for (not_null<const Collider_base*> other : contacts_graph.at(collider)) {
 				contacts_graph.at(other).erase(collider);
-				if (collider < other) {
-					contacts_cache.erase(make_tuple(collider, other));
+				if (contacts_graph.at(other).size() == 0) {
+					contacts_graph.erase(other);
+				}
+				if (less_for_unique_cache_entry(collider, other)) {
+					size_t removed = contacts_cache.erase(make_tuple(collider, other));
+					assert(removed);
 				} else {
-					contacts_cache.erase(make_tuple(other, collider));
+					size_t removed = contacts_cache.erase(make_tuple(other, collider));
+					assert(removed);
 				}
 			}
 			contacts_graph.erase(collider);
@@ -305,6 +310,7 @@ namespace migine {
 	}
 
 	size_t BVH::get_contact_count() const {
+		assert(contacts_cache.size() == get_graph_size()/2);
 		return contacts_cache.size();
 	}
 
@@ -352,9 +358,25 @@ namespace migine {
 	}
 
 
+	int BVH::get_graph_size() const {
+		int sum = 0;
+		for (auto& [_, line] : contacts_graph) {
+			sum += line.size();
+		}
+		return sum;
+	}
+
+	const BVH::contacts_cache_t& BVH::get_contacts() const {
+		return contacts_cache;
+	}
+
 #ifdef DEBUGGING
 	void BVH::render_all(const Camera& camera) const {
 		render_all_recursive(camera, bvh_root.get());
+	}
+
+	bool BVH::less_for_unique_cache_entry(not_null<const Collider_base*> lhs, not_null<const Collider_base*> rhs) const {
+		return lhs < rhs;
 	}
 
 	void BVH::render_all_recursive(const Camera& camera, Node* root) const {

@@ -69,10 +69,13 @@ namespace migine {
 		}
 	}
 
+	Test_cos_force_generator::Test_cos_force_generator(glm::vec3 axis, float multiplier) :
+		axis(normalize(axis)), multiplier(multiplier) {
+	}
+
 	void Test_cos_force_generator::update_force(gsl::not_null<Rigid_body*> obj, float delta_time) {
 		total_time += delta_time;
-		static float multiplier = 1;
-		obj->add_force({0, multiplier * cos(total_time), 0});
+		obj->add_force(multiplier * cos(total_time) * axis);
 	}
 
 	Linear_speed_generator::Linear_speed_generator(float min_y, float max_y, float desired_speed) :

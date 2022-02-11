@@ -10,24 +10,37 @@ using glm::vec3;
 using glm::vec4;
 using glm::quat;
 using glm::distance;
+using glm::distance2;
+using glm::normalize;
+
+using std::vector;
 using std::tuple;
 using std::get;
 using std::accumulate;
 using std::max;
+using std::unique_ptr;
+using std::make_unique;
 
 namespace migine {
-	Collision Sphere_collider::check_collision(const Collider_base& other) const {
+	vector<unique_ptr<Collision>> Sphere_collider::check_collision(const Collider_base& other) const {
 		return other.check_collision(*this);
 	}
 
-	Collision Sphere_collider::check_collision(const Box_collider& other) const {
-		assert(false); // TODO implementeaza
-		return Collision();
+	vector<unique_ptr<Collision>> Sphere_collider::check_collision(const Box_collider& other) const {  // DRY principle
+		return other.check_collision(*this);
 	}
 
-	Collision Sphere_collider::check_collision(const Sphere_collider& other) const {
-		assert(false); // TODO implementeaza
-		return Collision();
+	vector<unique_ptr<Collision>> Sphere_collider::check_collision(const Sphere_collider& other) const {
+		vector<unique_ptr<Collision>> ret;
+		float radii_sum = get_radius() + other.get_radius();
+		float dist2 = distance2(center, other.center);
+		if (dist2 < radii_sum * radii_sum) {
+			vec3 this_to_other = other.center - center;
+			vec3 contact_point = this_to_other / 2.0f;
+			float pen_depth = radii_sum - sqrtf(dist2);
+			ret.push_back(make_unique<Collision>(*this, other, contact_point, normalize(this_to_other), pen_depth));
+		}
+		return ret;
 	}
 
 	tuple<vec3, vec3> Sphere_collider::provide_aabb_parameters() const {
@@ -37,11 +50,20 @@ namespace migine {
 		return {min_pos, max_pos};
 	}
 
-	float Sphere_collider::get_diameter() {
+	float Sphere_collider::get_diameter() const { // TODO get radius*2 mayyybeeee
 		vec3 scale = transform.get_scale();
 		assert(scale.x == scale.y && scale.y == scale.z);
 		return scale.x;
 	}
+
+	float Sphere_collider::get_radius() const {
+		return radius;
+	}
+
+	glm::vec3 Sphere_collider::get_center() const {
+		return center;
+	}
+
 
 	Sphere_collider::Sphere_collider() : Has_mesh(get_mesh<Mesh_id::sphere>()) {
 		compute_center_and_radius();

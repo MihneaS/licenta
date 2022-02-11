@@ -72,7 +72,7 @@ namespace migine {
 		this->inverse_inertia_tensor = inverse_inertia_tensor;
 	}
 
-	void Rigid_body::compute_inverse_inertia_tensor_world() {
+	void Rigid_body::compute_inverse_inertia_tensor_world() { // TODO NU FOLOSI! matricile ar trebui transpuse!
 			mat3& iit_world = inverse_inertia_tensor_world;
 			const mat3& iit_body = inverse_inertia_tensor;
 			const mat4& rot_mat = transform.get_model();

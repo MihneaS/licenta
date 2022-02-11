@@ -15,4 +15,10 @@ namespace migine {
 	constexpr int k_no_index = -1;
 	constexpr glm::vec3 k_default_gravity = {0, -0.02, 0};//{0, -9.81, 0};
 	const glm::mat3 k_i3 = glm::mat3();
+
+	enum class Axis {
+		ox = 0,
+		oy = 1,
+		oz = 2
+	};
 }

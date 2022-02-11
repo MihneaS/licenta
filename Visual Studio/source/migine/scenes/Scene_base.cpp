@@ -61,7 +61,7 @@ namespace migine {
 		camera = new Camera();
 		camera->SetPerspective(60, window->props.aspectRatio, 0.01f, 200);
 		camera->transform->SetMoveSpeed(2);
-		camera->transform->SetWorldPosition(glm::vec3(0, 1.6f, 2.5));
+		camera->transform->SetWorldPosition(glm::vec3(0, 5.8f, 20));
 		camera->transform->SetWorldRotation(glm::vec3(-15, 0, 0));
 		camera->Update();
 
@@ -147,7 +147,7 @@ namespace migine {
 
 		// apply forces
 		force_registry.update_forces(caped_delta_time);
-		// move bodies and update colliders in bvh
+		// move bodies and update colliders in bvh (aka broad collision phase)
 		for (auto& bc_pair : bodies_and_colliders) {
 			auto rigid_body = get<gsl::not_null<Rigid_body*>>(bc_pair);
 			bool has_moved = rigid_body->integrate(caped_delta_time);
@@ -156,6 +156,15 @@ namespace migine {
 				if (collider) {
 					bvh.update(collider);
 				}
+			}
+		}
+
+		// narrow collision phase
+		int pairs_in_contact = 0;
+		for (auto& [obj0, obj1] : bvh.get_contacts()) {
+			auto contact_points = obj0->check_collision(*obj1);
+			if (contact_points.size() > 0) {
+				pairs_in_contact++;
 			}
 		}
 
@@ -169,25 +178,20 @@ namespace migine {
 		static float last_printing_time = 0;
 		static int total_frames = 0;
 		static int frames_since_printing = 0;
-		//static float sin_sum = 0;
-		//static float sin_now;
 		frames_since_printing++;
 		total_frames++;
 		float current_time = get_elapsed_time();
-		//sin_now = sin(total_time);
-		//sin_sum += sin_now;
 		if (float delta_time_printing = current_time - last_printing_time; delta_time_printing > 0.66) {
 			stringstream ss;
 			ss << "fps:" << frames_since_printing / delta_time_printing << ";";
 			frames_since_printing = 0;
 			last_printing_time = current_time;
 			ss << " broad contacts:" << bvh.get_contact_count() << ";";
+			ss << " pairs in narrow contact:" << pairs_in_contact << ";";
 			ss << " insertions:" << bvh.insertion_count << ";";
-			ss << " broad intersection checks:" << bvh.aabb_intersection_operations_count << ";";
+			//ss << " broad intersection checks:" << bvh.aabb_intersection_operations_count << ";";
 			ss << " time:" << current_time << ";";
 			ss << " frames:" << total_frames << ";";
-			//ss << " sin_now:" << sin_now << ";";
-			//ss << " sin_sum:" << sin_sum << ";";
 			continous_print_line_reset();
 			continous_print(ss.str());
 		}

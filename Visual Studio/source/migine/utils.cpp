@@ -1,5 +1,6 @@
 #include "utils.h"
 
+#include <migine/define.h>
 #include <migine/constants.h>
 
 #include <vector>
@@ -49,6 +50,7 @@ namespace migine {
 		printed_characters_count = 0;
 	}
 	void inverse_inplace(glm::mat3& mat) {
+		assert(false); // am descoperit ca matricile  pe care se bazeaza aceste hardcodari sunt transpuse fata de matricile din glm
 		// Ian Millington game physics engine development page 173
 		float t4 = mat[0][0] * mat[1][1];
 		float t6 = mat[0][0] * mat[1][2];
@@ -72,18 +74,37 @@ namespace migine {
 		mat[2][2] =  (t4 - t8)*t17;
 	}
 
-	glm::quat quat_add_vec3(glm::quat q, glm::vec3 v) {
-		quat q2 = {0, v.x, v.y, v.z};
-		q2 *= q;
-		q2 *= 0.5;
-		return q2;
-	}
+	//glm::quat quat_add_vec3(glm::quat q, glm::vec3 v) {
+	//	quat q2 = {0, v.x, v.y, v.z};
+	//	q2 *= q;
+	//	q2 *= 0.5;
+	//	return q2;
+	//}
 
 	float get_elapsed_time() {
 		return glfwGetTime();
 	}
 
+	bool is_zero_aprox(float val) {
+		return abs(val) < 0.00001f;
+	}
+
+	vec3 lerp(vec3 v0, vec3 v1, float t) {
+		return v0 + (v1 - v0) * t;
+	}
+
+	glm::vec3 mid_point(glm::vec3 v0, glm::vec3 v1) {
+		return (v0 + v1) / 2.0f;
+	}
+
+	void set_name(Game_object* obj, std::string name) {
+#ifdef DEBUGGING
+		obj->name = name;
+#endif // DEBUGGING
+	}
+
 	void _transform_inertia_tensor(mat3& iitWorld, const mat3& iitBody, const mat4& rotmat) {
+		assert(false); // am descoperit ca matricile  pe care se bazeaza aceste hardcodari sunt transpuse fata de matricile din glm
 		float t04 = rotmat[0][0] * iitBody[0][0] +
 			rotmat[0][1] * iitBody[1][0] +
 			rotmat[0][2] * iitBody[2][0];

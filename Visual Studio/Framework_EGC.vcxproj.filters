@@ -192,6 +192,7 @@
     <ClInclude Include="source\migine\game_objects\components\Has_name.h" />
     <ClInclude Include="source\migine\game_objects\physics\force_generators.h" />
     <ClInclude Include="source\migine\game_objects\physics\get_initial_force_generators.h" />
+    <ClInclude Include="source\migine\make_array.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Source\Laboratoare\Laborator8\Shaders\FragmentShader.glsl">

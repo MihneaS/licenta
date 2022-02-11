@@ -7,6 +7,7 @@
 #include <type_traits>
 
 #include <migine/constants.h>
+#include <migine/game_objects/Game_object.h>
 
 namespace migine {
     glm::quat euler_angles_to_quat(glm::vec3 euler_angles);
@@ -15,8 +16,12 @@ namespace migine {
     void continous_print(const std::string s);
     void continous_print_line_reset();
     void inverse_inplace(glm::mat3& mat);
-    glm::quat quat_add_vec3(glm::quat q, glm::vec3 v);
+    //glm::quat quat_add_vec3(glm::quat q, glm::vec3 v);
     float get_elapsed_time();
+    bool is_zero_aprox(float val); // credits for ideea: godot
+    glm::vec3 lerp(glm::vec3 v0, glm::vec3 v1, float t);
+    glm::vec3 mid_point(glm::vec3 v0, glm::vec3 v1);
+    void set_name(Game_object* obj, std::string name);
 
     inline void _transform_inertia_tensor(glm::mat3& iitWorld, const glm::mat3& iitBody, const glm::mat4& rotmat);
 

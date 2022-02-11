@@ -27,6 +27,8 @@ using std::cout;
 namespace migine {
 	Box* tmp2;
 	Sphere* tmp;
+	Box* rot0;
+	Box* rot1;
 
 	Scene_01::Scene_01() :
 			light_position(glm::vec3(0, 1, 1)),
@@ -45,59 +47,65 @@ namespace migine {
 		// create test Migine::Box
 		{
 			register_game_object(move(make_unique<Box>(vec3{2, 2, -2}, vec3{1, 2, 1}, euler_angles_deg_to_quat({45, 0, 45}))));
-#ifdef DEBUGGING
-			(*game_objects.rbegin())->name = "cub rotit";
-#endif // DEBUGGING
+			set_name(game_objects.rbegin()->get(), "cub rotit");
 		}
 
 		//create test Migine::Sphere
 		{
 			register_game_object(move(make_unique<Sphere>(vec3{-2, 2, -2})));
-#ifdef DEBUGGING
-			(*game_objects.rbegin())->name = "sfera jos";
-#endif // DEBUGGING
+			set_name(game_objects.rbegin()->get(), "sfera jos");
 		}
 
 		{
 			register_game_object(move(make_unique<Sphere>(vec3{2, 5, 0})));
-#ifdef DEBUGGING
-			(*game_objects.rbegin())->name = "sfera sus dreapta";
-#endif // DEBUGGING
+			set_name(game_objects.rbegin()->get(), "sfera sus dreapta");
+
 			register_game_object(move(make_unique<Sphere>(vec3{-2, 5, 0})));
-#ifdef DEBUGGING
-			(*game_objects.rbegin())->name = "sfera sus stanga";
-#endif // DEBUGGING
+			set_name(game_objects.rbegin()->get(), "sfera sus stanga");
+
 			register_game_object(move(make_unique<Sphere>(vec3{0, 5, 2})));
-#ifdef DEBUGGING
-			(*game_objects.rbegin())->name = "sfera sus spate";
-#endif // DEBUGGING
+			set_name(game_objects.rbegin()->get(), "sfera sus spate");
+
 			register_game_object(move(make_unique<Sphere>(vec3{0, 5, -2})));
-#ifdef DEBUGGING
-			(*game_objects.rbegin())->name = "sfera sus fata";
-#endif // DEBUGGING
+			set_name(game_objects.rbegin()->get(), "sfera sus fata");
+
 			register_game_object(move(make_unique<Sphere>(vec3{6, 5, 0})));
-#ifdef DEBUGGING
-			(*game_objects.rbegin())->name = "sfera sus foarte dreapta";
-#endif // DEBUGGING
+			set_name(game_objects.rbegin()->get(), "sfera sus foarte dreapta");
 		}
 		{
 			auto s = make_unique<Sphere>(vec3{-6, 5, 0});
 			tmp = s.get();
 			force_registry.add(static_cast<gsl::not_null<Rigid_body*>>(s.get()), make_unique<Test_cos_force_generator>());
 			s->set_inverse_mass(1);
-#ifdef DEBUGGING
-			tmp->name = "sfera miscatoare";
-#endif // DEBUGGING
+			set_name(tmp, "sfera miscatoare");
 			register_game_object(move(s));
+		}
+		{
+			register_game_object(move(make_unique<Sphere>(vec3{-6, 5, 0})));
+			set_name(game_objects.rbegin()->get(), "sfera test coliziuni");
 		}
 		{
 			auto b = make_unique<Box>(vec3{0, 8, -2}, vec3{20, 0.2, 20});
 			b->set_inverse_mass(1);
 			force_registry.add(static_cast<gsl::not_null<Rigid_body*>>(b.get()), make_unique<Linear_speed_generator>(-1, 7, 0.3));
-#ifdef DEBUGGING
-			b->name = "acoperitor";
-#endif // DEBUGGING
+			set_name(b.get(), "acoperitor");
 			tmp2 = b.get();
+			register_game_object(move(b));
+		}
+		{
+			auto b = make_unique<Box>(vec3{-0.65, 1.65, 2}, vec3{1, 1, 1}, euler_angles_deg_to_quat({45, 0, 0}));
+			b->set_inverse_mass(1);
+			//force_registry.add(static_cast<gsl::not_null<Rigid_body*>>(b.get()), make_unique<Linear_speed_generator>(-1, 7, 0.3));
+			set_name(b.get(), "rotating box 0 stanga");
+			rot0 = b.get();
+			register_game_object(move(b));
+		}
+		{
+			auto b = make_unique<Box>(vec3{0.65, 2, 2}, vec3{1, 1, 1}, euler_angles_deg_to_quat({0, 0, 45}));
+			b->set_inverse_mass(1);
+			force_registry.add(static_cast<gsl::not_null<Rigid_body*>>(b.get()), make_unique<Test_cos_force_generator>(vec3{-1,0,0}, 0.1f));
+			set_name(b.get(), "rotating box 1 dreapta");
+			rot1 = b.get();
 			register_game_object(move(b));
 		}
 
