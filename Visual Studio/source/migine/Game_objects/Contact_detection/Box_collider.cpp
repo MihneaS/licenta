@@ -34,17 +34,17 @@ using std::abs;
 using std::numeric_limits;
 
 namespace migine {
-	vector<unique_ptr<Collision>> Box_collider::check_collision(const Collider_base& other) const {
+	vector<unique_ptr<Contact>> Box_collider::check_collision(Collider_base& other) {
 		return other.check_collision(*this);
 	}
 
-	vector<unique_ptr<Collision>> Box_collider::check_collision(const Box_collider& other) const {
-		vector<unique_ptr<Collision>> ret;
+	vector<unique_ptr<Contact>> Box_collider::check_collision(Box_collider& other) {
+		vector<unique_ptr<Contact>> ret;
 		if (!fast_do_overlap(other)) {
 			return ret;
 		}
 
-		vector<unique_ptr<Collision>> tmp1;
+		vector<unique_ptr<Contact>> tmp1;
 		float max_depth_1 = 0;
 		auto this_corners = get_corners();
 		for (auto this_corner : this_corners) {
@@ -54,7 +54,7 @@ namespace migine {
 			}
 		}
 
-		vector<unique_ptr<Collision>> tmp2;
+		vector<unique_ptr<Contact>> tmp2;
 		float max_depth_2 = 0;
 		auto other_corners = other.get_corners();
 		for (auto others_corner : other_corners) {
@@ -99,13 +99,13 @@ namespace migine {
 					saved_pt_on_other = pt_on_other_edge;
 				}
 			}
-			ret.push_back(make_unique<Collision>(*this, other, mid_point(saved_pt_on_other, saved_pt_on_this), saved_pt_on_other - saved_pt_on_this, sqrtf(min_pen2)));
+			ret.push_back(make_unique<Contact>(this, &other, mid_point(saved_pt_on_other, saved_pt_on_this), saved_pt_on_other - saved_pt_on_this, sqrtf(min_pen2)));
 		}
 		return ret;
 	}
 
-	vector<unique_ptr<Collision>> Box_collider::check_collision(const Sphere_collider& other) const {
-		vector<unique_ptr<Collision>> ret;
+	vector<unique_ptr<Contact>> Box_collider::check_collision(Sphere_collider& other) {
+		vector<unique_ptr<Contact>> ret;
 
 		vec3 rel_sphere_center = transform.transform_to_local(other.transform.get_world_position());
 		if (abs(rel_sphere_center.x) - other.get_radius() > half_side_lengths.x ||
@@ -123,9 +123,9 @@ namespace migine {
 
 		vec3 closest_point_world = transform.get_model() * position_to_vec4(closest_point);
 
-		vec3 normal = normalize(other.get_center() - closest_point_world);
+		vec3 normal = normalize(other.get_center_world() - closest_point_world);
 		float pen_depth = other.get_radius() - sqrtf(dist2);
-		ret.push_back(make_unique<Collision>(*this, other, closest_point_world, normal, pen_depth));
+		ret.push_back(make_unique<Contact>(this, &other, closest_point_world, normal, pen_depth));
 		
 		// TODO
 		//contact->restitution = data->restitution; pg 309
@@ -237,8 +237,8 @@ namespace migine {
 		return false;
 	}
 
-	unique_ptr<Collision> Box_collider::check_collision_point(vec3 point, const Collider_base& other) const {
-		unique_ptr<Collision> ret = nullptr;
+	unique_ptr<Contact> Box_collider::check_collision_point(vec3 point, Collider_base& other) {
+		unique_ptr<Contact> ret = nullptr;
 		vec3 relative_point = transform.transform_to_local(point);
 		vec3 normal;
 
@@ -264,7 +264,7 @@ namespace migine {
 			normal = transform.get_axis<Axis::oz>() * ((relative_point.z < 0) ? -1.0f : 1.0f);
 		}
 
-		ret = make_unique<Collision>(*this, other, point, normal, min_depth); // TODO ugly second this! repiar imediatly after call
+		ret = make_unique<Contact>(this, &other, point, normal, min_depth); // TODO ugly second this! repiar imediatly after call
 		return ret;
 	}
 

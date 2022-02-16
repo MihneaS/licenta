@@ -19,9 +19,17 @@ namespace migine {
     //glm::quat quat_add_vec3(glm::quat q, glm::vec3 v);
     float get_elapsed_time();
     bool is_zero_aprox(float val); // credits for ideea: godot
+    bool is_equal_aprox(float val0, float val1);
     glm::vec3 lerp(glm::vec3 v0, glm::vec3 v1, float t);
     glm::vec3 mid_point(glm::vec3 v0, glm::vec3 v1);
     void set_name(Game_object* obj, std::string name);
+
+    // credits for next 3 functions https://github.com/opengl-tutorials/ogl/blob/master/common/quaternion_utils.hpp and quaternion_utils.cpp in the same folder
+    glm::quat rotation_between_vectors(glm::vec3 start, glm::vec3 dest);
+    glm::quat look_at(glm::vec3 direction, glm::vec3 desired_up);
+    glm::quat rotate_towards(glm::quat q1, glm::quat q2, float maxAngle);
+
+    glm::quat change_rotation(glm::vec3 old_direction, glm::vec3 desired_direction, glm::vec3 old_up, glm::vec3 desired_up);
 
     inline void _transform_inertia_tensor(glm::mat3& iitWorld, const glm::mat3& iitBody, const glm::mat4& rotmat);
 

@@ -6,15 +6,16 @@
 namespace migine {
 	class Sphere_collider: public Collider_base, virtual public Has_mesh {
 	public:
-		std::vector<std::unique_ptr<Collision>> check_collision(const Collider_base& other) const override; // double dispatch T.T I hate it
-		std::vector<std::unique_ptr<Collision>> check_collision(const Box_collider& other) const override;
-		std::vector<std::unique_ptr<Collision>> check_collision(const Sphere_collider& other) const override;
+		std::vector<std::unique_ptr<Contact>> check_collision(Collider_base& other) override; // double dispatch T.T I hate it
+		std::vector<std::unique_ptr<Contact>> check_collision(Box_collider& other) override;
+		std::vector<std::unique_ptr<Contact>> check_collision(Sphere_collider& other) override;
 
 		virtual std::tuple<glm::vec3, glm::vec3> provide_aabb_parameters() const override;
 
 		float get_diameter() const;
 		float get_radius() const;
-		glm::vec3 get_center() const;
+		glm::vec3 get_center_world() const;
+		glm::vec3 get_center_local() const;
 	protected:
 		Sphere_collider();
 

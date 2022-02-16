@@ -20,7 +20,8 @@ namespace migine {
 		vec3 angular_acceleration = inverse_inertia_tensor_world * torque_accumulator;
 		// Adjust velocities
 		// Update linear velocity from both acceleration and impulse.
-		velocity += acceleration * delta_time;
+		last_frame_acceleration = acceleration;
+		velocity += last_frame_acceleration * delta_time;
 		// Update angular velocity from both acceleration and impulse.
 		angular_velocity += angular_acceleration * delta_time;
 		// Impose drag.
@@ -40,7 +41,7 @@ namespace migine {
 		return has_moved;
 	}
 
-	float Rigid_body::get_mass() {
+	float Rigid_body::get_mass() const {
 		return 1.0f / inverse_mass;
 	}
 
@@ -48,7 +49,7 @@ namespace migine {
 		inverse_mass = 1.0f / mass;
 	}
 
-	float Rigid_body::get_inverse_mass() {
+	float Rigid_body::get_inverse_mass() const {
 		return inverse_mass;
 	}
 
@@ -56,11 +57,11 @@ namespace migine {
 		this->inverse_mass = inverse_mass;
 	}
 
-	vec3 Rigid_body::get_constant_acceleration() {
+	vec3 Rigid_body::get_constant_acceleration() const {
 		return constant_acceleration;
 	}
 
-	const glm::mat3& Rigid_body::get_inverse_invertia_tensor() {
+	const glm::mat3& Rigid_body::get_inverse_invertia_tensor() const {
 		return inverse_inertia_tensor;
 	}
 
@@ -132,12 +133,16 @@ namespace migine {
 			                  t62 * rot_mat[2][2];
 	}
 
-	glm::vec3 Rigid_body::get_velocity() {
+	glm::vec3 Rigid_body::get_velocity() const {
 		return velocity;
 	}
 
-	glm::quat Rigid_body::get_angular_velocity() {
+	glm::quat Rigid_body::get_angular_velocity() const {
 		return angular_velocity;
+	}
+
+	glm::vec3 Rigid_body::get_last_frame_acceleration() const {
+		return last_frame_acceleration;
 	}
 
 	void Rigid_body::add_force(glm::vec3 force) {

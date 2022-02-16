@@ -25,6 +25,18 @@ using std::move;
 using std::min;
 using std::stringstream;
 using std::pair;
+using std::vector;
+using std::array;
+
+using glm::quat;
+using glm::vec3;
+using glm::mat3;
+using glm::conjugate;
+using glm::cross;
+using glm::dot;
+using glm::length2;
+
+using gsl::not_null;
 
 namespace migine {
 
@@ -61,8 +73,8 @@ namespace migine {
 		camera = new Camera();
 		camera->SetPerspective(60, window->props.aspectRatio, 0.01f, 200);
 		camera->transform->SetMoveSpeed(2);
-		camera->transform->SetWorldPosition(glm::vec3(0, 5.8f, 20));
-		camera->transform->SetWorldRotation(glm::vec3(-15, 0, 0));
+		camera->transform->SetWorldPosition(vec3(0, 5.8f, 20));
+		camera->transform->SetWorldRotation(vec3(-15, 0, 0));
 		camera->Update();
 
 		camera_input = new CameraInput(camera);
@@ -78,10 +90,10 @@ namespace migine {
 		{
 			vector<VertexFormat> vertices =
 			{
-				VertexFormat(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)),
-				VertexFormat(glm::vec3(0, 1, 0), glm::vec3(0, 1, 0)),
+				VertexFormat(vec3(0, 0, 0), vec3(0, 1, 0)),
+				VertexFormat(vec3(0, 1, 0), vec3(0, 1, 0)),
 			};
-			std::vector<unsigned int> indices = {0, 1};
+			vector<unsigned int> indices = {0, 1};
 
 			auto tmp = make_unique<Mesh>(Mesh_id::line);
 			simple_line = tmp.get();
@@ -147,9 +159,10 @@ namespace migine {
 
 		// apply forces
 		force_registry.update_forces(caped_delta_time);
-		// move bodies and update colliders in bvh (aka broad collision phase)
+
+		// move bodies and update colliders in bvh (aka broad worst_collision phase)
 		for (auto& bc_pair : bodies_and_colliders) {
-			auto rigid_body = get<gsl::not_null<Rigid_body*>>(bc_pair);
+			auto rigid_body = get<not_null<Rigid_body*>>(bc_pair);
 			bool has_moved = rigid_body->integrate(caped_delta_time);
 			if (has_moved) {
 				auto collider = get<Collider_base*>(bc_pair);
@@ -159,14 +172,20 @@ namespace migine {
 			}
 		}
 
-		// narrow collision phase
+		// narrow worst_collision phase
 		int pairs_in_contact = 0;
+		vector<unique_ptr<Contact>> collisions;
 		for (auto& [obj0, obj1] : bvh.get_contacts()) {
-			auto contact_points = obj0->check_collision(*obj1);
-			if (contact_points.size() > 0) {
+			auto new_collisions = obj0->check_collision(*obj1);
+			if (new_collisions.size() > 0) {
 				pairs_in_contact++;
 			}
+			for (auto& new_collision : new_collisions) {
+				collisions.push_back(move(new_collision));
+			}
 		}
+
+
 
 		// render
 		for (auto& renderer : renderers) {

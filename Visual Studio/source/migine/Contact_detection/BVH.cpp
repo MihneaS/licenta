@@ -30,7 +30,7 @@ namespace migine {
 	int BVH::aabb_intersection_operations_count = 0;
 #endif // DEBUGGING
 
-	BVH::Node::Node(const Collider_base* bounded_object, AABB bounding_volume, Node* parent) :
+	BVH::Node::Node(Collider_base* bounded_object, AABB bounding_volume, Node* parent) :
 		parent(parent), bounding_volume(bounding_volume) {
 		children[1] = nullptr;
 		this->bounded_object = bounded_object;
@@ -209,7 +209,7 @@ namespace migine {
 		}
 	}
 
-	void BVH::cache_contact(not_null<const Collider_base*> collider0, not_null<const Collider_base*> collider1) {
+	void BVH::cache_contact(not_null<Collider_base*> collider0, not_null<Collider_base*> collider1) {
 		if (less_for_unique_cache_entry(collider0, collider1)) {
 			contacts_cache.insert(make_tuple(collider0, collider1));
 		} else {
@@ -219,7 +219,7 @@ namespace migine {
 		contacts_graph[collider1].insert(collider0);
 	}
 
-	void BVH::remove_contact(not_null<const Collider_base*> collider0, not_null<const Collider_base*> collider1) {
+	void BVH::remove_contact(not_null<Collider_base*> collider0, not_null<Collider_base*> collider1) {
 		if (less_for_unique_cache_entry(collider0, collider1)) {
 			contacts_cache.erase(make_tuple(collider0, collider1));
 		} else {
@@ -243,7 +243,7 @@ namespace migine {
 
 	}
 
-	void BVH::cache_contacts(not_null<const Collider_base*> collider) {
+	void BVH::cache_contacts(not_null<Collider_base*> collider) {
 		if (bvh_root == nullptr) {
 			return;
 		}
@@ -290,9 +290,9 @@ namespace migine {
 		insert(best_insertion_place, collider, aabb_for_game_obj);
 	}
 
-	void BVH::erase_from_all_contacts(not_null<const Collider_base*> collider) {
+	void BVH::erase_from_all_contacts(not_null<Collider_base*> collider) {
 		if (auto iterator_contacts = contacts_graph.find(collider); iterator_contacts != contacts_graph.end()) {
-			for (not_null<const Collider_base*> other : contacts_graph.at(collider)) {
+			for (not_null<Collider_base*> other : contacts_graph.at(collider)) {
 				contacts_graph.at(other).erase(collider);
 				if (contacts_graph.at(other).size() == 0) {
 					contacts_graph.erase(other);

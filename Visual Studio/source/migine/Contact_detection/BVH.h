@@ -24,7 +24,7 @@ namespace migine {
 			friend class Node_less;
 
 		public:
-			Node(const Collider_base* bounded_object, AABB bounding_volume, Node* parent);
+			Node(Collider_base* bounded_object, AABB bounding_volume, Node* parent);
 			Node(std::array<std::unique_ptr<Node>, 2> children, Node* parent);
 			~Node();
 
@@ -44,7 +44,7 @@ namespace migine {
 			using children_array_t = std::array<std::unique_ptr<Node>, 2>;
 			union {
 				children_array_t children;
-				gsl::not_null<const Collider_base*> bounded_object;
+				gsl::not_null<Collider_base*> bounded_object;
 			};
 		};
 		//static Node nullNode;
@@ -74,7 +74,7 @@ namespace migine {
 
 		//typedef ManhattanDistanceGreater NodeGreater; // easy to switch Greater
 		typedef Enlarged_volume_greater Node_greater; // easy to switch Greater
-		typedef std::unordered_set<std::tuple<gsl::not_null<const Collider_base*>, gsl::not_null<const Collider_base*>>, migine::Tuple_hasher<const Collider_base*, const Collider_base*>> contacts_cache_t;
+		typedef std::unordered_set<std::tuple<gsl::not_null<Collider_base*>, gsl::not_null<Collider_base*>>, migine::Tuple_hasher<Collider_base*, Collider_base*>> contacts_cache_t;
 
 	public:
 		BVH() = default;
@@ -83,9 +83,9 @@ namespace migine {
 		void remove(gsl::not_null<Collider_base*> collider);
 		void print(std::ostream& out_stream) const;
 		void update(gsl::not_null<Collider_base*> collider); // TODO find better name
-		void cache_contacts(gsl::not_null<const Collider_base*> collider);
+		void cache_contacts(gsl::not_null<Collider_base*> collider);
 		void cache_contacts_and_insert(gsl::not_null<Collider_base*> collider);
-		void erase_from_all_contacts(gsl::not_null<const Collider_base*> collider);
+		void erase_from_all_contacts(gsl::not_null<Collider_base*> collider);
 		const contacts_cache_t& get_contacts() const;
 		size_t get_contact_count() const;
 
@@ -100,14 +100,14 @@ namespace migine {
 		void insert(Node* root, gsl::not_null<Collider_base*> collider, AABB bounding_volume);
 		void insert(Node* root, gsl::not_null<Collider_base*> collider);
 		void remove_leaf(gsl::not_null<Node*> leaf);
-		void cache_contact(gsl::not_null<const Collider_base*> collider0, gsl::not_null<const Collider_base*> collider1);
-		void remove_contact(gsl::not_null<const Collider_base*> colldier0, gsl::not_null<const Collider_base*> collider1);
+		void cache_contact(gsl::not_null<Collider_base*> collider0, gsl::not_null<Collider_base*> collider1);
+		void remove_contact(gsl::not_null<Collider_base*> colldier0, gsl::not_null<Collider_base*> collider1);
 		void print_recursive(std::ostream& out_stream, Node* root, int level) const;
 
 		bool less_for_unique_cache_entry(gsl::not_null<const Collider_base*> lhs, gsl::not_null<const Collider_base*> rhs) const;
 
 		std::unique_ptr<Node> bvh_root;
-		std::unordered_map<gsl::not_null<const Collider_base*>, std::unordered_set<gsl::not_null<const Collider_base*>>> contacts_graph;
+		std::unordered_map<gsl::not_null<Collider_base*>, std::unordered_set<gsl::not_null<Collider_base*>>> contacts_graph;
 		contacts_cache_t contacts_cache;
 
 		int get_graph_size() const;

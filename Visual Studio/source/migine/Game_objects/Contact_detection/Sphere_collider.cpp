@@ -22,23 +22,23 @@ using std::unique_ptr;
 using std::make_unique;
 
 namespace migine {
-	vector<unique_ptr<Collision>> Sphere_collider::check_collision(const Collider_base& other) const {
+	vector<unique_ptr<Contact>> Sphere_collider::check_collision(Collider_base& other) {
 		return other.check_collision(*this);
 	}
 
-	vector<unique_ptr<Collision>> Sphere_collider::check_collision(const Box_collider& other) const {  // DRY principle
+	vector<unique_ptr<Contact>> Sphere_collider::check_collision(Box_collider& other) {  // DRY principle
 		return other.check_collision(*this);
 	}
 
-	vector<unique_ptr<Collision>> Sphere_collider::check_collision(const Sphere_collider& other) const {
-		vector<unique_ptr<Collision>> ret;
+	vector<unique_ptr<Contact>> Sphere_collider::check_collision(Sphere_collider& other) {
+		vector<unique_ptr<Contact>> ret;
 		float radii_sum = get_radius() + other.get_radius();
 		float dist2 = distance2(center, other.center);
 		if (dist2 < radii_sum * radii_sum) {
 			vec3 this_to_other = other.center - center;
 			vec3 contact_point = this_to_other / 2.0f;
 			float pen_depth = radii_sum - sqrtf(dist2);
-			ret.push_back(make_unique<Collision>(*this, other, contact_point, normalize(this_to_other), pen_depth));
+			ret.push_back(make_unique<Contact>(this, &other, contact_point, normalize(this_to_other), pen_depth));
 		}
 		return ret;
 	}
@@ -59,8 +59,12 @@ namespace migine {
 	float Sphere_collider::get_radius() const {
 		return radius;
 	}
+	
+	vec3 Sphere_collider::get_center_world() const {
+		return get_center_local() + transform.get_world_position();
+	}
 
-	glm::vec3 Sphere_collider::get_center() const {
+	vec3 Sphere_collider::get_center_local() const {
 		return center;
 	}
 

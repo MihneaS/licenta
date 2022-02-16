@@ -15,14 +15,15 @@ namespace migine {
 	class Rigid_body : virtual public Has_transform {
 	public:
 		bool integrate(float delta_time);
-		float get_mass();
+		float get_mass() const;
 		void set_mass(float mass);
-		float get_inverse_mass();
+		float get_inverse_mass() const;
 		void set_inverse_mass(float inverse_mass);
-		glm::vec3 get_constant_acceleration();
-		const glm::mat3& get_inverse_invertia_tensor();
-		glm::vec3 get_velocity();
-		glm::quat get_angular_velocity();
+		glm::vec3 get_constant_acceleration() const;
+		const glm::mat3& get_inverse_invertia_tensor() const;
+		glm::vec3 get_velocity() const;
+		glm::quat get_angular_velocity() const;
+		glm::vec3 get_last_frame_acceleration() const;
 		void add_force(glm::vec3 force);
 		void add_force_at_point(glm::vec3 force, glm::vec3 point);
 		void add_force_at_body_point(glm::vec3 force, glm::vec3 point);
@@ -43,6 +44,7 @@ namespace migine {
 		glm::vec3 velocity = k_vec3_zero;
 		glm::vec3 angular_velocity = k_vec3_zero;
 		glm::vec3 constant_acceleration = k_vec3_zero; // = k_default_gravity;
+		glm::vec3 last_frame_acceleration = k_vec3_zero;
 		//glm::vec3 last_frame_acceleration = k_vec3_zero;
 		//glm::vec3 angular_acceleration = k_vec3_zero;
 		glm::vec3 force_accumulator = k_vec3_zero;

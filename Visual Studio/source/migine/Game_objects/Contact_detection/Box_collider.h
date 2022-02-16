@@ -18,9 +18,9 @@ namespace migine {
 		};
 
 	public:
-		std::vector<std::unique_ptr<Collision>> check_collision(const Collider_base& other) const override; // double dispatch T.T I hate it
-		std::vector<std::unique_ptr<Collision>> check_collision(const Box_collider& other) const override;
-		std::vector<std::unique_ptr<Collision>> check_collision(const Sphere_collider& other) const override;
+		std::vector<std::unique_ptr<Contact>> check_collision(Collider_base& other) override; // double dispatch T.T I hate it
+		std::vector<std::unique_ptr<Contact>> check_collision(Box_collider& other) override;
+		std::vector<std::unique_ptr<Contact>> check_collision(Sphere_collider& other) override;
 		std::tuple<glm::vec3, glm::vec3> provide_aabb_parameters() const override;
 		// credits godot :https://github.com/godotengine/godot/blob/master/core/math/geometry_3d.h line 40
 		std::tuple<glm::vec3, glm::vec3, bool> get_closest_points_between_segments(glm::vec3 seg1_pt1, glm::vec3 seg1_pt2, glm::vec3 seg2_pt1, glm::vec3 seg2_pt2) const;
@@ -33,7 +33,7 @@ namespace migine {
 		float maximum_corner_projection_onto_axis(glm::vec3 axis) const;
 		bool do_overlap_on_axis(const Box_collider& other, glm::vec3 axis) const;
 		bool fast_do_overlap(const Box_collider& other) const;
-		std::unique_ptr<Collision> check_collision_point(glm::vec3 point, const Collider_base& other) const;
+		std::unique_ptr<Contact> check_collision_point(glm::vec3 point, Collider_base& other);
 		auto get_corners() const { // TODO force inline maybe??? if this is not inlined, std::vector is better
 			auto corners = make_array(
 				local_center + glm::vec3({-half_side_lengths.x, -half_side_lengths.y, -half_side_lengths.z}), //0
