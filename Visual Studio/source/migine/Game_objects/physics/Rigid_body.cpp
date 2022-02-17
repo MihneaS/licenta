@@ -137,11 +137,19 @@ namespace migine {
 		return velocity;
 	}
 
-	glm::quat Rigid_body::get_angular_velocity() const {
+	void Rigid_body::add_velocity(vec3 velocity) {
+		this->velocity += velocity;
+	}
+
+	quat Rigid_body::get_angular_velocity() const {
 		return angular_velocity;
 	}
 
-	glm::vec3 Rigid_body::get_last_frame_acceleration() const {
+	void Rigid_body::add_angular_velocity(vec3 rotation) {
+		this->angular_velocity += rotation;
+	}
+
+	vec3 Rigid_body::get_last_frame_acceleration() const {
 		return last_frame_acceleration;
 	}
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Core/Engine.h>
-//#include <glm/glm.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
 
 namespace migine {
 	constexpr glm::vec3 k_default_color = {1,0,1};

@@ -17,6 +17,7 @@
 
 #include <migine/Resource_manager.h>
 #include <migine/game_objects/contact_detection/Collider_base.h>
+#include <migine/game_objects/contact_detection/Contact_resolver.h>
 
 using std::vector;
 using std::unique_ptr;
@@ -174,17 +175,23 @@ namespace migine {
 
 		// narrow worst_collision phase
 		int pairs_in_contact = 0;
-		vector<unique_ptr<Contact>> collisions;
+		vector<unique_ptr<Contact>> contacts;
 		for (auto& [obj0, obj1] : bvh.get_contacts()) {
 			auto new_collisions = obj0->check_collision(*obj1);
 			if (new_collisions.size() > 0) {
 				pairs_in_contact++;
 			}
 			for (auto& new_collision : new_collisions) {
-				collisions.push_back(move(new_collision));
+				contacts.push_back(move(new_collision));
 			}
 		}
 
+		// resolve contacts
+		// prepare resolver
+		Contact_resolver contact_resolver(contacts, caped_delta_time);
+
+		// solve contacts
+		contact_resolver.resolve_contacts(contacts);
 
 
 		// render
