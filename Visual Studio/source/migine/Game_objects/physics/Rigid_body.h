@@ -23,7 +23,7 @@ namespace migine {
 		const glm::mat3& get_inverse_invertia_tensor() const;
 		glm::vec3 get_velocity() const;
 		void add_velocity(glm::vec3 velocity);
-		glm::quat get_angular_velocity() const;
+		glm::vec3 get_angular_velocity() const;
 		void add_angular_velocity(glm::vec3 rotation);
 		glm::vec3 get_last_frame_acceleration() const;
 		void add_force(glm::vec3 force);

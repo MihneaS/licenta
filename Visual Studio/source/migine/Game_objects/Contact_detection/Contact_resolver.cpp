@@ -26,7 +26,7 @@ namespace migine {
 		relative_contact_positions[0] = contact->contact_point - contact->objs[0]->transform.get_world_position();
 		relative_contact_positions[1] = contact->contact_point - contact->objs[1]->transform.get_world_position();
 
-		contact_local_velocity = calculate_local_velocity(contact, 0, delta_time) - calculate_local_velocity(contact, 1, delta_time);
+		contact_local_velocity = calculate_local_velocity(contact, 1, delta_time) - calculate_local_velocity(contact, 0, delta_time);
 		calculate_desired_delta_velocity(contact, delta_time);
 	}
 
@@ -42,8 +42,8 @@ namespace migine {
 		// Calculate the acceleration induced velocity accumulated this frame
 		float velocity_from_acc = 0;
 
-		velocity_from_acc += dot(contact->objs[0]->get_last_frame_acceleration() * delta_time, contact->normal);
-		velocity_from_acc -= dot(contact->objs[1]->get_last_frame_acceleration() * delta_time, contact->normal);
+		velocity_from_acc -= dot(contact->objs[0]->get_last_frame_acceleration() * delta_time, contact->normal);
+		velocity_from_acc += dot(contact->objs[1]->get_last_frame_acceleration() * delta_time, contact->normal);
 
 		// If the velocity is very slow, limit the restitution
 		float this_restitution = k_default_restitution;
@@ -53,7 +53,7 @@ namespace migine {
 
 		// Combine the bounce velocity with the removed
 		// acceleration velocity.
-		desired_delta_velocity = -contact_local_velocity.y - this_restitution * (contact_local_velocity.y - velocity_from_acc);
+ 		desired_delta_velocity = -contact_local_velocity.y - this_restitution * (contact_local_velocity.y - velocity_from_acc);
 	}
 
 	Contact_resolver::Contact_resolver(const vector<unique_ptr<Contact>>& collisions, float delta_time) :
@@ -69,7 +69,7 @@ namespace migine {
 		resolve_penetrations(contacts);
 
 		// resolve the velocity problems with contacts
-		//resolve_velocity(contacts);
+		resolve_velocity(contacts);
 	}
 
 	void Contact_resolver::resolve_penetrations(vector<unique_ptr<Contact>>& contacts) {
@@ -171,10 +171,10 @@ namespace migine {
 		for (int velocity_iteration = 0; velocity_iteration < k_maximum_velocity_correcting_iterations; velocity_iteration++) {
 			// find worst (deepest) worst_contact
 			int worst_collision_idx = -1;
-			float worst_velocity2 = k_velocity_epsilon;
+			float worst_velocity = k_velocity_epsilon;
 			for (int i = 0; i < contacts.size(); i++) {
-				if (float vel_mag2 = length2(additional_contact_data[i].contact_local_velocity); vel_mag2 > worst_velocity2) {
-					worst_velocity2 = vel_mag2;
+				if (additional_contact_data[i].desired_delta_velocity > worst_velocity) {
+					worst_velocity = additional_contact_data[i].desired_delta_velocity;
 					worst_collision_idx = i;
 				}
 			}
@@ -185,7 +185,8 @@ namespace migine {
 			// solve worst worst_contact
 			// calculate linear and angular movement
 			const Contact& worst_contact = *contacts[worst_collision_idx].get();
-			const Additional_contact_data more_data = additional_contact_data[worst_collision_idx];
+			const Additional_contact_data& more_data = additional_contact_data[worst_collision_idx];
+			float debug_original_desired_delta_velocity = more_data.desired_delta_velocity;
 
 			// apply move
 			auto [velocity_change, rotation_change] = apply_move(*contacts[worst_collision_idx].get(), additional_contact_data[worst_collision_idx]);
@@ -197,16 +198,16 @@ namespace migine {
 						if (contacts[i]->objs[j] == worst_contact.objs[k]) {
 							vec3 delta_vel = velocity_change[k] + cross(rotation_change[k], more_data.relative_contact_positions[j]);
 
-							float sign = 1 - 2 * j; // = j ? -1 : 1;
-							additional_contact_data[i].contact_local_velocity +=
-								conjugate(additional_contact_data[i].contact_to_world_rotation) * delta_vel * sign;
+							float sign = -1 + 2 * j; // = j ? -1 : 1;
+							auto tmp = conjugate(additional_contact_data[i].contact_to_world_rotation) * delta_vel * sign;
+							additional_contact_data[i].contact_local_velocity += tmp;
 							additional_contact_data[i].calculate_desired_delta_velocity(&worst_contact, delta_time);
 						}
 					}
 				}
 			}
 			
-			assert(worst_velocity2 > length2(more_data.contact_local_velocity)); // assert that penetration depth was improved
+			assert(abs(more_data.desired_delta_velocity) < abs(debug_original_desired_delta_velocity)); // assert that penetration depth was improved
 		}
 	}
 
@@ -244,9 +245,7 @@ namespace migine {
 		}
 
 		// Calculate the required size of the unit_impulse
-		unit_impulse_local_contact.x = more_data.desired_delta_velocity / delta_velocity;
-		unit_impulse_local_contact.y = 0;
-		unit_impulse_local_contact.z = 0;
+		unit_impulse_local_contact.y = more_data.desired_delta_velocity / delta_velocity;
 		return unit_impulse_local_contact;
 	}
 }

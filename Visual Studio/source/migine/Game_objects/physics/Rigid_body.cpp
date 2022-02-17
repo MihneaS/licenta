@@ -133,7 +133,7 @@ namespace migine {
 			                  t62 * rot_mat[2][2];
 	}
 
-	glm::vec3 Rigid_body::get_velocity() const {
+	vec3 Rigid_body::get_velocity() const {
 		return velocity;
 	}
 
@@ -141,7 +141,7 @@ namespace migine {
 		this->velocity += velocity;
 	}
 
-	quat Rigid_body::get_angular_velocity() const {
+	vec3 Rigid_body::get_angular_velocity() const {
 		return angular_velocity;
 	}
 
@@ -153,20 +153,20 @@ namespace migine {
 		return last_frame_acceleration;
 	}
 
-	void Rigid_body::add_force(glm::vec3 force) {
+	void Rigid_body::add_force(vec3 force) {
 		force_accumulator += force;
 	}
 
-	void Rigid_body::add_force_at_point(glm::vec3 force, glm::vec3 point) {
+	void Rigid_body::add_force_at_point(vec3 force, vec3 point) {
 		add_force(force);
 		add_torque(cross(force, point - transform.get_world_position())); // TODO e bine?
 	}
 
-	void Rigid_body::add_force_at_body_point(glm::vec3 force, glm::vec3 point) {
+	void Rigid_body::add_force_at_body_point(vec3 force, vec3 point) {
 		add_force_at_point(force, transform.get_point_in_world_space(point));
 	}
 
-	void Rigid_body::add_torque(glm::vec3 torque) {
+	void Rigid_body::add_torque(vec3 torque) {
 		torque_accumulator += torque;
 	}
 
