@@ -47,6 +47,7 @@ namespace migine {
 
 	void Rigid_body::set_mass(float mass) {
 		inverse_mass = 1.0f / mass;
+		compute_inverse_inertia_tensor();
 	}
 
 	float Rigid_body::get_inverse_mass() const {
@@ -55,6 +56,7 @@ namespace migine {
 
 	void Rigid_body::set_inverse_mass(float inverse_mass) {
 		this->inverse_mass = inverse_mass;
+		compute_inverse_inertia_tensor();
 	}
 
 	vec3 Rigid_body::get_constant_acceleration() const {
@@ -187,5 +189,10 @@ namespace migine {
 		//_transform_inertia_tensor(inverse_inertia_tensor_world, inverse_inertia_tensor, transform.get_model());
 		compute_inverse_inertia_tensor_world();
 		transform.internal_update();
+	}
+
+	std::vector<std::unique_ptr<Force_generator_base>>& Rigid_body::get_default_fs_gen()
+	{
+		return default_fs_gen;
 	}
 }

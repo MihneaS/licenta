@@ -7,12 +7,6 @@
 #include <migine/game_objects/components/Transform.h>
 #include <migine/game_objects/physics/Rigid_body.h>
 #include <migine/game_objects/physics/force_generators.h>
-#include <migine/game_objects/physics/get_initial_force_generators.h>
-
-#ifdef DEBUGGING
-#include <migine/game_objects/shapes/Sphere.h>
-#include <migine/game_objects/shapes/Box.h>
-#endif // DEBUGGING
 
 #include <Core/World.h>
 
@@ -42,23 +36,23 @@ namespace migine {
 		void update(float delta_time_seconds) override;
 		void frame_end() override;
 
-		template<class T>
-		void register_game_object(std::unique_ptr<T> game_object) {
-			static_assert(std::is_base_of<Game_object, T>());
-			if constexpr (std::is_base_of<Renderer_base, T>()) {
+		template<class Obj_t>
+		void register_game_object(std::unique_ptr<Obj_t> game_object) {
+			static_assert(std::is_base_of<Game_object, Obj_t>());
+			if constexpr (std::is_base_of<Renderer_base, Obj_t>()) {
 				renderers.push_back(static_cast<Renderer_base*>(game_object.get()));
 			}
-			if constexpr (std::is_base_of<Rigid_body, T>()) {
+			if constexpr (std::is_base_of<Rigid_body, Obj_t>()) {
 				gsl::not_null<Rigid_body*> rigid_body = static_cast<Rigid_body*>(game_object.get());
 				Collider_base* collider = nullptr;
-				if constexpr (std::is_base_of<Collider_base, T>()) {
+				if constexpr (std::is_base_of<Collider_base, Obj_t>()) {
 					collider = static_cast<Collider_base*>(game_object.get());
 					bvh.insert(collider);
 				}
 				bodies_and_colliders.push_back(std::make_pair(rigid_body, collider));
-				auto initial_force_generators = get_initial_force_generators<T>();
+				auto& initial_force_generators = get_initial_force_generators(rigid_body);
 				for (auto& force_generator : initial_force_generators) {
-					force_registry.add(rigid_body, move(force_generator));
+					force_registry.add(rigid_body, force_generator->make_deep_copy());
 				}
 			}
 			game_objects.push_back(move(game_object));
@@ -95,8 +89,11 @@ namespace migine {
 		std::vector<std::pair<gsl::not_null<Rigid_body*>, Collider_base*>> bodies_and_colliders;
 		Force_registry force_registry;
 
+		std::vector<std::unique_ptr<Force_generator_base>> default_fs_gen;
+
 	private:
 		void init_resources();
+		std::vector<std::unique_ptr<Force_generator_base>>& get_initial_force_generators(gsl::not_null<Rigid_body*> r_body);
 
 		// memory managed by this
 		InputController* camera_input;

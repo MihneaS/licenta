@@ -5,6 +5,8 @@
 #include <migine/game_objects/rendering/Simple_renderer.h>
 #include <migine/game_objects/physics/Rigid_body.h>
 
+//#include <migine/game_objects/physics/get_initial_force_generators.h>
+
 namespace migine {
 	class Sphere : public Game_object, public Sphere_collider, public Simple_renderer { // , public Rigid_body{
 	public:

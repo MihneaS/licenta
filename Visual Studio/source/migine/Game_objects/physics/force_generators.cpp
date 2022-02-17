@@ -9,6 +9,7 @@ using glm::normalize;
 using gsl::not_null;
 
 using std::unique_ptr;
+using std::make_unique;
 using std::move;
 using std::cos;
 
@@ -42,6 +43,10 @@ namespace migine {
 
 	vec3 Gravity_generator::gravity = k_default_gravity;
 
+	unique_ptr<Force_generator_base> Gravity_generator::make_deep_copy() {
+		return make_unique<Gravity_generator>(*this);
+	}
+
 	void Gravity_generator::update_force(not_null<Rigid_body*> obj, float delta_time) {
 		obj->add_force(gravity * obj->get_inverse_mass());
 	}
@@ -59,6 +64,14 @@ namespace migine {
 		obj->add_force(force);
 	}
 
+	unique_ptr<Force_generator_base> Drag_generator::make_deep_copy() {
+		return make_unique<Drag_generator>(*this);
+	}
+
+	unique_ptr<Force_generator_base> Test_bouyant_force_generator::make_deep_copy() {
+		return make_unique<Test_bouyant_force_generator>(*this);
+	}
+
 	void Test_bouyant_force_generator::update_force(gsl::not_null<Rigid_body*> obj, float delta_time) {
 		float y = obj->transform.get_world_position().y;
 		static float multiplier = 3;
@@ -71,6 +84,10 @@ namespace migine {
 
 	Test_cos_force_generator::Test_cos_force_generator(glm::vec3 axis, float multiplier) :
 		axis(normalize(axis)), multiplier(multiplier) {
+	}
+
+	unique_ptr<Force_generator_base> Test_cos_force_generator::make_deep_copy() {
+		return make_unique<Test_cos_force_generator>(*this);
 	}
 
 	void Test_cos_force_generator::update_force(gsl::not_null<Rigid_body*> obj, float delta_time) {
@@ -96,6 +113,10 @@ namespace migine {
 			speed_target = -desired_speed;
 		}
 		obj->add_force(obtain_force_for_desired_velocity(obj, delta_time, {0, speed_target, 0}));
+	}
+
+	unique_ptr<Force_generator_base> Linear_speed_generator::make_deep_copy() {
+		return make_unique<Linear_speed_generator>(*this);
 	}
 	
 	vec3 Force_generator_base::obtain_force_for_desired_velocity(not_null<Rigid_body*> obj, float delta_time, vec3 desired_velocity) {

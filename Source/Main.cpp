@@ -7,6 +7,7 @@ using namespace std;
 
 #include <migine/scenes/Scene_01.h>
 #include <migine/scenes/Scene_02.h>
+#include <migine/scenes/Scene_03.h>
 
 int main(int argc, char **argv)
 {

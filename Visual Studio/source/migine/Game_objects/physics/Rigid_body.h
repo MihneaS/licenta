@@ -10,7 +10,7 @@
 #include <gsl/gsl>
 
 namespace migine {
-	class Force_generator_base;
+	//class Force_generator_base;
 
 	class Rigid_body : virtual public Has_transform {
 	public:
@@ -35,6 +35,8 @@ namespace migine {
 		void clear_accumulators();
 		void calculate_derived_data();
 
+		std::vector<std::unique_ptr<Force_generator_base>>& get_default_fs_gen();
+
 	protected:
 		void set_inertia_tensor(const glm::mat3& inerta_tensor);
 		void set_inverse_inertia_tensor(const glm::mat3& inverse_inertia_tensor);
@@ -56,5 +58,7 @@ namespace migine {
 		glm::mat3 inverse_inertia_tensor_world = k_i3;
 		float linear_damping = 0.995f;
 		float angular_damping = 0.995f;
+
+		std::vector<std::unique_ptr<Force_generator_base>> default_fs_gen;
 	};
 }

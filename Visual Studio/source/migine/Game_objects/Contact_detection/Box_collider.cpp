@@ -47,7 +47,7 @@ namespace migine {
 		vector<unique_ptr<Contact>> tmp1;
 		float max_depth_1 = 0;
 		auto this_corners = get_corners();
-		for (auto this_corner : this_corners) {
+		for (auto& this_corner : this_corners) {
 			if (auto collision = other.check_collision_point(this_corner, *this); collision) {
 				max_depth_1 = max(max_depth_1, collision->penetration_depth);
 				tmp1.push_back(move(collision));
@@ -57,7 +57,7 @@ namespace migine {
 		vector<unique_ptr<Contact>> tmp2;
 		float max_depth_2 = 0;
 		auto other_corners = other.get_corners();
-		for (auto others_corner : other_corners) {
+		for (auto& others_corner : other_corners) {
 			if (auto collision = check_collision_point(others_corner, other); collision) {
 				max_depth_2 = max(max_depth_2, collision->penetration_depth);
 				tmp2.push_back(move(collision));
@@ -72,11 +72,13 @@ namespace migine {
 
 		vec3 this_center = transform.get_world_position();
 		vec3 other_center = other.transform.get_world_position();
-		for (auto [this_idx1, this_idx2] : get_edges_indexes_in_corners()) {
+		for (auto& [this_idx1, this_idx2] : get_edges_indexes_in_corners()) {
 			float min_pen2 = numeric_limits<float>::infinity();
 			vec3 saved_pt_on_this;
 			vec3 saved_pt_on_other;
-			for (auto [other_idx1, other_idx2] : other.get_edges_indexes_in_corners()) {
+			bool found_new_contact = false;
+			for (auto& [other_idx1, other_idx2] : other.get_edges_indexes_in_corners()) {
+				found_new_contact = false;
 				auto [pt_on_this_edge, pt_on_other_edge, clipped] = get_closest_points_between_segments(this_corners[this_idx1], this_corners[this_idx2], other_corners[other_idx1], other_corners[other_idx2]);
 				static_assert(std::is_same<decltype(clipped), bool>());
 				if (clipped) {
@@ -92,6 +94,7 @@ namespace migine {
 				if (dist2_to_contact_this > dist2_to_edge_this) {
 					continue;
 				}
+				found_new_contact = true;
 				float pen2 = distance2(pt_on_this_edge, pt_on_other_edge);
 				if (pen2 < min_pen2) {
 					min_pen2 = pen2;
@@ -99,7 +102,9 @@ namespace migine {
 					saved_pt_on_other = pt_on_other_edge;
 				}
 			}
-			ret.push_back(make_unique<Contact>(this, &other, mid_point(saved_pt_on_other, saved_pt_on_this), saved_pt_on_other - saved_pt_on_this, sqrtf(min_pen2)));
+			if (found_new_contact) {
+				ret.push_back(make_unique<Contact>(this, &other, mid_point(saved_pt_on_other, saved_pt_on_this), saved_pt_on_other - saved_pt_on_this, sqrtf(min_pen2)));
+			}
 		}
 		return ret;
 	}
@@ -107,7 +112,8 @@ namespace migine {
 	vector<unique_ptr<Contact>> Box_collider::check_collision(Sphere_collider& other) {
 		vector<unique_ptr<Contact>> ret;
 
-		vec3 rel_sphere_center = transform.transform_to_local(other.transform.get_world_position());
+		vec3 sphere_center = other.get_center_world();
+		vec3 rel_sphere_center = transform.transform_to_local(sphere_center);
 		if (abs(rel_sphere_center.x) - other.get_radius() > half_side_lengths.x ||
 			abs(rel_sphere_center.y) - other.get_radius() > half_side_lengths.y ||
 			abs(rel_sphere_center.z) - other.get_radius() > half_side_lengths.z) {
@@ -116,15 +122,14 @@ namespace migine {
 
 		vec3 closest_point = clamp(rel_sphere_center, -half_side_lengths, half_side_lengths); // TODO sigur face ce trebuie clamp?
 		float r = other.get_radius();
-		float dist2 = distance2(closest_point, rel_sphere_center);
+		vec3 closest_point_world = transform.get_model() * position_to_vec4(closest_point);
+		float dist2 = distance2(closest_point_world, sphere_center);
 		if (dist2 > r * r) {
 			return ret;
 		}
 
-		vec3 closest_point_world = transform.get_model() * position_to_vec4(closest_point);
-
-		vec3 normal = normalize(other.get_center_world() - closest_point_world);
-		float pen_depth = other.get_radius() - sqrtf(dist2);
+		vec3 normal = normalize(sphere_center - closest_point_world);
+		float pen_depth = r - sqrtf(dist2);
 		ret.push_back(make_unique<Contact>(this, &other, closest_point_world, normal, pen_depth));
 		
 		// TODO

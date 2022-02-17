@@ -210,6 +210,10 @@ namespace migine {
 	}
 
 	void BVH::cache_contact(not_null<Collider_base*> collider0, not_null<Collider_base*> collider1) {
+		if (collider0->get_inverse_mass() == 0 && collider1->get_inverse_mass() == 0) {
+			return;
+		}
+
 		if (less_for_unique_cache_entry(collider0, collider1)) {
 			contacts_cache.insert(make_tuple(collider0, collider1));
 		} else {

@@ -74,7 +74,9 @@ namespace migine {
 		camera = new Camera();
 		camera->SetPerspective(60, window->props.aspectRatio, 0.01f, 200);
 		camera->transform->SetMoveSpeed(2);
-		camera->transform->SetWorldPosition(vec3(0, 5.8f, 20));
+		//camera->transform->SetWorldPosition(vec3(0, 5.8f, 20));
+		//camera->transform->SetWorldRotation(vec3(-15, 0, 0));
+		camera->transform->SetWorldPosition(vec3(0, 1.8f, 0));
 		camera->transform->SetWorldRotation(vec3(-15, 0, 0));
 		camera->Update();
 
@@ -163,7 +165,7 @@ namespace migine {
 
 		// move bodies and update colliders in bvh (aka broad worst_collision phase)
 		for (auto& bc_pair : bodies_and_colliders) {
-			auto rigid_body = get<not_null<Rigid_body*>>(bc_pair);
+			auto& rigid_body = get<not_null<Rigid_body*>>(bc_pair);
 			bool has_moved = rigid_body->integrate(caped_delta_time);
 			if (has_moved) {
 				auto collider = get<Collider_base*>(bc_pair);
@@ -187,12 +189,13 @@ namespace migine {
 		}
 
 		// resolve contacts
-		// prepare resolver
-		Contact_resolver contact_resolver(contacts, caped_delta_time);
+		if (!contacts.empty()) {
+			// prepare resolver
+			Contact_resolver contact_resolver(contacts, caped_delta_time); //DEMO1
 
-		// solve contacts
-		contact_resolver.resolve_contacts(contacts);
-
+			// solve contacts
+			contact_resolver.resolve_contacts(contacts); // DEMO1
+		}
 
 		// render
 		for (auto& renderer : renderers) {
@@ -359,6 +362,14 @@ namespace migine {
 
 	Camera& Scene_base::get_scene_camera() const {
 		return *camera;
+	}
+
+	std::vector<std::unique_ptr<Force_generator_base>>& Scene_base::get_initial_force_generators(gsl::not_null<Rigid_body*> r_body) {
+		auto& r_body_default_fs_gen = r_body->get_default_fs_gen();
+		if (r_body_default_fs_gen.size() != 0) {
+			return r_body_default_fs_gen;
+		}
+		return this->default_fs_gen;
 	}
 
 	InputController& Scene_base::get_camera_input() const {

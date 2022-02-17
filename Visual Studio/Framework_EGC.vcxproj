@@ -53,6 +53,7 @@
     <ClCompile Include="source\migine\game_objects\shapes\Box.cpp" />
     <ClCompile Include="source\migine\game_objects\shapes\Sphere.cpp" />
     <ClCompile Include="source\migine\Resource_manager.cpp" />
+    <ClCompile Include="source\migine\scenes\Scene_03.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_01.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_02.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_input.cpp" />
@@ -93,7 +94,6 @@
     <ClInclude Include="source\migine\contact_detection\Contact.h" />
     <ClInclude Include="source\migine\game_objects\contact_detection\Contact_resolver.h" />
     <ClInclude Include="source\migine\game_objects\physics\force_generators.h" />
-    <ClInclude Include="source\migine\game_objects\physics\get_initial_force_generators.h" />
     <ClInclude Include="source\migine\game_objects\physics\Rigid_body.h" />
     <ClInclude Include="source\migine\game_objects\contact_detection\Sphere_collider.h" />
     <ClInclude Include="source\migine\game_objects\Game_object.h" />
@@ -107,6 +107,7 @@
     <ClInclude Include="source\migine\game_objects\shapes\Sphere.h" />
     <ClInclude Include="source\migine\make_array.h" />
     <ClInclude Include="source\migine\Resource_manager.h" />
+    <ClInclude Include="source\migine\scenes\Scene_03.h" />
     <ClInclude Include="source\migine\scenes\Scene_01.h" />
     <ClInclude Include="source\migine\scenes\Scene_02.h" />
     <ClInclude Include="source\migine\scenes\Scene_input.h" />
