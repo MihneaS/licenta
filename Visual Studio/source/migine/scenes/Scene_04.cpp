@@ -35,7 +35,7 @@ namespace migine {
 
 		{ //defualt forces
 			default_fs_gen.clear();
-			//default_fs_gen.push_back(make_unique<Constant_torque_generator>(vec3{1,1,0}));
+			default_fs_gen.push_back(make_unique<Sinusoidal_torque_generator>(vec3{1,1,0}));
 		}
 
 		{ // ground
@@ -43,19 +43,33 @@ namespace migine {
 			set_name(game_objects.rbegin()->get(), "pamant");
 		}
 
-		{ // falling obj
+		{
 			auto obj_h = make_unique<Sphere>(vec3{ -1, 2, -2 });
 			obj_h->set_inverse_mass(1);
 			register_game_object(move(obj_h));
-			set_name(game_objects.rbegin()->get(), "sfera");
+			set_name(game_objects.rbegin()->get(), "sfera_1");
 		}
 
 
-		{ // falling obj
+		{
 			auto obj_h = make_unique<Box>(vec3{ 1, 2, -2 });
 			obj_h->set_inverse_mass(1);
 			register_game_object(move(obj_h));
-			set_name(game_objects.rbegin()->get(), "cub");
+			set_name(game_objects.rbegin()->get(), "cub_1");
+		}
+
+		{
+			auto obj_h = make_unique<Sphere>(vec3{ 4, 2, -2 });
+			obj_h->set_inverse_mass(1);
+			register_game_object(move(obj_h));
+			set_name(game_objects.rbegin()->get(), "sfera_2");
+		}
+
+		{
+			auto obj_h = make_unique<Box>(vec3{ -4, 2, -2 });
+			obj_h->set_inverse_mass(1);
+			register_game_object(move(obj_h));
+			set_name(game_objects.rbegin()->get(), "cub_2");
 		}
 
 		for (auto& game_object : game_objects) {
