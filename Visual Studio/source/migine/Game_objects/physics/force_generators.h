@@ -102,6 +102,32 @@ namespace migine {
 		float desired_speed;
 	};
 
+	class Constant_torque_generator : public Force_generator_base {
+	public:
+		Constant_torque_generator(glm::vec3 torque);
+		Constant_torque_generator(const Constant_torque_generator&) = default;
+		~Constant_torque_generator() override = default;
+
+		void update_force(gsl::not_null<Rigid_body*> obj, float delta_time) override;
+		std::unique_ptr<Force_generator_base> make_deep_copy() override;
+	private:
+		glm::vec3 torque;
+	};
+
+	class Sinusoidal_torque_generator : public Force_generator_base {
+	public:
+		Sinusoidal_torque_generator(glm::vec3 max_torque, float miu = 1);
+		Sinusoidal_torque_generator(const Sinusoidal_torque_generator&) = default;
+		~Sinusoidal_torque_generator() override = default;
+
+		void update_force(gsl::not_null<Rigid_body*> obj, float delta_time) override;
+		std::unique_ptr<Force_generator_base> make_deep_copy() override;
+	private:
+		glm::vec3 max_torque;
+		float total_time = 0;
+		float miu;
+	};
+
 	//class Scene_base;
 
 	//template<class Obj_t, class Scene_t>

@@ -7,6 +7,9 @@
 #include <migine/utils.h>
 
 namespace migine {
+	/*
+	 * Scene for testing contact resolution with rotation between 2 cubes
+	 */
 	class Scene_02: public migine::Scene_base {
 	public:
 		Scene_02();

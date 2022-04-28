@@ -98,7 +98,7 @@ namespace migine {
 	Linear_speed_generator::Linear_speed_generator(float min_y, float max_y, float desired_speed) :
 		min_y(min_y), max_y(max_y), desired_speed(desired_speed) {
 	}
-	
+
 	void Linear_speed_generator::update_force(gsl::not_null<Rigid_body*> obj, float delta_time) {
 		float y = obj->transform.get_world_position().y;
 		float velocity_y = obj->get_velocity().y;
@@ -122,4 +122,30 @@ namespace migine {
 	vec3 Force_generator_base::obtain_force_for_desired_velocity(not_null<Rigid_body*> obj, float delta_time, vec3 desired_velocity) {
 		return (desired_velocity - obj->get_velocity() - obj->get_constant_acceleration() * delta_time) / (delta_time * obj->get_inverse_mass());
 	}
+
+	Constant_torque_generator::Constant_torque_generator(glm::vec3 torque) :
+		torque(torque) {
+	}
+
+	unique_ptr<Force_generator_base> Constant_torque_generator::make_deep_copy() {
+		return make_unique<Constant_torque_generator>(*this);
+	}
+
+	void Constant_torque_generator::update_force(not_null<Rigid_body*> obj, float delta_time) {
+		//obj->add_torque(torque * obj->get_inverse_invertia_tensor());
+		obj->add_torque(torque);
+	}
+	Sinusoidal_torque_generator::Sinusoidal_torque_generator(glm::vec3 max_torque, float miu) :
+		max_torque(max_torque), miu(miu) {
+	}
+
+	void Sinusoidal_torque_generator::update_force(gsl::not_null<Rigid_body*> obj, float delta_time) {
+		total_time += delta_time;
+		obj->add_torque(max_torque * cos(miu * total_time));
+	}
+
+	unique_ptr<Force_generator_base> Sinusoidal_torque_generator::make_deep_copy() {
+		return make_unique<Sinusoidal_torque_generator>(*this);
+	}
+
 }

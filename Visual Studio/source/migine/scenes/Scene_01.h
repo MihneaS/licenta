@@ -7,6 +7,9 @@
 #include <migine/utils.h>
 
 namespace migine {
+	/*
+	 * Scene for testing coarse and fine contact detection and the use of forces
+	 */
 	class Scene_01: public migine::Scene_base {
 	public:
 		Scene_01();

@@ -8,12 +8,12 @@
 
 namespace migine {
 	/*
-	 * Scene for testing torques
+	 * Scene for tests with text output
 	 */
-	class Scene_04 : public migine::Scene_base {
+	class Scene_05 : public migine::Scene_base {
 	public:
-		Scene_04();
-		~Scene_04();
+		Scene_05();
+		~Scene_05();
 
 		void init() override;
 

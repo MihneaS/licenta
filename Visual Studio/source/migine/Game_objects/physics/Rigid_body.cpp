@@ -135,6 +135,10 @@ namespace migine {
 			                  t62 * rot_mat[2][2];
 	}
 
+	//void Rigid_body::compute_inverse_inertia_tensor_world() {
+		//assert(false); // TODO
+	//}
+
 	vec3 Rigid_body::get_velocity() const {
 		return velocity;
 	}
