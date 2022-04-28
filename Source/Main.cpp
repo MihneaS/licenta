@@ -8,6 +8,7 @@ using namespace std;
 #include <migine/scenes/Scene_01.h>
 #include <migine/scenes/Scene_02.h>
 #include <migine/scenes/Scene_03.h>
+#include <migine/scenes/Scene_04.h>
 
 int main(int argc, char **argv)
 {
@@ -21,7 +22,7 @@ int main(int argc, char **argv)
 	WindowObject* window = Engine::Init(wp);
 
 	// Create a new 3D world and start running it
-	World *world = new migine::Scene_02();
+	World *world = new migine::Scene_04();
 	world->init();
 	world->run();
 
