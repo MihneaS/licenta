@@ -71,7 +71,7 @@ namespace migine {
 
 		object_model = new EngineComponents::Transform();
 
-		camera = new Camera();
+		camera = make_unique<Camera>();
 		camera->SetPerspective(60, window->props.aspectRatio, 0.01f, 200);
 		camera->transform->SetMoveSpeed(2);
 		//camera->transform->SetWorldPosition(vec3(0, 5.8f, 20));
@@ -80,7 +80,7 @@ namespace migine {
 		camera->transform->SetWorldRotation(vec3(-15, 0, 0));
 		camera->Update();
 
-		camera_input = new CameraInput(camera);
+		camera_input = make_unique<CameraInput>(camera.get());
 		window = Engine::GetWindow();
 
 		Scene_input* SI = new Scene_input(*this);

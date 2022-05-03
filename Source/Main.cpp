@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 	WindowObject* window = Engine::Init(wp);
 
 	// Create a new 3D world and start running it
-	World *world = new migine::Scene_05();
+	World *world = new migine::Scene_04();
 	world->init();
 	world->run();
 

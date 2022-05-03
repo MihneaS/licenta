@@ -64,7 +64,7 @@ namespace migine {
 		glm::vec3 light_position;
 		glm::vec3 light_direction;
 		// TODO use unique
-		Camera* camera;
+		std::unique_ptr<Camera> camera;
 
 	protected:
 		virtual void draw_coordinat_system();
@@ -96,7 +96,7 @@ namespace migine {
 		std::vector<std::unique_ptr<Force_generator_base>>& get_initial_force_generators(gsl::not_null<Rigid_body*> r_body);
 
 		// memory managed by this
-		InputController* camera_input;
+		std::unique_ptr<InputController> camera_input;
 
 		bool draw_ground_plane;
 		// memory managed by this

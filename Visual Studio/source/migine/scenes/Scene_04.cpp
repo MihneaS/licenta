@@ -33,6 +33,12 @@ namespace migine {
 
 	void Scene_04::init() {
 
+		{ // set camera position and rotation
+			camera->transform->SetWorldPosition(vec3(0, 2.8f, 4));
+			camera->transform->SetWorldRotation(vec3(-15, 0, 0));
+			camera->Update();
+		}
+
 		{ //defualt forces
 			default_fs_gen.clear();
 			default_fs_gen.push_back(make_unique<Sinusoidal_torque_generator>(vec3{1,1,0}));
@@ -60,14 +66,14 @@ namespace migine {
 
 		{
 			auto obj_h = make_unique<Sphere>(vec3{ 4, 2, -2 });
-			obj_h->set_inverse_mass(1);
+			obj_h->set_inverse_mass(0.1);
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "sfera_2");
 		}
 
 		{
 			auto obj_h = make_unique<Box>(vec3{ -4, 2, -2 });
-			obj_h->set_inverse_mass(1);
+			obj_h->set_inverse_mass(0.1);
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "cub_2");
 		}

@@ -17,6 +17,8 @@
 
 using glm::vec3;
 using glm::quat;
+using glm::mat4;
+using glm::mat3;
 
 using std::move;
 using std::make_unique;
@@ -25,6 +27,27 @@ using std::min;
 using std::cout;
 
 namespace migine {
+
+	void print_mat4(mat4 mat) {
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				cout << mat[i][j] << " ";
+			}
+			cout << "\n";
+		}
+		cout << "\n";
+	}
+
+	void print_mat3(mat3 mat) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				cout << mat[i][j] << " ";
+			}
+			cout << "\n";
+		}
+		cout << "\n";
+	}
+
 	Scene_05::Scene_05() {
 	}
 
@@ -35,6 +58,22 @@ namespace migine {
 
 		{ //defualt forces
 			default_fs_gen.clear();
+		}
+
+		{
+			migine::Transform transform({ 0.5,0.5,0.5 }, { 2,2,2 }, euler_angles_deg_to_quat({ 90,0,0 }));
+			auto& to_world = transform.get_model();
+			auto inv = glm::inverse(to_world);
+			auto trsp_inv = glm::transpose(inv);
+			mat3 some_mat3 = {{2,0,0}, {0,2,0}, {0,0,2}};
+			mat4 some_mat4 = mat4(some_mat3);
+			print_mat4(some_mat4);
+			//mat4 coords_changed = inv * some_mat4 * trsp_inv;
+			mat4 coords_changed = trsp_inv * some_mat4 * inv;
+			//mat4 coords_changed2 = trsp_inv * some_mat3 * inv;
+			print_mat4(coords_changed);
+			mat3 m3 = coords_changed;
+			print_mat3(m3);
 		}
 
 		for (auto& game_object : game_objects) {

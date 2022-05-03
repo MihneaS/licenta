@@ -7,6 +7,7 @@ using glm::quat;
 using glm::mat3;
 using glm::mat4;
 using glm::inverse;
+using glm::transpose;
 using glm::cross;
 
 namespace migine {
@@ -75,69 +76,14 @@ namespace migine {
 		this->inverse_inertia_tensor = inverse_inertia_tensor;
 	}
 
-	void Rigid_body::compute_inverse_inertia_tensor_world() { // TODO NU FOLOSI! matricile ar trebui transpuse!
-			mat3& iit_world = inverse_inertia_tensor_world;
-			const mat3& iit_body = inverse_inertia_tensor;
-			const mat4& rot_mat = transform.get_model();
-			float t04 = rot_mat[0][0] * iit_body[0][0] +	       
-			            rot_mat[0][1] * iit_body[1][0] +
-			            rot_mat[0][2] * iit_body[2][0];
-			float t09 = rot_mat[0][0] * iit_body[0][1] +
-			            rot_mat[0][1] * iit_body[1][1] +
-			            rot_mat[0][2] * iit_body[2][1];
-			float t14 = rot_mat[0][0] * iit_body[0][2] +
-			            rot_mat[0][1] * iit_body[1][2] +
-			            rot_mat[0][2] * iit_body[2][2];
-			float t28 = rot_mat[1][0] * iit_body[0][0] +
-			            rot_mat[1][1] * iit_body[1][0] +
-			            rot_mat[1][2] * iit_body[2][0];
-			float t33 = rot_mat[1][0] * iit_body[0][1] +
-			            rot_mat[1][1] * iit_body[1][1] +
-			            rot_mat[1][2] * iit_body[2][1];
-			float t38 = rot_mat[1][0] * iit_body[0][2] +
-			            rot_mat[1][1] * iit_body[1][2] +
-			            rot_mat[1][2] * iit_body[2][2];
-			float t52 = rot_mat[2][0] * iit_body[0][0] +
-			            rot_mat[2][1] * iit_body[1][0] +
-			            rot_mat[2][2] * iit_body[2][0];
-			float t57 = rot_mat[2][0] * iit_body[0][1] +
-			            rot_mat[2][1] * iit_body[1][1] +
-			            rot_mat[2][2] * iit_body[2][1];
-			float t62 = rot_mat[2][0] * iit_body[0][2] +
-			            rot_mat[2][1] * iit_body[1][2] +
-			            rot_mat[2][2] * iit_body[2][2];
-			iit_world[0][0] = t04 * rot_mat[0][0] +
-			                  t09 * rot_mat[0][1] +
-			                  t14 * rot_mat[0][2];
-			iit_world[0][1] = t04 * rot_mat[1][0] +
-			                  t09 * rot_mat[1][1] +
-			                  t14 * rot_mat[1][2];
-			iit_world[0][2] = t04 * rot_mat[2][0] +
-			                  t09 * rot_mat[2][1] +
-			                  t14 * rot_mat[2][2];
-			iit_world[1][0] = t28 * rot_mat[0][0] +
-			                  t33 * rot_mat[0][1] +
-			                  t38 * rot_mat[0][2];
-			iit_world[1][1] = t28 * rot_mat[1][0] +
-			                  t33 * rot_mat[1][1] +
-			                  t38 * rot_mat[1][2];
-			iit_world[1][2] = t28 * rot_mat[2][0] +
-			                  t33 * rot_mat[2][1] +
-			                  t38 * rot_mat[2][2];
-			iit_world[2][0] = t52 * rot_mat[0][0] +
-			                  t57 * rot_mat[0][1] +
-			                  t62 * rot_mat[0][2];
-			iit_world[2][1] = t52 * rot_mat[1][0] +
-			                  t57 * rot_mat[1][1] +
-			                  t62 * rot_mat[1][2];
-			iit_world[2][2] = t52 * rot_mat[2][0] +
-			                  t57 * rot_mat[2][1] +
-			                  t62 * rot_mat[2][2];
+	void Rigid_body::compute_inverse_inertia_tensor_world() {
+		//mat3 inv = inverse(transform.get_model());
+		mat3 inv = mat3(conjugate(transform.get_orientation()));
+		inverse_inertia_tensor_world = transpose(inv) * get_inverse_invertia_tensor() * inv;
+		//mat4 inv = inverse(transform.get_model());
+		//inverse_inertia_tensor_world = transpose(inv) * mat4(get_inverse_invertia_tensor()) * inv;
+		//inverse_inertia_tensor_world = inv * mat4(get_inverse_invertia_tensor()) * transpose(inv);
 	}
-
-	//void Rigid_body::compute_inverse_inertia_tensor_world() {
-		//assert(false); // TODO
-	//}
 
 	vec3 Rigid_body::get_velocity() const {
 		return velocity;
