@@ -141,8 +141,15 @@ namespace migine {
 		transform.internal_update();
 	}
 
-	std::vector<std::unique_ptr<Force_generator_base>>& Rigid_body::get_default_fs_gen()
-	{
+	void Rigid_body::stop_motion() {
+		velocity = k_vec3_zero;
+		angular_velocity = k_vec3_zero;
+		last_frame_acceleration = k_vec3_zero;
+		force_accumulator = k_vec3_zero; // e necesar?
+		torque_accumulator = k_vec3_zero; // e necesar?
+	}
+
+	std::vector<std::unique_ptr<Force_generator_base>>& Rigid_body::get_default_fs_gen() {
 		return default_fs_gen;
 	}
 }

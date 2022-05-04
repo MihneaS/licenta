@@ -31,6 +31,15 @@ namespace migine {
 		}
 	}
 
+	void Force_registry::remove(gsl::not_null<Rigid_body*> obj) {
+		for (auto it = registrations.begin(); it != registrations.end(); it++) {
+			if (it->obj == obj) {
+				registrations.erase(it);
+				break;
+			}
+		}
+	}
+
 	void Force_registry::clear() {
 		registrations.clear();
 	}

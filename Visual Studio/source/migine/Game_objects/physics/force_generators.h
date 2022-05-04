@@ -35,6 +35,7 @@ namespace migine {
 
 		void add(gsl::not_null<Rigid_body*> obj, std::unique_ptr<Force_generator_base> force_generator);
 		void remove(gsl::not_null<Rigid_body*> obj, gsl::not_null<Force_generator_base*> force_generator);
+		void remove(gsl::not_null<Rigid_body*> obj);
 		void clear();
 		void update_forces(float delta_time);
 

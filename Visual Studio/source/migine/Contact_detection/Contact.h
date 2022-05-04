@@ -8,6 +8,8 @@
 #include <tuple>
 #include <array>
 
+#include <migine/define.h>
+
 namespace migine {
 	class Collider_base;
 
@@ -20,5 +22,8 @@ namespace migine {
 		glm::vec3 contact_point;
 		glm::vec3 normal;
 		float penetration_depth;
+#ifdef DEBUGGING
+		std::string type = "no type";
+#endif // DEBUGGING
 	};
 }

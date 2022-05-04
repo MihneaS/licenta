@@ -9,6 +9,8 @@
 #include <array>
 #include <climits>
 
+#include <migine/define.h>
+
 using glm::vec3;
 using glm::vec4;
 using glm::quat;
@@ -19,6 +21,7 @@ using glm::clamp;
 using glm::distance2;
 using glm::dot;
 using glm::cross;
+using glm::normalize;
 
 using std::max;
 using std::min;
@@ -40,10 +43,13 @@ namespace migine {
 
 	vector<unique_ptr<Contact>> Box_collider::check_collision(Box_collider& other) {
 		vector<unique_ptr<Contact>> ret;
+
+		// check intersection of projections on 15 axis
 		if (!fast_do_overlap(other)) {
 			return ret;
 		}
 
+		// check for contacts between corners of this and faces of other
 		vector<unique_ptr<Contact>> tmp1;
 		float max_depth_1 = 0;
 		auto this_corners = get_corners();
@@ -51,9 +57,13 @@ namespace migine {
 			if (auto collision = other.check_collision_point(this_corner, *this); collision) {
 				max_depth_1 = max(max_depth_1, collision->penetration_depth);
 				tmp1.push_back(move(collision));
+#ifdef DEBUGGING
+				(*tmp1.rbegin())->type = "box-box point-face";
+#endif // DEBUGGING
 			}
 		}
 
+		// check for contacts between corners of other and faces of this
 		vector<unique_ptr<Contact>> tmp2;
 		float max_depth_2 = 0;
 		auto other_corners = other.get_corners();
@@ -61,15 +71,20 @@ namespace migine {
 			if (auto collision = check_collision_point(others_corner, other); collision) {
 				max_depth_2 = max(max_depth_2, collision->penetration_depth);
 				tmp2.push_back(move(collision));
+#ifdef DEBUGGING
+				(*tmp2.rbegin())->type = "box-box point-face";
+#endif // DEBUGGING
 			}
 		}
 
+		// keep deepest
 		if (max_depth_1 > max_depth_2) {
 			ret = move(tmp1);
 		} else {
 			ret = move(tmp2);
 		}
 
+		// check for edge-edge contacts
 		vec3 this_center = transform.get_world_position();
 		vec3 other_center = other.transform.get_world_position();
 		for (auto& [this_idx1, this_idx2] : get_edges_indexes_in_corners()) {
@@ -103,9 +118,18 @@ namespace migine {
 				}
 			}
 			if (found_new_contact) {
-				ret.push_back(make_unique<Contact>(this, &other, mid_point(saved_pt_on_other, saved_pt_on_this), saved_pt_on_other - saved_pt_on_this, sqrtf(min_pen2)));
+				ret.push_back(make_unique<Contact>(
+						this,
+						&other, 
+						mid_point(saved_pt_on_other, saved_pt_on_this), 
+						saved_pt_on_other - saved_pt_on_this, 
+						sqrtf(min_pen2)));
+#ifdef DEBUGGING
+				(*ret.rbegin())->type = "box-box edge-edge";
+#endif // DEBUGGING
 			}
 		}
+
 		return ret;
 	}
 
@@ -131,6 +155,9 @@ namespace migine {
 		vec3 normal = normalize(sphere_center - closest_point_world);
 		float pen_depth = r - sqrtf(dist2);
 		ret.push_back(make_unique<Contact>(this, &other, closest_point_world, normal, pen_depth));
+#ifdef DEBUGGING
+		(*ret.rbegin())->type = "box-sphere";
+#endif // DEBUGGING
 		
 		// TODO
 		//contact->restitution = data->restitution; pg 309
@@ -251,14 +278,14 @@ namespace migine {
 		if (min_depth < 0) {
 			return ret;
 		}
-		normal = transform.get_axis<Axis::ox>() * ((relative_point.x < 0) ? -1.0f : 1.0f);
+		normal = normalize(transform.get_axis<Axis::ox>() * ((relative_point.x < 0) ? -1.0f : 1.0f));
 		
 		float depth = half_side_lengths.y - abs(relative_point.y);
 		if (depth < 0) {
 			return ret;
 		} else if (depth < min_depth) {
 			min_depth = depth;
-			normal = transform.get_axis<Axis::oy>() * ((relative_point.y < 0) ? -1.0f : 1.0f);
+			normal = normalize(transform.get_axis<Axis::oy>() * ((relative_point.y < 0) ? -1.0f : 1.0f));
 		}
 
 		depth = half_side_lengths.z - abs(relative_point.z);
@@ -266,7 +293,7 @@ namespace migine {
 			return ret;
 		} else if (depth < min_depth) {
 			min_depth = depth;
-			normal = transform.get_axis<Axis::oz>() * ((relative_point.z < 0) ? -1.0f : 1.0f);
+			normal = normalize(transform.get_axis<Axis::oz>() * ((relative_point.z < 0) ? -1.0f : 1.0f));
 		}
 
 		ret = make_unique<Contact>(this, &other, point, normal, min_depth); // TODO ugly second this! repiar imediatly after call

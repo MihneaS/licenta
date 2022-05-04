@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include <migine/define.h>
+
 using glm::vec3;
 using glm::vec4;
 using glm::quat;
@@ -39,6 +41,9 @@ namespace migine {
 			vec3 contact_point = this_to_other / 2.0f;
 			float pen_depth = radii_sum - sqrtf(dist2);
 			ret.push_back(make_unique<Contact>(this, &other, contact_point, normalize(this_to_other), pen_depth));
+#ifdef DEBUGGING
+			(*ret.rbegin())->type = "sphere-sphere";
+#endif // DEBUGGING
 		}
 		return ret;
 	}

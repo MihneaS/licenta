@@ -146,6 +146,8 @@ namespace migine {
 			obj1->set_inverse_mass(1);
 			obj0->stop_motion();
 			obj1->stop_motion();
+			force_registry.remove(obj0); // fara aceasta linie continua sa se miste
+			force_registry.remove(obj1); // fara aceasta linie continua sa se miste
 		}
 
 		// render

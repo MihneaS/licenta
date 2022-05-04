@@ -35,6 +35,8 @@ namespace migine {
 		void clear_accumulators();
 		void calculate_derived_data();
 
+		void stop_motion();
+
 		std::vector<std::unique_ptr<Force_generator_base>>& get_default_fs_gen();
 
 	protected:
