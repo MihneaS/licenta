@@ -144,10 +144,8 @@ namespace migine {
 		for (auto& [obj0, obj1] : bvh.get_contacts()) {
 			obj0->set_inverse_mass(0);
 			obj1->set_inverse_mass(1);
-			obj0->add_angular_velocity(-obj0->get_angular_velocity());
-			obj0->add_velocity(-obj0->get_velocity());
-			obj1->add_angular_velocity(-obj1->get_angular_velocity());
-			obj1->add_velocity(-obj1->get_velocity());
+			obj0->stop_motion();
+			obj1->stop_motion();
 		}
 
 		// render
