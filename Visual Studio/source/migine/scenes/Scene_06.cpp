@@ -137,7 +137,8 @@ namespace migine {
 
 			// solve contacts
 			//contact_resolver.resolve_contacts(contacts); // DEMO1
-			contact_resolver.resolve_penetrations(contacts);
+			//contact_resolver.resolve_penetrations(contacts);
+			contact_resolver.resolve_penetrations_linearly(contacts);
 
 		}
 		for (auto& [obj0, obj1] : bvh.get_contacts()) {
