@@ -5,7 +5,7 @@ using namespace std;
 
 #include <Core/Engine.h>
 
-#include <migine/scenes/all_scenes.h>
+#include <migine/scenes/current_scene.h>
 
 int main(int argc, char **argv)
 {
@@ -19,9 +19,9 @@ int main(int argc, char **argv)
 	WindowObject* window = Engine::Init(wp);
 
 	// Create a new 3D world and start running it
-	World *world = new migine::Scene_06();
-	world->init();
-	world->run();
+	World& world = migine::get_current_scene();
+	world.init();
+	world.run();
 
 	// Signals to the Engine to release the OpenGL context
 	Engine::Exit();
