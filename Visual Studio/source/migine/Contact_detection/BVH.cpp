@@ -318,6 +318,15 @@ namespace migine {
 		return contacts_cache.size();
 	}
 
+	void BVH::clean_dirty_nodes() {
+		for (auto& node : dirty_nodes) {
+			auto& collider = node->bounded_object;
+			remove(collider);
+			insert(collider);
+		}
+		dirty_nodes.clear();
+	}
+
 	void BVH::print_recursive(std::ostream& out_stream, Node* root, int level) const {
 		for (int i = 0; i < level; i++) {
 			out_stream << "|\t";
@@ -337,6 +346,10 @@ namespace migine {
 		} else {
 			out_stream << root->bounded_object->name << "\n";
 		}
+	}
+
+	void BVH::mark_dirty_node(gsl::not_null<Node*> node) {
+		dirty_nodes.insert(node);
 	}
 
 	BVH::Manhattan_distance_greater::Manhattan_distance_greater(AABB added_volume) :

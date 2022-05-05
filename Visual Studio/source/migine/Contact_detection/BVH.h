@@ -14,7 +14,6 @@
 
 namespace migine {
 	class Collider_base;
-	class AABB;
 
 	class BVH {
 		friend class Collider_base; // TODO e necesar?
@@ -88,6 +87,7 @@ namespace migine {
 		void erase_from_all_contacts(gsl::not_null<Collider_base*> collider);
 		const contacts_cache_t& get_contacts() const;
 		size_t get_contact_count() const;
+		void clean_dirty_nodes();
 
 #ifdef DEBUGGING
 		void render_all(const Camera& camera) const;
@@ -103,12 +103,14 @@ namespace migine {
 		void cache_contact(gsl::not_null<Collider_base*> collider0, gsl::not_null<Collider_base*> collider1);
 		void remove_contact(gsl::not_null<Collider_base*> colldier0, gsl::not_null<Collider_base*> collider1);
 		void print_recursive(std::ostream& out_stream, Node* root, int level) const;
+		void mark_dirty_node(gsl::not_null<Node*> node);
 
 		bool less_for_unique_cache_entry(gsl::not_null<const Collider_base*> lhs, gsl::not_null<const Collider_base*> rhs) const;
 
 		std::unique_ptr<Node> bvh_root;
 		std::unordered_map<gsl::not_null<Collider_base*>, std::unordered_set<gsl::not_null<Collider_base*>>> contacts_graph;
 		contacts_cache_t contacts_cache;
+		std::unordered_set<gsl::not_null<Node*>> dirty_nodes;
 
 		int get_graph_size() const;
 

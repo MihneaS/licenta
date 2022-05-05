@@ -1,6 +1,6 @@
 #pragma once
 
-#include <migine/game_objects/components/Transform.h>
+//#include <migine/game_objects/components/Transform.h>
 #include <migine/game_objects/components/Mesh.h>
 #include <migine/define.h>
 
@@ -12,6 +12,7 @@
 
 namespace migine {
 	class Collider_base;
+	class Transform;
 
 	class AABB {
 	public:
