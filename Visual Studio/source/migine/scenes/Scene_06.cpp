@@ -106,19 +106,12 @@ namespace migine {
 		force_registry.update_forces(caped_delta_time);
 
 		// move bodies and update colliders in bvh (aka broad worst_collision phase)
-		for (auto& bc_pair : bodies_and_colliders) {
-			auto& rigid_body = get<not_null<Rigid_body*>>(bc_pair);
+		for (auto& rigid_body : rigid_bodies) {
 			bool has_moved = rigid_body->integrate(caped_delta_time);
-			if (has_moved) {
-				auto collider = get<Collider_base*>(bc_pair);
-				if (collider) {
-					bvh.update(collider);
-				}
-			}
 		}
 
 		// repair bvh
-		//bvh.clean_dirty_nodes();
+		bvh.clean_dirty_nodes();
 
 		// narrow worst_collision phase
 		int pairs_in_contact = 0;

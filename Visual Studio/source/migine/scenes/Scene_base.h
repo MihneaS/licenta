@@ -46,16 +46,15 @@ namespace migine {
 			}
 			if constexpr (std::is_base_of<Rigid_body, Obj_t>()) {
 				gsl::not_null<Rigid_body*> rigid_body = static_cast<Rigid_body*>(game_object.get());
-				Collider_base* collider = nullptr;
-				if constexpr (std::is_base_of<Collider_base, Obj_t>()) {
-					collider = static_cast<Collider_base*>(game_object.get());
-					bvh.insert(collider);
-				}
-				bodies_and_colliders.push_back(std::make_pair(rigid_body, collider));
+				rigid_bodies.push_back(rigid_body);
 				auto& initial_force_generators = get_initial_force_generators(rigid_body);
 				for (auto& force_generator : initial_force_generators) {
 					force_registry.add(rigid_body, force_generator->make_deep_copy());
 				}
+			}
+			if constexpr (std::is_base_of<Collider_base, Obj_t>()) {
+				gsl::not_null<Collider_base*> collider = static_cast<Collider_base*>(game_object.get());
+				bvh.insert(collider);
 			}
 			game_objects.push_back(move(game_object));
 		}
@@ -88,7 +87,7 @@ namespace migine {
 		// use unique. make it a const vector, as resizeing will invalidate all teh references... or use a list or something
 		std::vector<std::unique_ptr<Game_object>> game_objects;
 		std::vector<gsl::not_null<Renderer_base*>> renderers;
-		std::vector<std::pair<gsl::not_null<Rigid_body*>, Collider_base*>> bodies_and_colliders;
+		std::vector<gsl::not_null<Rigid_body*>> rigid_bodies;
 		Force_registry force_registry;
 
 		std::vector<std::unique_ptr<Force_generator_base>> default_fs_gen;
