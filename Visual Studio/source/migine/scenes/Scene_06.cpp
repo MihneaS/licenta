@@ -51,7 +51,8 @@ namespace migine {
 		{ //defualt forces
 			default_fs_gen.clear();
 			default_fs_gen.push_back(make_unique<Sinusoidal_torque_generator>(vec3{ 1,1,0 }));
-			default_fs_gen.push_back(make_unique<Gravity_generator>());
+			//default_fs_gen.push_back(make_unique<Gravity_generator>());
+			default_fs_gen.push_back(make_unique<Constant_force_generator>(vec3{0,-20,0}));
 		}
 
 		{ // ground
@@ -59,34 +60,12 @@ namespace migine {
 			set_name(game_objects.rbegin()->get(), "pamant");
 		}
 
-		//{
-		//	auto obj_h = make_unique<Sphere>(vec3{ -1, 2, -2 });
-		//	obj_h->set_inverse_mass(1);
-		//	register_game_object(move(obj_h));
-		//	set_name(game_objects.rbegin()->get(), "sfera_1");
-		//}
-
-
 		{
-			auto obj_h = make_unique<Box>(vec3{ 1, 2, -2 });
+			auto obj_h = make_unique<Box>(vec3{ 1, 20, -2 });
 			obj_h->set_inverse_mass(1);
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "cub_1");
 		}
-
-		//{
-		//	auto obj_h = make_unique<Sphere>(vec3{ 4, 2, -2 });
-		//	obj_h->set_inverse_mass(0.1);
-		//	register_game_object(move(obj_h));
-		//	set_name(game_objects.rbegin()->get(), "sfera_2");
-		//}
-
-		//{
-		//	auto obj_h = make_unique<Box>(vec3{ -4, 2, -2 });
-		//	obj_h->set_inverse_mass(0.1);
-		//	register_game_object(move(obj_h));
-		//	set_name(game_objects.rbegin()->get(), "cub_2");
-		//}
 
 		for (auto& game_object : game_objects) {
 			game_object->init();
@@ -164,12 +143,14 @@ namespace migine {
 			ss << "fps:" << frames_since_printing / delta_time_printing << ";";
 			frames_since_printing = 0;
 			last_printing_time = current_time;
-			ss << " broad contacts:" << bvh.get_contact_count() << ";";
-			ss << " pairs in narrow contact:" << pairs_in_contact << ";";
+			//ss << " broad contacts:" << bvh.get_contact_count() << ";";
+			//ss << " pairs in narrow contact:" << pairs_in_contact << ";";
 			ss << " insertions:" << bvh.insertion_count << ";";
 			//ss << " broad intersection checks:" << bvh.aabb_intersection_operations_count << ";";
 			ss << " time:" << current_time << ";";
 			ss << " frames:" << total_frames << ";";
+			ss << "vpos:" << (*rigid_bodies.rbegin())->get_transform().get_world_position().y << ";";
+			ss << "mpos:" << (*rigid_bodies.rbegin())->get_transform().get_model()[3].y << ";";
 			continous_print_line_reset();
 			continous_print(ss.str());
 		}

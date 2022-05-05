@@ -157,4 +157,17 @@ namespace migine {
 		return make_unique<Sinusoidal_torque_generator>(*this);
 	}
 
+	Constant_force_generator::Constant_force_generator(vec3 force) :
+		force(force) {
+	}
+
+	std::unique_ptr<Force_generator_base> Constant_force_generator::make_deep_copy() {
+		return make_unique<Constant_force_generator>(*this);
+	}
+
+	void Constant_force_generator::update_force(gsl::not_null<Rigid_body*> obj, float delta_time) {
+		obj->add_force(force);
+	}
+
+
 }

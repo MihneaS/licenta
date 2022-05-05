@@ -129,6 +129,16 @@ namespace migine {
 		float miu;
 	};
 
+	class Constant_force_generator : public Force_generator_base {
+	public:
+		Constant_force_generator(glm::vec3 force);
+		Constant_force_generator(const Constant_force_generator&) = default;
+		~Constant_force_generator() override = default;
+		std::unique_ptr<Force_generator_base> make_deep_copy() override;
+		void update_force(gsl::not_null<Rigid_body*> obj, float delta_time) override;
+		glm::vec3 force;
+	};
+
 	//class Scene_base;
 
 	//template<class Obj_t, class Scene_t>

@@ -40,7 +40,7 @@ namespace migine {
 		scale *= relative_scale_change;
 		orientation *= euler_angles_to_quat(delta_rot);
 
-		compute_world_model();
+		internal_update();
 	}
 
 	void Transform::change_state(vec3 new_pos, vec3 new_scale, quat new_rot) {
@@ -88,10 +88,12 @@ namespace migine {
 
 	void Transform::change_position_with_delta(vec3 delta_pos) {
 		world_position += delta_pos;
+		internal_update();
 	}
 
 	void Transform::change_orientation_with_delta(vec3 rotation) {
 		orientation *= euler_angles_to_quat(rotation);
+		internal_update();
 	}
 
 	void Transform::internal_update() {

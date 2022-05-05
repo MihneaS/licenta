@@ -320,9 +320,7 @@ namespace migine {
 
 	void BVH::clean_dirty_nodes() {
 		for (auto& node : dirty_nodes) {
-			auto& collider = node->bounded_object;
-			remove(collider);
-			insert(collider);
+			update(node->bounded_object);
 		}
 		dirty_nodes.clear();
 	}
