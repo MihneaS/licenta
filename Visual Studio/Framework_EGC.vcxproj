@@ -37,9 +37,11 @@
     <ClCompile Include="source\migine\contact_detection\BVH.cpp" />
     <ClCompile Include="source\migine\game_objects\components\Has_mesh.cpp" />
     <ClCompile Include="source\migine\game_objects\components\Has_shader.cpp" />
+    <ClCompile Include="source\migine\game_objects\components\Has_spcon_transform.cpp" />
     <ClCompile Include="source\migine\game_objects\components\Has_transform.cpp" />
     <ClCompile Include="source\migine\contact_detection\Contact.cpp" />
     <ClCompile Include="source\migine\game_objects\components\Has_id.cpp" />
+    <ClCompile Include="source\migine\game_objects\components\Spcon_transform.cpp" />
     <ClCompile Include="source\migine\game_objects\components\Transform.cpp" />
     <ClCompile Include="source\migine\contact_detection\Box_collider.cpp" />
     <ClCompile Include="source\migine\physics\Contact_resolver.cpp" />
@@ -89,9 +91,12 @@
     <ClInclude Include="source\migine\contact_detection\BVH.h" />
     <ClInclude Include="source\migine\define.h" />
     <ClInclude Include="source\migine\game_objects\components\Has_name.h" />
+    <ClInclude Include="source\migine\game_objects\components\Has_spcon_transform.h" />
+    <ClInclude Include="source\migine\game_objects\components\Has_transform_interface.h" />
     <ClInclude Include="source\migine\game_objects\components\Mesh.h" />
     <ClInclude Include="source\migine\game_objects\components\Shader.h" />
     <ClInclude Include="source\migine\game_objects\components\Has_mesh.h" />
+    <ClInclude Include="source\migine\game_objects\components\Spcon_transform.h" />
     <ClInclude Include="source\migine\game_objects\components\Transform.h" />
     <ClInclude Include="source\migine\contact_detection\Box_collider.h" />
     <ClInclude Include="source\migine\contact_detection\Collider_base.h" />

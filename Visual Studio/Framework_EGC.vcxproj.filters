@@ -112,6 +112,8 @@
     <ClCompile Include="source\migine\scenes\Scene_05.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_06.cpp" />
     <ClCompile Include="source\migine\scenes\current_scene.cpp" />
+    <ClCompile Include="source\migine\game_objects\components\Spcon_transform.cpp" />
+    <ClCompile Include="source\migine\game_objects\components\Has_spcon_transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Core\World.h">
@@ -207,6 +209,9 @@
     <ClInclude Include="source\migine\scenes\all_scenes.h" />
     <ClInclude Include="source\migine\scenes\Scene_06.h" />
     <ClInclude Include="source\migine\scenes\current_scene.h" />
+    <ClInclude Include="source\migine\game_objects\components\Has_transform_interface.h" />
+    <ClInclude Include="source\migine\game_objects\components\Spcon_transform.h" />
+    <ClInclude Include="source\migine\game_objects\components\Has_spcon_transform.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Source\Laboratoare\Laborator8\Shaders\FragmentShader.glsl">

@@ -5,10 +5,11 @@
 #include <migine/constants.h>
 
 namespace migine {
+	class Has_transform;
 	class Transform {
+		friend class Has_transform;
 	public:
 		explicit Transform(glm::vec3 position = k_vec3_zero, glm::vec3 scale = {1, 1, 1}, glm::quat orientation = glm::quat());
-		Transform(const Transform& transform) = default;
 
 		glm::vec3 get_world_position() const;
 		glm::vec3 get_scale() const;
@@ -18,11 +19,12 @@ namespace migine {
 		void change_position_with_delta(glm::vec3 delta_pos);
 		void change_orientation_with_delta(glm::vec3 rotation);
 		void change_state(glm::vec3 new_pos = k_vec3_zero, glm::vec3 new_scale = {1, 1, 1}, glm::quat new_rot = glm::quat());
-		void internal_update();
+		virtual void internal_update();
 		glm::vec3 transform_to_local(glm::vec3 point) const;
 		template <Axis axis> glm::vec3 get_axis() const;
 
 	private:
+		Transform(const Transform& transform) = default; // can cause slicing if it reaciesvs a child of Transform
 		void compute_world_model();
 
 		glm::mat4 world_model = glm::mat4(1.0f);

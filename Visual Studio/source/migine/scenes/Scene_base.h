@@ -24,10 +24,12 @@ namespace EngineComponents {
 class InputController;
 
 namespace migine {
+	class Spcon_transform;
 
 	class Scene_base : public World
 	{
 		friend class SceneInput;
+		friend class Spcon_transform;
 	public:
 		Scene_base();
 		~Scene_base();// TODO elibereaza resursele

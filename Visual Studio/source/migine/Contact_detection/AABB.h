@@ -21,6 +21,7 @@ namespace migine {
 		AABB(gsl::not_null<const Collider_base*> collider);
 		AABB(const Mesh& mesh, const Transform& transform);
 		AABB(AABB child0, AABB child1);
+		AABB(const AABB& other) = default;
 
 		float get_volume() const;
 		glm::vec3 get_center() const;

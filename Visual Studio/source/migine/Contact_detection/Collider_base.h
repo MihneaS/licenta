@@ -1,6 +1,6 @@
 #pragma once
 
-#include <migine/game_objects/components/Has_transform.h>
+#include <migine/game_objects/components/Has_spcon_transform.h>
 #include <migine/game_objects/components/Has_name.h>
 #include <migine/game_objects/components/Has_id.h>
 #include <migine/contact_detection/Contact.h>
@@ -16,7 +16,7 @@ namespace migine {
 	class Box_collider;
 	class Sphere_collider;
 
-	class Collider_base : virtual public Has_transform, virtual public Has_id, public Rigid_body 
+	class Collider_base : virtual public Has_spcon_transform, virtual public Has_id, public Rigid_body 
 #ifdef DEBUGGING 
 		, virtual public Has_name
 #endif // DEBUGGING

@@ -14,10 +14,12 @@
 
 namespace migine {
 	class Collider_base;
+	class Spcon_transform;
 
 	class BVH {
 		friend class Collider_base; // TODO e necesar?
 		friend class AABB;
+		friend class Spcon_transform;
 
 		class Node {
 			friend class Node_less;
