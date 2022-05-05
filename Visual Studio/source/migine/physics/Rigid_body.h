@@ -1,6 +1,6 @@
 #pragma once
 
-#include <migine/game_objects/components/Has_transform.h>
+#include <migine/game_objects/components/Has_spcon_transform.h>
 #include <migine/physics/force_generators.h>
 
 #include <Core/Engine.h>
@@ -12,7 +12,7 @@
 namespace migine {
 	//class Force_generator_base;
 
-	class Rigid_body : virtual public Has_transform {
+	class Rigid_body : virtual public Has_spcon_transform {
 	public:
 		bool integrate(float delta_time);
 		float get_mass() const;
