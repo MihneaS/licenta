@@ -5,8 +5,8 @@
 #include <migine/contact_detection/BVH.h>
 #include <migine/Camera.h>
 #include <migine/game_objects/components/Transform.h>
-#include <migine/game_objects/physics/Rigid_body.h>
-#include <migine/game_objects/physics/force_generators.h>
+#include <migine/physics/Rigid_body.h>
+#include <migine/physics/force_generators.h>
 
 #include <Core/World.h>
 

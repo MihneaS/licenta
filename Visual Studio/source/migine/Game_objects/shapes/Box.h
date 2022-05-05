@@ -1,9 +1,9 @@
 #pragma once
 
 #include <migine/game_objects/Game_object.h>
-#include <migine/game_objects/contact_detection/Box_collider.h>
+#include <migine/contact_detection/Box_collider.h>
 #include <migine/game_objects/rendering/Simple_renderer.h>
-#include <migine/game_objects/physics/Rigid_body.h>
+#include <migine/physics/Rigid_body.h>
 
 //#include <migine/game_objects/physics/get_initial_force_generators.h>
 

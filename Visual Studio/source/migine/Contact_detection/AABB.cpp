@@ -1,6 +1,6 @@
 #include "AABB.h"
 
-#include <migine/game_objects/contact_detection/Collider_base.h>
+#include <migine/contact_detection/Collider_base.h>
 #include <migine/game_objects/components/Transform.h>
 #include <migine/Resource_manager.h>
 

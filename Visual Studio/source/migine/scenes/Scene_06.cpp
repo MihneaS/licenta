@@ -15,7 +15,7 @@
 #include <migine/utils.h>
 #include <migine/Resource_manager.h>
 #include <migine/define.h>
-#include <migine/game_objects/contact_detection/Contact_resolver.h>
+#include <migine/physics/Contact_resolver.h>
 
 #include <gsl/gsl>
 

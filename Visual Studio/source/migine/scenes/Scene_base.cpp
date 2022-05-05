@@ -16,8 +16,8 @@
 #include <migine/game_objects/components/Transform.h>
 
 #include <migine/Resource_manager.h>
-#include <migine/game_objects/contact_detection/Collider_base.h>
-#include <migine/game_objects/contact_detection/Contact_resolver.h>
+#include <migine/contact_detection/Collider_base.h>
+#include <migine/physics/Contact_resolver.h>
 
 using std::vector;
 using std::unique_ptr;

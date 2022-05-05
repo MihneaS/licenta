@@ -1,5 +1,5 @@
 #include "force_generators.h"
-#include <migine/game_objects/physics/Rigid_body.h>
+#include <migine/physics/Rigid_body.h>
 
 #include <cmath>
 

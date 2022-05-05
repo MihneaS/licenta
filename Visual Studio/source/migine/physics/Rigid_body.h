@@ -1,7 +1,7 @@
 #pragma once
 
 #include <migine/game_objects/components/Has_transform.h>
-#include <migine/game_objects/physics/force_generators.h>
+#include <migine/physics/force_generators.h>
 
 #include <Core/Engine.h>
 
