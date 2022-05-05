@@ -8,13 +8,18 @@
 
 #ifdef DEBUGGING
 #include <migine/game_objects/rendering/Wireframe_renderer.h>
+#include <migine/game_objects/components/Has_transform.h>
 #endif
 
 namespace migine {
 	class Collider_base;
 	class Transform;
 
-	class AABB {
+	class AABB 
+#ifdef DEBUGGING
+		: public virtual Wireframe_renderer, public virtual Has_transform
+#endif // DEBBUGING
+	{
 	public:
 		AABB(std::tuple<glm::vec3, glm::vec3> min_pos_max_pos);
 		AABB(glm::vec3 min_pos, glm::vec3 max_pos);
@@ -31,15 +36,10 @@ namespace migine {
 		bool contains(glm::vec3 point) const;
 
 #ifdef DEBUGGING
-		void render(const Camera& camera);
-#endif
-
+		void render(const Camera& camera) override;
+#endif // DEBUGGING
 	private:
 		glm::vec3 min_pos;
 		glm::vec3 max_pos;
-
-#ifdef DEBUGGING
-		Wireframe_renderer renderer;
-#endif
 	};
 }

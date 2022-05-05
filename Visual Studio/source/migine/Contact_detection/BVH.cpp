@@ -136,7 +136,7 @@ namespace migine {
 
 	void BVH::insert(Node* root, not_null<Collider_base*> collider, AABB bounding_volume) {
 		unique_ptr<Node> new_leaf_node = make_unique<Node>(collider, bounding_volume, nullptr);
-		collider->bvh_node = new_leaf_node.get();
+		collider->transform.bvh_node = new_leaf_node.get();
 		if (!bvh_root) {
 			bvh_root = move(new_leaf_node);
 		} else {
@@ -180,8 +180,8 @@ namespace migine {
 	}
 
 	void BVH::remove(not_null<Collider_base*> collider) {
-		remove_leaf(collider->bvh_node);
-		collider->bvh_node = nullptr;
+		remove_leaf(collider->transform.bvh_node);
+		collider->transform.bvh_node = nullptr;
 		erase_from_all_contacts(collider);
 	}
 

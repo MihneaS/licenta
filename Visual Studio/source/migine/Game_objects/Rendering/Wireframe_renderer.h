@@ -13,5 +13,8 @@ namespace migine {
 
 		glm::vec3 color;
 		float line_width;
+
+	protected:
+		Wireframe_renderer();
 	};
 }

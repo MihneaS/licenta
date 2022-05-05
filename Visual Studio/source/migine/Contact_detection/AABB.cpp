@@ -24,11 +24,10 @@ namespace migine {
 	}
 
 	AABB::AABB(vec3 min_pos, vec3 max_pos) :
-		min_pos(min_pos), max_pos(max_pos)
 #ifdef DEBUGGING
-		, renderer(get_shader<Shader_id::color>(), get_mesh<Mesh_id::box_wireframe>())
+		Has_shader(get_shader<Shader_id::color>()), Has_mesh(get_mesh<Mesh_id::box_wireframe>()),
 #endif
-	{
+		min_pos(min_pos), max_pos(max_pos) {
 		assert(min_pos.x <= max_pos.x, "AABB constructor: given min X is greater then given max X");
 		assert(min_pos.y <= max_pos.y, "AABB constructor: given min Y is greater then given max Y");
 		assert(min_pos.z <= max_pos.z, "AABB constructor: given min Z is greater then given max Z");
@@ -41,7 +40,7 @@ namespace migine {
 
 	AABB::AABB(const Mesh& mesh, const Transform& transform)
 #ifdef DEBUGGING
-		: renderer(get_shader<Shader_id::color>(), get_mesh<Mesh_id::box_wireframe>())
+		: Has_shader(get_shader<Shader_id::color>()), Has_mesh(get_mesh<Mesh_id::box_wireframe>())
 #endif
 	{
 		vector<vec4> points;
@@ -62,7 +61,7 @@ namespace migine {
 
 	AABB::AABB(AABB child0, AABB child1)
 #ifdef DEBUGGING
-		: renderer(get_shader<Shader_id::color>(), get_mesh<Mesh_id::box_wireframe>())
+		: Has_shader(get_shader<Shader_id::color>()), Has_mesh(get_mesh<Mesh_id::box_wireframe>())
 #endif
 	{
 		resize(child0, child1);
@@ -110,10 +109,10 @@ namespace migine {
 	void AABB::render(const Camera& camera) {
 		vec3 pos = get_center();
 		vec3 scale = max_pos - min_pos;
-		renderer.transform.change_state(pos, scale, quat());
+		transform.change_state(pos, scale, quat());
 		//transform.SetWorldPosition((aabb->minPos + aabb->maxPos) / 2.0f);
 		//transform.SetScale(aabb->maxPos - aabb->minPos);
-		renderer.render(camera);
+		Wireframe_renderer::render(camera);
 	}
 #endif
 }

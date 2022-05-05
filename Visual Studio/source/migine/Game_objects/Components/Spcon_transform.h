@@ -4,7 +4,9 @@
 #include <migine/contact_detection/BVH.h>
 
 namespace migine {
+	class BVH;
 	class Spcon_transform : public Transform {
+		friend class BVH;
 	public:
 		explicit Spcon_transform(glm::vec3 position = k_vec3_zero, glm::vec3 scale = { 1, 1, 1 }, glm::quat orientation = glm::quat());
 		void internal_update() override;

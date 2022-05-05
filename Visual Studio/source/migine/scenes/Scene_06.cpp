@@ -117,6 +117,9 @@ namespace migine {
 			}
 		}
 
+		// repair bvh
+		//bvh.clean_dirty_nodes();
+
 		// narrow worst_collision phase
 		int pairs_in_contact = 0;
 		vector<unique_ptr<Contact>> contacts;
