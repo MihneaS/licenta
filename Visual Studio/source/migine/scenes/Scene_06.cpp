@@ -61,10 +61,31 @@ namespace migine {
 		}
 
 		{
-			auto obj_h = make_unique<Box>(vec3{ 1, 20, -2 });
+			auto obj_h = make_unique<Box>(vec3{ -4, 20, -2 });
 			obj_h->set_inverse_mass(1);
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "cub_1");
+		} 
+		
+		{
+			auto obj_h = make_unique<Box>(vec3{ -1, 20, -2 });
+			obj_h->set_inverse_mass(1);
+			register_game_object(move(obj_h));
+			set_name(game_objects.rbegin()->get(), "cub_2");
+		}
+
+		{
+			auto obj_h = make_unique<Box>(vec3{ 1, 20, -2 });
+			obj_h->set_inverse_mass(1);
+			register_game_object(move(obj_h));
+			set_name(game_objects.rbegin()->get(), "cub_3");
+		}
+
+		{
+			auto obj_h = make_unique<Box>(vec3{ 4, 20, -2 });
+			obj_h->set_inverse_mass(1);
+			register_game_object(move(obj_h));
+			set_name(game_objects.rbegin()->get(), "cub_4");
 		}
 
 		for (auto& game_object : game_objects) {

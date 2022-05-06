@@ -317,13 +317,13 @@ namespace migine {
 		vec3 relative_point = transform.transform_to_local(point);
 		vec3 normal;
 
-		float min_depth = half_side_lengths.x - abs(relative_point.x);
+		float min_depth = abs(transform.get_scale().x) * (half_side_lengths.x - abs(relative_point.x));
 		if (min_depth < 0) {
 			return ret;
 		}
 		normal = normalize(transform.get_axis<Axis::ox>() * ((relative_point.x < 0) ? -1.0f : 1.0f));
 		
-		float depth = half_side_lengths.y - abs(relative_point.y);
+		float depth = abs(transform.get_scale().y) * (half_side_lengths.y - abs(relative_point.y));
 		if (depth < 0) {
 			return ret;
 		} else if (depth < min_depth) {
@@ -331,7 +331,7 @@ namespace migine {
 			normal = normalize(transform.get_axis<Axis::oy>() * ((relative_point.y < 0) ? -1.0f : 1.0f));
 		}
 
-		depth = half_side_lengths.z - abs(relative_point.z);
+		depth = abs(transform.get_scale().z) * (half_side_lengths.z - abs(relative_point.z));
 		if (depth < 0) {
 			return ret;
 		} else if (depth < min_depth) {
