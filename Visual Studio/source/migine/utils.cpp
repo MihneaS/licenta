@@ -14,6 +14,7 @@ using glm::mat3;
 using glm::mat4;
 using glm::length2;
 using glm::angleAxis;
+using glm::dot;
 
 using std::stringstream;
 using std::string;
@@ -107,6 +108,14 @@ namespace migine {
 #ifdef DEBUGGING
 		obj->name = name;
 #endif // DEBUGGING
+	}
+
+	// credits to https://gamedev.stackexchange.com/questions/72528/how-can-i-project-a-3d-point-onto-a-3d-line
+	vec3 project_point_onto_axis(vec3 p, vec3 seg_p0, vec3 seg_p1) {
+		vec3 seg = seg_p1 - seg_p0;
+		// fie seg_p0 = p0, seg_p1 = p1, q = p
+		vec3 p0q = p - seg_p0;
+		return seg_p0 + dot(p0q, seg) / dot(seg, seg) * seg;
 	}
 
 	void _transform_inertia_tensor(mat3& iitWorld, const mat3& iitBody, const mat4& rotmat) {

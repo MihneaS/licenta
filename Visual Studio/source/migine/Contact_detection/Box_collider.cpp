@@ -2,6 +2,7 @@
 #include "Sphere_collider.h"
 #include <migine/Resource_manager.h>
 #include <migine/make_array.h>
+#include <migine/utils.h>
 
 #include <algorithm>
 #include <vector>
@@ -181,6 +182,7 @@ namespace migine {
 		return {min_pos, max_pos};
 	}
 
+	// inspired by get_closest_points_between_segemnts from https://github.com/godotengine/godot/blob/master/core/math/geometry_3d.h
 	tuple<vec3, vec3, bool> Box_collider::get_closest_points_between_segments(vec3 seg0_p0, vec3 seg0_p1, vec3 seg1_p0, vec3 seg1_p1) const {
 		// Do the function 'd' as defined by pb. I think it's a dot product of some sort.
 //#define d_of(m, n, o, p) ((m.x - n.x) * (o.x - p.x) + (m.y - n.y) * (o.y - p.y) + (m.z - n.z) * (o.z - p.z))
@@ -191,29 +193,70 @@ namespace migine {
 		//float mub = (d_of(seg0_p0, seg1_p0, seg1_p1, seg1_p0) + mua * d_of(seg1_p1, seg1_p0, seg0_p1, seg0_p0)) / d_of(seg1_p1, seg1_p0, seg1_p1, seg1_p0);
 #undef d_of
 
-		float mua = (dot(seg0_p0-seg1_p0, seg1_p1-seg1_p0)*dot(seg1_p1-seg1_p0, seg0_p1-seg0_p0) - dot(seg0_p0-seg1_p0, seg0_p1-seg0_p0)*dot(seg1_p1-seg1_p0, seg1_p1-seg1_p0)) / 
-			(dot(seg0_p1-seg0_p0, seg0_p1-seg0_p0)*dot(seg1_p1-seg1_p0, seg1_p1-seg1_p0) - dot(seg1_p1-seg1_p0, seg0_p1-seg0_p0) * dot(seg1_p1-seg1_p0, seg0_p1-seg0_p0));
-		float mub = (dot(seg0_p0-seg1_p0, seg1_p1-seg1_p0) + mua*dot(seg1_p1-seg1_p0, seg0_p1-seg0_p0)) / dot(seg1_p1-seg1_p0, seg1_p1-seg1_p0);
+		//float mua = (dot(seg0_p0-seg1_p0, seg1_p1-seg1_p0)*dot(seg1_p1-seg1_p0, seg0_p1-seg0_p0) - dot(seg0_p0-seg1_p0, seg0_p1-seg0_p0)*dot(seg1_p1-seg1_p0, seg1_p1-seg1_p0)) / 
+			//(dot(seg0_p1-seg0_p0, seg0_p1-seg0_p0)*dot(seg1_p1-seg1_p0, seg1_p1-seg1_p0) - dot(seg1_p1-seg1_p0, seg0_p1-seg0_p0) * dot(seg1_p1-seg1_p0, seg0_p1-seg0_p0));
+		//float mub = (dot(seg0_p0-seg1_p0, seg1_p1-seg1_p0) + mua*dot(seg1_p1-seg1_p0, seg0_p1-seg0_p0)) / dot(seg1_p1-seg1_p0, seg1_p1-seg1_p0);
 
-		// Clip the value between [0..1] constraining the solution to lie on the original curves.
-		bool clipped = false;
-		if (mua < 0) {
-			mua = 0;
-			clipped = true;
+		// fie seg0_p0 = p0, seg0_p1 = p1; seg1_p0 = q0; seg1_p1 = q1;
+		vec3 q0p0 = seg0_p0 - seg1_p0;
+		vec3 seg1 = seg1_p1 - seg1_p0; // q0q1
+		vec3 seg0 = seg0_p1 - seg0_p0; // p0p1
+
+		//								seg1 || seg0 => seg0 = a*seg1
+
+		float d1 = dot(q0p0, seg1); //	= d1
+		float d2 = dot(seg1, seg0); //	= a d4
+		float d1d2 = d1 * d2; //		= a d1 d3
+		float d3 = dot(q0p0, seg0); //	= a d1
+		float d4 = dot(seg1, seg1); //	= d4
+		float d3d4 = d3 * d4; //		= a d1 d4
+		float dif1 = d1d2 - d3d4; //	= 0
+
+		// if axis are not paralel, continue the initial algorithm
+		if (dif1 != 0) {
+			float d5 = dot(seg0, seg0); //	= a a d4 
+			// d6 = d4
+			float d5d6 = d5 * d4; //		= a a d4 d4
+			// d7 = d2
+			// d8 = d2
+			float d7d8 = d2 * d2; //		= a a d4 d4
+			float dif2 = d5d6 - d7d8; //	= 0
+			float mua = dif1 / dif2;
+			// d9 = d1
+			// d10 = d2
+			// d11 = d4
+			float add1 = d1 + mua * d2;
+			float mub = add1 / d4;
+			float mua2 = (dot(seg0_p0 - seg1_p0, seg1_p1 - seg1_p0) * dot(seg1_p1 - seg1_p0, seg0_p1 - seg0_p0) - dot(seg0_p0 - seg1_p0, seg0_p1 - seg0_p0) * dot(seg1_p1 - seg1_p0, seg1_p1 - seg1_p0)) /
+				(dot(seg0_p1 - seg0_p0, seg0_p1 - seg0_p0) * dot(seg1_p1 - seg1_p0, seg1_p1 - seg1_p0) - dot(seg1_p1 - seg1_p0, seg0_p1 - seg0_p0) * dot(seg1_p1 - seg1_p0, seg0_p1 - seg0_p0));
+			float mub2 = (dot(seg0_p0 - seg1_p0, seg1_p1 - seg1_p0) + mua * dot(seg1_p1 - seg1_p0, seg0_p1 - seg0_p0)) / dot(seg1_p1 - seg1_p0, seg1_p1 - seg1_p0);
+
+			// Clip the value between [0..1] constraining the solution to lie on the original curves.
+			bool clipped = false;
+			if (mua < 0) {
+				mua = 0;
+				clipped = true;
+			}
+			if (mub < 0) {
+				mub = 0;
+				clipped = true;
+			}
+			if (mua > 1) {
+				mua = 1;
+				clipped = true;
+			}
+			if (mub > 1) {
+				mub = 1;
+				clipped = true;
+			}
+			return { lerp(seg0_p0, seg0_p1, mua), lerp(seg1_p0, seg1_p1, mub), clipped };
+		} else { // else return projection of mid_point
+			vec3 mid_point = (seg0_p0 + seg0_p1 + seg1_p0 + seg1_p1 ) / 4.0f;
+			vec3 res_p0 = project_point_onto_axis(mid_point, seg0_p0, seg0_p1);
+			vec3 res_p1 = project_point_onto_axis(mid_point, seg1_p0, seg1_p1);
+			bool clipped = res_p0 != mid_point || res_p1 != mid_point;
+			return {res_p0, res_p1, clipped};
 		}
-		if (mub < 0) {
-			mub = 0;
-			clipped = true;
-		}
-		if (mua > 1) {
-			mua = 1;
-			clipped = true;
-		}
-		if (mub > 1) {
-			mub = 1;
-			clipped = true;
-		}
-		return {lerp(seg0_p0, seg0_p1, mua), lerp(seg1_p0, seg1_p1, mub), clipped};
 	}
 
 	Box_collider::Box_collider() : Has_mesh(get_mesh<Mesh_id::box>()) { // TODO nu e nevoie sa retii in fiecare obiect, doar intoarce din cache dupa ce ai construit

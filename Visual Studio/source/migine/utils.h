@@ -23,6 +23,7 @@ namespace migine {
     glm::vec3 lerp(glm::vec3 v0, glm::vec3 v1, float t);
     glm::vec3 mid_point(glm::vec3 v0, glm::vec3 v1);
     void set_name(Game_object* obj, std::string name);
+    glm::vec3 project_point_onto_axis(glm::vec3 p, glm::vec3 seg_p0, glm::vec3 seg_p1);
 
     // credits for next 3 functions https://github.com/opengl-tutorials/ogl/blob/master/common/quaternion_utils.hpp and quaternion_utils.cpp in the same folder
     glm::quat rotation_between_vectors(glm::vec3 start, glm::vec3 dest);

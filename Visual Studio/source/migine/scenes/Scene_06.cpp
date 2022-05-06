@@ -50,7 +50,7 @@ namespace migine {
 
 		{ //defualt forces
 			default_fs_gen.clear();
-			default_fs_gen.push_back(make_unique<Sinusoidal_torque_generator>(vec3{ 1,1,0 }));
+			//default_fs_gen.push_back(make_unique<Sinusoidal_torque_generator>(vec3{ 1,1,0 }));
 			//default_fs_gen.push_back(make_unique<Gravity_generator>());
 			default_fs_gen.push_back(make_unique<Constant_force_generator>(vec3{0,-20,0}));
 		}
