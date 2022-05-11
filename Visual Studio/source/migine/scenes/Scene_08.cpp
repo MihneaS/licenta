@@ -76,8 +76,8 @@ namespace migine {
 		}
 		{ // make test point
 
-			register_game_object(move(make_unique<Debug_point>(vec3{0,1,0})));
-			set_name(game_objects.rbegin()->get(), "test_point_1");
+			//register_game_object(move(make_unique<Debug_point>(vec3{0,1,0})));
+			//set_name(game_objects.rbegin()->get(), "test_point_1");
 		}
 
 		for (auto& game_object : game_objects) {
@@ -148,7 +148,10 @@ namespace migine {
 			contact_resolver.resolve_penetrations(contacts);
 
 		}
-		for (auto& [obj0, obj1] : bvh.get_contacts()) {
+		//for (auto& [obj0, obj1] : bvh.get_contacts()) {
+		for (auto& contact : contacts) {
+			auto& obj0 = contact->objs[0];
+			auto& obj1 = contact->objs[1];
 			obj0->set_inverse_mass(0);
 			obj1->set_inverse_mass(0);
 			obj0->stop_motion();

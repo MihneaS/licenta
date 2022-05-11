@@ -3,6 +3,8 @@
 #include <migine/Resource_manager.h>
 #include <migine/make_array.h>
 #include <migine/utils.h>
+#include <migine/scenes/current_scene.h>
+#include <migine/game_objects/shapes/Debug_point.h>
 
 #include <algorithm>
 #include <vector>
@@ -94,7 +96,6 @@ namespace migine {
 			vec3 saved_pt_on_other;
 			bool found_new_contact = false;
 			for (auto& [other_idx1, other_idx2] : other.get_edges_indexes_in_corners()) {
-				found_new_contact = false;
 				auto [pt_on_this_edge, pt_on_other_edge, clipped] = get_closest_points_between_segments(this_corners[this_idx1], this_corners[this_idx2], other_corners[other_idx1], other_corners[other_idx2]);
 				static_assert(std::is_same<decltype(clipped), bool>());
 				if (clipped) {
@@ -110,8 +111,10 @@ namespace migine {
 				if (d2_tc_to_oe > d2_tc_to_te) {
 					continue;
 				}
-				assert(other.check_collision_point(pt_on_this_edge, *this));
-				assert(this->check_collision_point(pt_on_other_edge, other));
+				//get_current_scene().register_game_object(move(make_unique<Debug_point>(pt_on_this_edge)));
+				//get_current_scene().register_game_object(move(make_unique<Debug_point>(pt_on_other_edge)));
+				//assert(other.check_collision_point(pt_on_this_edge, *this));
+				//assert(this->check_collision_point(pt_on_other_edge, other));
 				found_new_contact = true;
 				float pen2 = distance2(pt_on_this_edge, pt_on_other_edge);
 				if (pen2 < min_pen2) {
@@ -125,7 +128,7 @@ namespace migine {
 						this,
 						&other, 
 						mid_point(saved_pt_on_other, saved_pt_on_this), 
-						saved_pt_on_other - saved_pt_on_this, 
+						normalize(saved_pt_on_this - saved_pt_on_other), 
 						sqrtf(min_pen2)));
 #ifdef DEBUGGING
 				(*ret.rbegin())->type = "box-box edge-edge";
