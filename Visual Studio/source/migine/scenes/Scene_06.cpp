@@ -56,13 +56,16 @@ namespace migine {
 		}
 
 		{ // ground
-			register_game_object(move(make_unique<Box>(vec3{ 0, -10, 0 }, vec3{ 200, 20, 200 }, euler_angles_deg_to_quat({ 0,0,0 }))));
+			auto obj_h = make_unique<Box>(vec3{ 0, -10, 0 }, vec3{ 200, 20, 200 }, euler_angles_deg_to_quat({ 0,0,0 }));
+			pamant = obj_h.get();
+			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "pamant");
 		}
 
 		{
 			auto obj_h = make_unique<Box>(vec3{ -4, 20, -2 });
 			obj_h->set_inverse_mass(1);
+			cub1 = obj_h.get();
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "cub_1");
 		} 
@@ -70,20 +73,23 @@ namespace migine {
 		{
 			auto obj_h = make_unique<Box>(vec3{ -1, 20, -2 });
 			obj_h->set_inverse_mass(1);
+			cub2 = obj_h.get();
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "cub_2");
 		}
 
 		{
-			auto obj_h = make_unique<Box>(vec3{ 1, 20, -2 });
+			auto obj_h = make_unique<Box>(vec3{ 1, 20, -2 }, vec3{1}, euler_angles_deg_to_quat(vec3{0, 45, 45}));
 			obj_h->set_inverse_mass(1);
+			cub3 = obj_h.get();
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "cub_3");
 		}
 
 		{
-			auto obj_h = make_unique<Box>(vec3{ 4, 20, -2 });
+			auto obj_h = make_unique<Box>(vec3{ 4, 20, -2 }, vec3{ 1 }, euler_angles_deg_to_quat(vec3{ 0, 45, 45 }));
 			obj_h->set_inverse_mass(1);
+			cub4 = obj_h.get();
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "cub_4");
 		}
@@ -125,25 +131,42 @@ namespace migine {
 				contacts.push_back(move(new_collision));
 			}
 		}
+		assert(pamant->get_inverse_mass() == 0);
 
 		// resolve contacts
 		if (!contacts.empty()) {
+
+			vector<unique_ptr<Contact>> linearly;
+			vector<unique_ptr<Contact>> normaly;
+
+			for (auto& contact : contacts) {
+				if (contact->objs[0]->id == cub1->id || contact->objs[1]->id == cub1->id ||
+					contact->objs[0]->id == cub3->id || contact->objs[1]->id == cub3->id) {
+					linearly.push_back(move(contact));
+				} else {
+					normaly.push_back(move(contact));
+				}
+			}
+
 			// prepare resolver
-			Contact_resolver contact_resolver(contacts, caped_delta_time); //DEMO1
+			Contact_resolver contact_resolver_l(linearly, caped_delta_time); //DEMO1
+			contact_resolver_l.resolve_penetrations_linearly_01(linearly);
+			Contact_resolver contact_resolver_n(normaly, caped_delta_time);
+			contact_resolver_n.resolve_penetrations_linearly(normaly);
+			contact_resolver_n.resolve_penetrations(normaly);
 
 			// solve contacts
 			//contact_resolver.resolve_contacts(contacts); // DEMO1
 			//contact_resolver.resolve_penetrations(contacts);
-			contact_resolver.resolve_penetrations_linearly(contacts);
 
 		}
 		for (auto& [obj0, obj1] : bvh.get_contacts()) {
 			obj0->set_inverse_mass(0);
-			obj1->set_inverse_mass(1);
+			obj1->set_inverse_mass(0);
 			obj0->stop_motion();
 			obj1->stop_motion();
-			force_registry.remove(obj0); // fara aceasta linie continua sa se miste
-			force_registry.remove(obj1); // fara aceasta linie continua sa se miste
+			force_registry.remove(obj0);
+			force_registry.remove(obj1);
 		}
 
 		// render
@@ -161,21 +184,22 @@ namespace migine {
 		float current_time = get_elapsed_time();
 		if (float delta_time_printing = current_time - last_printing_time; delta_time_printing > 0.66) {
 			stringstream ss;
-			ss << "fps:" << frames_since_printing / delta_time_printing << ";";
+			// ss << "fps:" << frames_since_printing / delta_time_printing << ";";
 			frames_since_printing = 0;
 			last_printing_time = current_time;
 			//ss << " broad contacts:" << bvh.get_contact_count() << ";";
 			//ss << " pairs in narrow contact:" << pairs_in_contact << ";";
-			ss << " insertions:" << bvh.insertion_count << ";";
+			// ss << " insertions:" << bvh.insertion_count << ";";
 			//ss << " broad intersection checks:" << bvh.aabb_intersection_operations_count << ";";
-			ss << " time:" << current_time << ";";
-			ss << " frames:" << total_frames << ";";
-			ss << "vpos:" << (*rigid_bodies.rbegin())->get_transform().get_world_position().y << ";";
-			ss << "mpos:" << (*rigid_bodies.rbegin())->get_transform().get_model()[3].y << ";";
+			// ss << " time:" << current_time << ";";
+			// ss << " frames:" << total_frames << ";";
+			// ss << "1" << cub1->transform.get_orientation() << ";";
+			// ss << "2" << cub2->transform.get_orientation() << ";";
+			ss << "3" << cub3->transform.get_orientation() << ";";
+			ss << "4" << cub4->transform.get_orientation() << ";";
 			continous_print_line_reset();
 			continous_print(ss.str());
 		}
-		
 	}
 
 	void Scene_06::frame_end() {

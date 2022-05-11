@@ -1,4 +1,4 @@
-#include "Simple_renderer.h"
+#include "Color_renderer.h"
 #include <Migine/Resource_manager.h>
 #include <migine/game_objects/components/Transform.h>
 
@@ -7,11 +7,11 @@ using glm::vec3;
 using glm::quat;
 
 namespace migine {
-	Simple_renderer::Simple_renderer(const Shader& shader, const Mesh& mesh, vec3 position, vec3 scale, quat rotation) :
-		Has_shader(shader), Has_mesh(mesh) {
+	Color_renderer::Color_renderer(const Shader& shader, const Mesh& mesh, vec3 position, vec3 scale, quat rotation, vec3 color) :
+		Has_shader(shader), Has_mesh(mesh), color(color) {
 	}
 
-	void Simple_renderer::render(const Camera& camera) {
+	void Color_renderer::render(const Camera& camera) {
 		if (!shader.GetProgramID()) {
 			return;
 		}
@@ -22,11 +22,12 @@ namespace migine {
 		glUniformMatrix4fv(shader.loc_view_matrix, 1, GL_FALSE, value_ptr(camera.GetViewMatrix()));
 		glUniformMatrix4fv(shader.loc_projection_matrix, 1, GL_FALSE, value_ptr(camera.GetProjectionMatrix()));
 		glUniformMatrix4fv(shader.loc_model_matrix, 1, GL_FALSE, value_ptr(get_transform().get_model()));
+		glUniform3fv(shader.GetUniformLocation("color"), 1, glm::value_ptr(color));
 
 		mesh.Render();
 	}
 
-	Simple_renderer::Simple_renderer() :
-		Simple_renderer(get_shader<Shader_id::color>(), get_mesh<Mesh_id::box>()) {
+	Color_renderer::Color_renderer() :
+		Color_renderer(get_shader<Shader_id::color>(), get_mesh<Mesh_id::box>()) {
 	}
 }

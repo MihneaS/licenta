@@ -44,6 +44,8 @@
     <ClCompile Include="source\migine\game_objects\components\Spcon_transform.cpp" />
     <ClCompile Include="source\migine\game_objects\components\Transform.cpp" />
     <ClCompile Include="source\migine\contact_detection\Box_collider.cpp" />
+    <ClCompile Include="source\migine\game_objects\rendering\Color_renderer.cpp" />
+    <ClCompile Include="source\migine\game_objects\shapes\Debug_point.cpp" />
     <ClCompile Include="source\migine\physics\Contact_resolver.cpp" />
     <ClCompile Include="source\migine\contact_detection\std_hash_extensions.cpp" />
     <ClCompile Include="source\migine\physics\force_generators.cpp" />
@@ -62,6 +64,8 @@
     <ClCompile Include="source\migine\scenes\Scene_04.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_05.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_06.cpp" />
+    <ClCompile Include="source\migine\scenes\Scene_07.cpp" />
+    <ClCompile Include="source\migine\scenes\Scene_08.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_input.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_base.cpp" />
     <ClCompile Include="source\migine\utils.cpp" />
@@ -101,6 +105,8 @@
     <ClInclude Include="source\migine\contact_detection\Box_collider.h" />
     <ClInclude Include="source\migine\contact_detection\Collider_base.h" />
     <ClInclude Include="source\migine\contact_detection\Contact.h" />
+    <ClInclude Include="source\migine\game_objects\rendering\Color_renderer.h" />
+    <ClInclude Include="source\migine\game_objects\shapes\Debug_point.h" />
     <ClInclude Include="source\migine\physics\Contact_resolver.h" />
     <ClInclude Include="source\migine\physics\force_generators.h" />
     <ClInclude Include="source\migine\physics\Rigid_body.h" />
@@ -124,6 +130,8 @@
     <ClInclude Include="source\migine\scenes\Scene_04.h" />
     <ClInclude Include="source\migine\scenes\Scene_05.h" />
     <ClInclude Include="source\migine\scenes\Scene_06.h" />
+    <ClInclude Include="source\migine\scenes\Scene_07.h" />
+    <ClInclude Include="source\migine\scenes\Scene_08.h" />
     <ClInclude Include="source\migine\scenes\Scene_input.h" />
     <ClInclude Include="source\migine\scenes\Scene_base.h" />
     <ClInclude Include="source\migine\utils.h" />

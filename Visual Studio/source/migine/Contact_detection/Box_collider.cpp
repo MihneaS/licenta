@@ -100,16 +100,18 @@ namespace migine {
 				if (clipped) {
 					continue;
 				}
-				float dist2_to_contact_other = distance2(other_center, pt_on_this_edge);
-				float dist2_to_edge_other = distance2(other_center, pt_on_other_edge);
-				if (dist2_to_contact_other > dist2_to_edge_other) {
+				float d2_oc_to_te = distance2(other_center, pt_on_this_edge);
+				float d2_oc_to_oe = distance2(other_center, pt_on_other_edge);
+				if (d2_oc_to_te > d2_oc_to_oe) {
 					continue;
 				}
-				float dist2_to_contact_this = distance2(this_center, pt_on_other_edge);
-				float dist2_to_edge_this = distance2(this_center, pt_on_this_edge);
-				if (dist2_to_contact_this > dist2_to_edge_this) {
+				float d2_tc_to_oe = distance2(this_center, pt_on_other_edge);
+				float d2_tc_to_te = distance2(this_center, pt_on_this_edge);
+				if (d2_tc_to_oe > d2_tc_to_te) {
 					continue;
 				}
+				assert(other.check_collision_point(pt_on_this_edge, *this));
+				assert(this->check_collision_point(pt_on_other_edge, other));
 				found_new_contact = true;
 				float pen2 = distance2(pt_on_this_edge, pt_on_other_edge);
 				if (pen2 < min_pen2) {

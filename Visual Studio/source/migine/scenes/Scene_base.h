@@ -59,6 +59,14 @@ namespace migine {
 			game_objects.push_back(move(game_object));
 		}
 
+		template <class Obj_t, typename... Params>
+		gsl::not_null<Obj_t*> make_game_object(Params... params) {
+			std::unique_ptr<Obj_t> new_obj = std::make_unique<Obj_t>(std::forward<Params>(params)...);
+			Obj_t* ret_ptr = new_obj.get();
+			register_game_object(move(new_obj)); // TODO use emplace
+			return ret_ptr;
+		}
+
 		// deprecated
 		void register_game_object2(std::unique_ptr<Game_object> game_object);
 

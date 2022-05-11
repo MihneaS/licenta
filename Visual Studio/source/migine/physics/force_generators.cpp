@@ -170,4 +170,17 @@ namespace migine {
 	}
 
 
+	Sinusiodal_force_on_point_generator::Sinusiodal_force_on_point_generator(glm::vec3 force, glm::vec3 point) :
+		force(force), point(point) {
+	}
+
+	std::unique_ptr<Force_generator_base> Sinusiodal_force_on_point_generator::make_deep_copy()
+	{
+		return make_unique< Sinusiodal_force_on_point_generator>(*this);
+	}
+
+	void Sinusiodal_force_on_point_generator::update_force(gsl::not_null<Rigid_body*> obj, float delta_time) {
+		total_time += delta_time;
+		obj->add_force_at_body_point(force * cos(total_time), point);
+	}
 }

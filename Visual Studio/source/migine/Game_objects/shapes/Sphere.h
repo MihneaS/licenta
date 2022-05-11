@@ -10,7 +10,7 @@
 namespace migine {
 	class Sphere : public Game_object, public Sphere_collider, public Simple_renderer { // , public Rigid_body{
 	public:
-		Sphere(glm::vec3 position = { 0,0,0 }, float diameter = 1, glm::quat rotation = glm::quat());
+		explicit Sphere(glm::vec3 position = { 0,0,0 }, float diameter = 1, glm::quat rotation = glm::quat());
 		void compute_inverse_inertia_tensor() override;
 	};
 }

@@ -139,6 +139,19 @@ namespace migine {
 		glm::vec3 force;
 	};
 
+	class Sinusiodal_force_on_point_generator : public Force_generator_base {
+	public:
+		Sinusiodal_force_on_point_generator(glm::vec3 force, glm::vec3 point);
+		Sinusiodal_force_on_point_generator(const Sinusiodal_force_on_point_generator&) = default;
+		~Sinusiodal_force_on_point_generator() override = default;
+		std::unique_ptr<Force_generator_base> make_deep_copy() override;
+		void update_force(gsl::not_null<Rigid_body*> obj, float delta_time) override;
+	private:
+		glm::vec3 force;
+		glm::vec3 point;
+		float total_time;
+	};
+
 	//class Scene_base;
 
 	//template<class Obj_t, class Scene_t>

@@ -114,6 +114,10 @@
     <ClCompile Include="source\migine\scenes\current_scene.cpp" />
     <ClCompile Include="source\migine\game_objects\components\Spcon_transform.cpp" />
     <ClCompile Include="source\migine\game_objects\components\Has_spcon_transform.cpp" />
+    <ClCompile Include="source\migine\scenes\Scene_07.cpp" />
+    <ClCompile Include="source\migine\scenes\Scene_08.cpp" />
+    <ClCompile Include="source\migine\game_objects\shapes\Debug_point.cpp" />
+    <ClCompile Include="source\migine\game_objects\rendering\Color_renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Core\World.h">
@@ -212,6 +216,10 @@
     <ClInclude Include="source\migine\game_objects\components\Has_transform_interface.h" />
     <ClInclude Include="source\migine\game_objects\components\Spcon_transform.h" />
     <ClInclude Include="source\migine\game_objects\components\Has_spcon_transform.h" />
+    <ClInclude Include="source\migine\scenes\Scene_07.h" />
+    <ClInclude Include="source\migine\scenes\Scene_08.h" />
+    <ClInclude Include="source\migine\game_objects\shapes\Debug_point.h" />
+    <ClInclude Include="source\migine\game_objects\rendering\Color_renderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Source\Laboratoare\Laborator8\Shaders\FragmentShader.glsl">

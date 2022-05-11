@@ -8,14 +8,14 @@
 
 namespace migine {
 	class Box;
-	
+
 	/*
 	 * Scene for testing torques
 	 */
-	class Scene_06 : public migine::Scene_base {
+	class Scene_07 : public migine::Scene_base {
 	public:
-		Scene_06();
-		~Scene_06();
+		Scene_07();
+		~Scene_07();
 
 		void init() override;
 
@@ -33,17 +33,8 @@ namespace migine {
 		void on_window_resize(int width, int height) override;
 
 	public:
-		unsigned int material_shininess;
-		float material_kd;
-		float material_ks;
-
-		glm::vec3 light_position;
-		glm::vec3 light_direction;
 
 		Box* pamant;
 		Box* cub1;
-		Box* cub2;
-		Box* cub3;
-		Box* cub4;
 	};
 }
