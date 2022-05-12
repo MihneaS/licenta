@@ -161,6 +161,7 @@ namespace migine {
 		vec3 normal = normalize(sphere_center - closest_point_world);
 		float pen_depth = r - sqrtf(dist2);
 		ret.push_back(make_unique<Contact>(this, &other, closest_point_world, normal, pen_depth));
+		//ret.push_back(make_unique<Contact>(&other, this, closest_point_world, -normal, pen_depth));
 #ifdef DEBUGGING
 		(*ret.rbegin())->type = "box-sphere";
 #endif // DEBUGGING

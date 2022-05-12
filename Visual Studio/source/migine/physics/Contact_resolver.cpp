@@ -30,7 +30,7 @@ namespace migine {
 		relative_contact_positions[0] = contact->contact_point - contact->objs[0]->transform.get_world_position();
 		relative_contact_positions[1] = contact->contact_point - contact->objs[1]->transform.get_world_position();
 
-		contact_local_velocity = calculate_local_velocity(contact, 1, delta_time) - calculate_local_velocity(contact, 0, delta_time);
+		contact_local_velocity = calculate_local_velocity(contact, 1, delta_time) - calculate_local_velocity(contact, 0, delta_time); // TODO o fi corect? era cu minus
 		calculate_desired_delta_velocity(contact, delta_time);
 	}
 
@@ -46,8 +46,9 @@ namespace migine {
 		// Calculate the acceleration induced velocity accumulated this frame
 		float velocity_from_acc = 0;
 
+		// TODO verifica
 		velocity_from_acc -= dot(contact->objs[0]->get_last_frame_acceleration() * delta_time, contact->normal);
-		velocity_from_acc += dot(contact->objs[1]->get_last_frame_acceleration() * delta_time, contact->normal);
+		velocity_from_acc += dot(contact->objs[1]->get_last_frame_acceleration() * delta_time, contact->normal); // aici era plus
 
 		// If the velocity is very slow, limit the restitution
 		float this_restitution = k_default_restitution;
@@ -308,7 +309,7 @@ namespace migine {
 				}
 			}
 
-			// update penetrations and velocities
+			// update penetrations
 			for (int i = 0; i < contacts.size(); i++) {
 				for (int j = 0; j < 2; j++) {
 					for (int k = 0; k < 2; k++) {
@@ -333,7 +334,7 @@ namespace migine {
 			int worst_collision_idx = -1;
 			float worst_velocity = k_velocity_epsilon;
 			for (int i = 0; i < contacts.size(); i++) {
-				if (additional_contact_data[i].desired_delta_velocity > worst_velocity) {
+				if (additional_contact_data[i].desired_delta_velocity > worst_velocity) { // TODO use abs if desired_delta_velocity might be less then 0
 					worst_velocity = additional_contact_data[i].desired_delta_velocity;
 					worst_collision_idx = i;
 				}
@@ -379,10 +380,11 @@ namespace migine {
 		vec3 unit_impulse = more_data.contact_to_world_rotation * unit_impulse_local_contact;
 
 		for (int i = 0; i < 2; i++) {
+			float sign = -1 + 2 * i; // = i ? -1 : 1;
 			auto& obj = *contact.objs[i];
 			vec3 impulsive_torque = cross(more_data.relative_contact_positions[i], unit_impulse);
-			rotation_change[i] = obj.get_inverse_invertia_tensor() * impulsive_torque;
-			velocity_change[i] = unit_impulse * obj.get_inverse_mass();
+			rotation_change[i] = sign * obj.get_inverse_invertia_tensor() * impulsive_torque;
+			velocity_change[i] = sign * unit_impulse * obj.get_inverse_mass();
 
 			obj.add_velocity(velocity_change[i]);
 			obj.add_angular_velocity(rotation_change[i]);

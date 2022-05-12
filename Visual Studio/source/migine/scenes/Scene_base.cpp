@@ -157,40 +157,45 @@ namespace migine {
 	}
 
 	void Scene_base::update(float delta_time_seconds) {
-		// cap delta time
-		float caped_delta_time = min(delta_time_seconds, 1.0f / 20);
-
-		// apply forces
-		force_registry.update_forces(caped_delta_time);
-
-		// move bodies and update colliders in bvh (aka broad worst_collision phase)
-		for (auto& rigid_body : rigid_bodies) {
-			bool has_moved = rigid_body->integrate(caped_delta_time);
-		}
-
-		// repair bvh
-		bvh.clean_dirty_nodes();
-
-		// narrow worst_collision phase
 		int pairs_in_contact = 0;
-		vector<unique_ptr<Contact>> contacts;
-		for (auto& [obj0, obj1] : bvh.get_contacts()) {
-			auto new_collisions = obj0->check_collision(*obj1);
-			if (new_collisions.size() > 0) {
-				pairs_in_contact++;
-			}
-			for (auto& new_collision : new_collisions) {
-				contacts.push_back(move(new_collision));
-			}
+		if (time_slowed) {
+			delta_time_seconds /= 10;
 		}
+		if (!time_stopped) {
+			// cap delta time
+			float caped_delta_time = min(delta_time_seconds, 1.0f / 20);
 
-		// resolve contacts
-		if (!contacts.empty()) {
-			// prepare resolver
-			Contact_resolver contact_resolver(contacts, caped_delta_time); //DEMO1
+			// apply forces
+			force_registry.update_forces(caped_delta_time);
 
-			// solve contacts
-			contact_resolver.resolve_contacts(contacts); // DEMO1
+			// move bodies and update colliders in bvh (aka broad worst_collision phase)
+			for (auto& rigid_body : rigid_bodies) {
+				bool has_moved = rigid_body->integrate(caped_delta_time);
+			}
+
+			// repair bvh
+			bvh.clean_dirty_nodes();
+
+			// narrow worst_collision phase
+			vector<unique_ptr<Contact>> contacts;
+			for (auto& [obj0, obj1] : bvh.get_contacts()) {
+				auto new_collisions = obj0->check_collision(*obj1);
+				if (new_collisions.size() > 0) {
+					pairs_in_contact++;
+				}
+				for (auto& new_collision : new_collisions) {
+					contacts.push_back(move(new_collision));
+				}
+			}
+
+			// resolve contacts
+			if (!contacts.empty()) {
+				// prepare resolver
+				Contact_resolver contact_resolver(contacts, caped_delta_time); //DEMO1
+
+				// solve contacts
+				contact_resolver.resolve_contacts(contacts); // DEMO1
+			}
 		}
 
 		// render

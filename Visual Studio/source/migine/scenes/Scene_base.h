@@ -99,6 +99,8 @@ namespace migine {
 		Force_registry force_registry;
 
 		std::vector<std::unique_ptr<Force_generator_base>> default_fs_gen;
+		bool time_stopped = false;
+		bool time_slowed = false;
 
 	private:
 		void init_resources();

@@ -3,8 +3,7 @@
 
 namespace migine {
     Scene_base& migine::get_current_scene() {
-        static Scene_08 instance;
+        static Scene_02 instance;
         return instance;
-        // // O: insert return statement here
     }
 }
