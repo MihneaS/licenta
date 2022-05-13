@@ -29,6 +29,7 @@ namespace migine {
     glm::quat rotation_between_vectors(glm::vec3 start, glm::vec3 dest);
     glm::quat look_at(glm::vec3 direction, glm::vec3 desired_up);
     glm::quat rotate_towards(glm::quat q1, glm::quat q2, float maxAngle);
+    glm::mat3 get_skew_symmetric(glm::vec3 vec);
 
     glm::quat change_rotation(glm::vec3 old_direction, glm::vec3 desired_direction, glm::vec3 old_up, glm::vec3 desired_up);
 

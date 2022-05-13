@@ -283,6 +283,10 @@ namespace migine {
 
 	}
 
+	mat3 get_skew_symmetric(vec3 vec) {
+		return glm::mat3{{0,vec.z,-vec.y},{-vec.z,0,vec.x},{vec.y,-vec.x,0}};
+	}
+
 	quat change_rotation(vec3 old_direction, glm::vec3 desired_direction, glm::vec3 old_up, vec3 desired_up) {
 		if (is_zero_aprox(desired_direction.length())) {
 			return quat();

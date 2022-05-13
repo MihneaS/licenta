@@ -74,6 +74,12 @@ namespace migine {
 			print_mat4(coords_changed);
 			mat3 m3 = coords_changed;
 			print_mat3(m3);
+
+			vec3 v1{ 1,0,0 };
+			vec3 v2{ 0,1,0 };
+			vec3 v3{ 0 };
+
+			cout << "cross vs skew_mat:" << glm::cross(v1, v2).z << " " << (get_skew_symmetric(v1) * v2).z << "\n";
 		}
 
 		for (auto& game_object : game_objects) {

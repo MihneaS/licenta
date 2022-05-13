@@ -35,6 +35,7 @@ namespace migine {
 	private:
 		std::tuple<std::array<glm::vec3, 2>, std::array<glm::vec3, 2>> apply_move(Contact& contact, Additional_contact_data& more_data);
 		glm::vec3 compute_frictionless_contact_local_unit_impulse(Contact& contact, Additional_contact_data& more_data);
+		glm::vec3 compute_contact_local_unit_impulse_with_friction(Contact& contact, Additional_contact_data& more_data);
 
 		std::vector<Additional_contact_data> additional_contact_data;
 		float delta_time;

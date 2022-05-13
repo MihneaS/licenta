@@ -29,7 +29,8 @@ namespace migine {
 	constexpr float k_penetration_epsilon = 0.0f; // TODO revert to non zero! it was 0.001
 	constexpr float k_velocity_epsilon = 0.0001f;
 	constexpr float k_velocity_restitution_limit = 0.25f;
-	constexpr float k_default_restitution = 0.9f;
+	constexpr float k_default_restitution = 0.4f;
+	constexpr float k_friction_coef = 0.7;
 
 	enum class Axis {
 		ox = 0,

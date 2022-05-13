@@ -58,8 +58,10 @@ namespace migine {
 		float inverse_mass = 0;
 		glm::mat3 inverse_inertia_tensor = k_i3;
 		glm::mat3 inverse_inertia_tensor_world = k_i3;
-		float linear_damping = 0.995f;
-		float angular_damping = 0.995f;
+		//float linear_damping = 0.995f;
+		//float angular_damping = 0.995f;
+		float linear_damping = 0.9f;
+		float angular_damping = 0.9f;
 
 		std::vector<std::unique_ptr<Force_generator_base>> default_fs_gen;
 	};

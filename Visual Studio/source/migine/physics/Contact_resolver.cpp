@@ -2,6 +2,7 @@
 
 #include <migine/contact_detection/Collider_base.h>
 #include <migine/make_array.h>
+#include <migine/constants.h>
 
 #include <migine/scenes/current_scene.h>
 #include <migine/scenes/Scene_06.h>
@@ -13,6 +14,7 @@ using glm::quat;
 using glm::cross;
 using glm::dot;
 using glm::conjugate;
+using glm::transpose;
 
 using gsl::not_null;
 
@@ -368,7 +370,7 @@ namespace migine {
 				}
 			}
 			
-			assert(abs(more_data.desired_delta_velocity) < abs(debug_original_desired_delta_velocity)); // assert that penetration depth was improved
+			assert(more_data.desired_delta_velocity < debug_original_desired_delta_velocity); // assert that penetration depth was improved
 		}
 	}
 
@@ -376,7 +378,8 @@ namespace migine {
 		array<vec3, 2> velocity_change = {k_vec3_zero, k_vec3_zero};
 		array<vec3, 2> rotation_change = {k_vec3_zero, k_vec3_zero};
 
-		vec3 unit_impulse_local_contact = compute_frictionless_contact_local_unit_impulse(contact, more_data);
+		//vec3 unit_impulse_local_contact = compute_frictionless_contact_local_unit_impulse(contact, more_data);
+		vec3 unit_impulse_local_contact = compute_contact_local_unit_impulse_with_friction(contact, more_data);
 		vec3 unit_impulse = more_data.contact_to_world_rotation * unit_impulse_local_contact;
 
 		for (int i = 0; i < 2; i++) {
@@ -387,7 +390,7 @@ namespace migine {
 			velocity_change[i] = sign * unit_impulse * obj.get_inverse_mass();
 
 			obj.add_velocity(velocity_change[i]);
-			obj.add_angular_velocity(rotation_change[i]);
+			obj.add_angular_velocity(rotation_change[i]); // TODO TODO nu cred ca e ok ca am pus minus aici!
 		}
 
 		return {velocity_change, rotation_change};
@@ -408,6 +411,65 @@ namespace migine {
 
 		// Calculate the required size of the unit_impulse
 		unit_impulse_local_contact.y = more_data.desired_delta_velocity / delta_velocity;
+		return unit_impulse_local_contact;
+	}
+
+	vec3 Contact_resolver::compute_contact_local_unit_impulse_with_friction(Contact& contact, Additional_contact_data& more_data) {
+		float inverse_mass = contact.objs[0]->get_inverse_mass();
+		vec3 unit_impulse_local_contact = k_vec3_zero;
+		// The equivalent of a cross product in matrices is multiplication
+		// by a skew-symmetric matrix - we build the matrix for converting
+		// between linear and angular quantities.
+		mat3 impulse_to_torque = get_skew_symmetric(more_data.relative_contact_positions[0]);
+		// Build the matrix to convert contact impulse to change in velocity
+		// in world coordinates.
+		mat3 delta_vel_world = impulse_to_torque;
+		delta_vel_world *= contact.objs[0]->get_inverse_invertia_tensor();
+		delta_vel_world *= impulse_to_torque;
+		delta_vel_world *= -1;
+		// Check whether we need to add body 2’s data.
+		// Find the inertia tensor for this body.
+		// Set the cross product matrix.
+		impulse_to_torque = get_skew_symmetric(more_data.relative_contact_positions[1]);
+		// Calculate the velocity change matrix.
+		mat3 delta_vel_world_2 = impulse_to_torque;
+		delta_vel_world_2 *= contact.objs[1]->get_inverse_invertia_tensor();
+		delta_vel_world_2 *= impulse_to_torque;
+		delta_vel_world_2 *= -1;
+		// Add to the total delta velocity.
+		delta_vel_world += delta_vel_world_2;
+		// Add to the inverse mass.
+		inverse_mass += contact.objs[1]->get_inverse_mass();
+		// Do a change of basis to convert into contact coordinates.
+		mat3 contact_to_world_rotation = mat3(more_data.contact_to_world_rotation);
+		mat3 delta_velocity = transpose(contact_to_world_rotation);
+		delta_velocity *= delta_vel_world;
+		delta_velocity *= contact_to_world_rotation;
+		// Add in the linear velocity change.
+		delta_velocity[0][0] += inverse_mass;
+		delta_velocity[1][1] += inverse_mass;
+		delta_velocity[2][2] += inverse_mass;
+		// Invert to get the impulse needed per unit velocity.
+		mat3 impulse_matrix = inverse(delta_velocity);
+		// Find the target velocities to kill.
+		vec3 vel_kill{-more_data.contact_local_velocity.x, more_data.desired_delta_velocity, -more_data.contact_local_velocity.z };
+		// Find the impulse to kill target velocities.
+		unit_impulse_local_contact = impulse_matrix * vel_kill;
+		// Check for exceeding friction.
+		float planar_impulse = sqrtf(unit_impulse_local_contact.x * unit_impulse_local_contact.x +
+			unit_impulse_local_contact.z * unit_impulse_local_contact.z);
+		if (planar_impulse > unit_impulse_local_contact.y * k_friction_coef)
+		{
+			// We need to use dynamic friction.
+			unit_impulse_local_contact.x /= planar_impulse;
+			unit_impulse_local_contact.z /= planar_impulse;
+			unit_impulse_local_contact.y = delta_velocity[1][1] +
+				delta_velocity[1][0] * k_friction_coef * unit_impulse_local_contact.x +
+				delta_velocity[1][2] * k_friction_coef * unit_impulse_local_contact.z; // TODO e bine?
+			unit_impulse_local_contact.y = more_data.desired_delta_velocity / unit_impulse_local_contact.y;
+			unit_impulse_local_contact.x *= k_friction_coef * unit_impulse_local_contact.y;
+			unit_impulse_local_contact.z *= k_friction_coef * unit_impulse_local_contact.y;
+		}
 		return unit_impulse_local_contact;
 	}
 }
