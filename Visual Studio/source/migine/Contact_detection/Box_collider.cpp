@@ -1,5 +1,6 @@
 #include "Box_collider.h"
 #include "Sphere_collider.h"
+#include <migine/define.h>
 #include <migine/Resource_manager.h>
 #include <migine/make_array.h>
 #include <migine/utils.h>
@@ -11,6 +12,8 @@
 #include <numeric>
 #include <array>
 #include <climits>
+
+#include <iostream>
 
 #include <migine/define.h>
 
@@ -95,6 +98,7 @@ namespace migine {
 			vec3 saved_pt_on_this;
 			vec3 saved_pt_on_other;
 			bool found_new_contact = false;
+			vec3 saved_backup_norm{0};
 			for (auto& [other_idx1, other_idx2] : other.get_edges_indexes_in_corners()) {
 				auto [pt_on_this_edge, pt_on_other_edge, clipped] = get_closest_points_between_segments(this_corners[this_idx1], this_corners[this_idx2], other_corners[other_idx1], other_corners[other_idx2]);
 				static_assert(std::is_same<decltype(clipped), bool>());
@@ -121,14 +125,30 @@ namespace migine {
 					min_pen2 = pen2;
 					saved_pt_on_this = pt_on_this_edge;
 					saved_pt_on_other = pt_on_other_edge;
+					if (pen2 == 0) {
+						vec3 this_edge_mid = mid_point(this_corners[this_idx1], this_corners[this_idx2]);
+						vec3 this_center_to_edge = normalize(this_edge_mid - this_center);
+						vec3 other_edge_mid = mid_point(other_corners[other_idx1], other_corners[other_idx2]);
+						vec3 other_center_to_edge = normalize(other_edge_mid - other_center);
+						saved_backup_norm = normalize(this_center_to_edge - other_center_to_edge);
+#ifdef DEBUGGING
+						std::cout << "\nbox-box edge-edge backup norm used\n";
+#endif // DEBUGGING
+					}
 				}
 			}
 			if (found_new_contact) {
+				vec3 norm{0};
+				if (min_pen2 == 0) {
+					norm = saved_backup_norm;
+				} else {
+					norm = normalize(saved_pt_on_this - saved_pt_on_other);
+				}
 				ret.push_back(make_unique<Contact>(
 						this,
 						&other, 
 						mid_point(saved_pt_on_other, saved_pt_on_this), 
-						normalize(saved_pt_on_this - saved_pt_on_other), 
+						norm, 
 						sqrtf(min_pen2)));
 #ifdef DEBUGGING
 				(*ret.rbegin())->type = "box-box edge-edge";

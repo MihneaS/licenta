@@ -118,6 +118,7 @@
     <ClCompile Include="source\migine\scenes\Scene_08.cpp" />
     <ClCompile Include="source\migine\game_objects\shapes\Debug_point.cpp" />
     <ClCompile Include="source\migine\game_objects\rendering\Color_renderer.cpp" />
+    <ClCompile Include="source\migine\scenes\Scene_09.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Core\World.h">
@@ -219,6 +220,7 @@
     <ClInclude Include="source\migine\scenes\Scene_08.h" />
     <ClInclude Include="source\migine\game_objects\shapes\Debug_point.h" />
     <ClInclude Include="source\migine\game_objects\rendering\Color_renderer.h" />
+    <ClInclude Include="source\migine\scenes\Scene_09.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Source\Laboratoare\Laborator8\Shaders\FragmentShader.glsl">

@@ -60,7 +60,8 @@ namespace migine {
 
 		// Combine the bounce velocity with the removed
 		// acceleration velocity.
- 		desired_delta_velocity = -contact_local_velocity.y - this_restitution * (contact_local_velocity.y - velocity_from_acc);
+ 		//desired_delta_velocity = -contact_local_velocity.y - this_restitution * (contact_local_velocity.y - velocity_from_acc);
+		desired_delta_velocity = -contact_local_velocity.y * (1 + this_restitution) - velocity_from_acc;
 	}
 
 	Contact_resolver::Contact_resolver(const vector<unique_ptr<Contact>>& collisions, float delta_time) :
@@ -74,6 +75,7 @@ namespace migine {
 	void Contact_resolver::resolve_contacts(vector<unique_ptr<Contact>>& contacts) {
 		// resolve the interprenetrations problems with contacts
 		resolve_penetrations(contacts);
+		//resolve_penetrations_linearly_01(contacts);
 
 		// resolve the velocity problems with contacts
 		resolve_velocity(contacts);
@@ -415,31 +417,21 @@ namespace migine {
 	}
 
 	vec3 Contact_resolver::compute_contact_local_unit_impulse_with_friction(Contact& contact, Additional_contact_data& more_data) {
-		float inverse_mass = contact.objs[0]->get_inverse_mass();
+		float inverse_mass = 0;
 		vec3 unit_impulse_local_contact = k_vec3_zero;
 		// The equivalent of a cross product in matrices is multiplication
 		// by a skew-symmetric matrix - we build the matrix for converting
 		// between linear and angular quantities.
-		mat3 impulse_to_torque = get_skew_symmetric(more_data.relative_contact_positions[0]);
-		// Build the matrix to convert contact impulse to change in velocity
-		// in world coordinates.
-		mat3 delta_vel_world = impulse_to_torque;
-		delta_vel_world *= contact.objs[0]->get_inverse_invertia_tensor();
-		delta_vel_world *= impulse_to_torque;
-		delta_vel_world *= -1;
-		// Check whether we need to add body 2’s data.
-		// Find the inertia tensor for this body.
-		// Set the cross product matrix.
-		impulse_to_torque = get_skew_symmetric(more_data.relative_contact_positions[1]);
-		// Calculate the velocity change matrix.
-		mat3 delta_vel_world_2 = impulse_to_torque;
-		delta_vel_world_2 *= contact.objs[1]->get_inverse_invertia_tensor();
-		delta_vel_world_2 *= impulse_to_torque;
-		delta_vel_world_2 *= -1;
-		// Add to the total delta velocity.
-		delta_vel_world += delta_vel_world_2;
-		// Add to the inverse mass.
-		inverse_mass += contact.objs[1]->get_inverse_mass();
+		mat3 delta_vel_world{0};
+		for (int i = 0; i < 2; i++) {
+			inverse_mass += contact.objs[i]->get_inverse_mass();
+			mat3 impulse_to_torque = get_skew_symmetric(more_data.relative_contact_positions[i]);
+			mat3 delta_vel_world_i = impulse_to_torque;
+			delta_vel_world_i *= contact.objs[i]->get_inverse_invertia_tensor();
+			delta_vel_world_i *= impulse_to_torque;
+			delta_vel_world_i *= -1;
+			delta_vel_world += delta_vel_world_i;
+		}
 		// Do a change of basis to convert into contact coordinates.
 		mat3 contact_to_world_rotation = mat3(more_data.contact_to_world_rotation);
 		mat3 delta_velocity = transpose(contact_to_world_rotation);

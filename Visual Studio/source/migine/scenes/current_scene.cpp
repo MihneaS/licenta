@@ -8,10 +8,11 @@
 #include "Scene_06.h"
 #include "Scene_07.h"
 #include "Scene_08.h"
+#include "Scene_09.h"
 
 namespace migine {
     Scene_base& migine::get_current_scene() {
-        static Scene_02 instance;
+        static Scene_03 instance;
         return instance;
     }
 }

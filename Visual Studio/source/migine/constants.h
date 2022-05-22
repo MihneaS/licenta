@@ -24,9 +24,9 @@ namespace migine {
 	constexpr glm::vec3 k_forward = { 0, 0,-1};
 	constexpr int k_maximum_position_correcting_iterations = 1000;
 	constexpr int k_maximum_velocity_correcting_iterations = 1000;
-	constexpr float k_angular_move_limit = 0.2f;
+	constexpr float k_angular_move_limit = 0.1f;//0.2f;
 	constexpr float k_float_epsilon = 0.0001f;
-	constexpr float k_penetration_epsilon = 0.0f; // TODO revert to non zero! it was 0.001
+	constexpr float k_penetration_epsilon = 0.001f; //0.0f; // TODO revert to non zero! it was 0.001
 	constexpr float k_velocity_epsilon = 0.0001f;
 	constexpr float k_velocity_restitution_limit = 0.25f;
 	constexpr float k_default_restitution = 0.4f;

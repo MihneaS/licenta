@@ -66,6 +66,7 @@
     <ClCompile Include="source\migine\scenes\Scene_06.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_07.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_08.cpp" />
+    <ClCompile Include="source\migine\scenes\Scene_09.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_input.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_base.cpp" />
     <ClCompile Include="source\migine\utils.cpp" />
@@ -123,6 +124,7 @@
     <ClInclude Include="source\migine\make_array.h" />
     <ClInclude Include="source\migine\Resource_manager.h" />
     <ClInclude Include="source\migine\scenes\current_scene.h" />
+    <ClInclude Include="source\migine\scenes\Scene_09.h" />
     <ClInclude Include="source\migine\scenes\Scene_03.h" />
     <ClInclude Include="source\migine\scenes\Scene_01.h" />
     <ClInclude Include="source\migine\scenes\Scene_02.h" />

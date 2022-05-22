@@ -64,7 +64,7 @@ namespace migine {
 		//}
 
 		{ // falling obj
-			auto obj_h = make_unique<Box>(vec3{ 1, 2, -2 });
+			auto obj_h = make_unique<Box>(vec3{ 1, 2, -2.3f });
 			obj_h->set_inverse_mass(1);
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "falling obj_2");
