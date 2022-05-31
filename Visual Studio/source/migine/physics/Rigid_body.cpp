@@ -64,8 +64,16 @@ namespace migine {
 		return constant_acceleration;
 	}
 
+	mat3 Rigid_body::get_inertia_tensor_world() const {
+		return inverse(inverse_inertia_tensor_world);
+	}
+
 	const glm::mat3& Rigid_body::get_inverse_invertia_tensor() const {
 		return inverse_inertia_tensor;
+	}
+
+	const mat3& Rigid_body::get_inverse_invertia_tensor_world() const {
+		return inverse_inertia_tensor_world;
 	}
 
 	void Rigid_body::set_inertia_tensor(const mat3& inerta_tensor) {
@@ -78,11 +86,15 @@ namespace migine {
 
 	void Rigid_body::compute_inverse_inertia_tensor_world() {
 		//mat3 inv = inverse(transform.get_model());
-		mat3 inv = mat3(conjugate(transform.get_orientation()));
-		inverse_inertia_tensor_world = transpose(inv) * get_inverse_invertia_tensor() * inv;
+		
+		//mat3 inv = mat3(conjugate(transform.get_orientation()));
+		//inverse_inertia_tensor_world = transpose(inv) * get_inverse_invertia_tensor() * inv;
+		
 		//mat4 inv = inverse(transform.get_model());
 		//inverse_inertia_tensor_world = transpose(inv) * mat4(get_inverse_invertia_tensor()) * inv;
 		//inverse_inertia_tensor_world = inv * mat4(get_inverse_invertia_tensor()) * transpose(inv);
+		mat3 to_world_rotation = mat3(transform.get_orientation()); // TODO what about scaling? is it included in inverse inertia tensor calculation?
+		inverse_inertia_tensor_world = to_world_rotation * inverse_inertia_tensor * transpose(to_world_rotation);
 	}
 
 	vec3 Rigid_body::get_velocity() const {
@@ -139,6 +151,66 @@ namespace migine {
 		//_transform_inertia_tensor(inverse_inertia_tensor_world, inverse_inertia_tensor, transform.get_model());
 		compute_inverse_inertia_tensor_world();
 		transform.internal_update();
+	}
+
+	float Rigid_body::get_kinetic_energy() const {
+		if (inverse_mass == 0) {
+			return std::numeric_limits<float>::infinity();
+		}
+		float v_len = length(velocity);
+		float ang_v_len = length(angular_velocity); // TODO e bine? poate trb * k_deg_to_rad
+		float angular_kinetic_energy = 0;
+		if (ang_v_len != 0) {
+			float rotation_inertia_around_rotating_axis = 0;
+
+			vec3 rotating_axis = angular_velocity / ang_v_len;
+
+			// based on RotationBetweenVectors from https://github.com/opengl-tutorials/ogl/blob/master/common/quaternion_utils.cpp
+			// and rotating matrices from "Game Physics Engine Development"
+
+			// I am bassically constructing a rotating matrix from rotating_axis to OX,
+			// changing the coordinates of the inertia tensor from world coordinates to some coordinates where OX is the rotating axis
+			// new_I = rot_mat * I_world * rot_mat^-1
+			// and because for rotation matrices rot_mat^-1 = transpose(rot_mat)
+			// new_I = rot*mat * I_world * transpose(rot_mat)
+			// Therefore rotating inertia with respect to the rotating axis is new_I[0][0]
+			float cos_theta = dot(rotating_axis, {1,0,0});
+			if (cos_theta < -1 + k_float_epsilon) {
+				rotation_inertia_around_rotating_axis = get_inertia_tensor_world()[0][0];
+			} else {
+				vec3 rot_axis = cross(rotating_axis, {1,0,0});
+				float sin_theta = sqrtf(1 - cos_theta * cos_theta);
+				float t_theta = 1 - cos_theta;
+				float tx = t_theta * rot_axis.x;
+				vec3 rot_mat_0{
+						tx * rot_axis.x + cos_theta,
+						tx * rot_axis.y + sin_theta * rot_axis.z,
+						tx * rot_axis.z - sin_theta * rot_axis.y
+				};
+				mat3 inertia_tensor_world = get_inertia_tensor_world();
+				//for (int i = 0; i < 3; i++) {
+				//	float tmp = 0;
+				//	for (int j = 0; j < 3; j++) {
+				//		for (int k = 0; k < 3; k++) {
+				//			tmp += rot_mat_0[k] * inertia_tensor_world[k][j]; // indices are right
+				//		}
+				//	}
+				//	rotation_inertia_around_rotating_axis += rot_mat_0[i] * tmp;
+				//}
+				rotation_inertia_around_rotating_axis =
+					rot_mat_0[0] * (rot_mat_0[0] * inertia_tensor_world[0][0] +
+									rot_mat_0[1] * inertia_tensor_world[1][0] +
+									rot_mat_0[2] * inertia_tensor_world[2][0]) +
+					rot_mat_0[1] * (rot_mat_0[0] * inertia_tensor_world[0][1] +
+									rot_mat_0[1] * inertia_tensor_world[1][1] +
+									rot_mat_0[2] * inertia_tensor_world[2][1]) +
+					rot_mat_0[2] * (rot_mat_0[0] * inertia_tensor_world[0][2] +
+									rot_mat_0[1] * inertia_tensor_world[1][2] +
+									rot_mat_0[2] * inertia_tensor_world[2][2]);
+			}
+			angular_kinetic_energy = rotation_inertia_around_rotating_axis * ang_v_len * ang_v_len * 0.5;
+		}
+		return (get_mass() * v_len * v_len) * 0.5f + angular_kinetic_energy;
 	}
 
 	void Rigid_body::stop_motion() {

@@ -20,7 +20,9 @@ namespace migine {
 		float get_inverse_mass() const;
 		void set_inverse_mass(float inverse_mass);
 		glm::vec3 get_constant_acceleration() const;
+		glm::mat3 get_inertia_tensor_world() const;
 		const glm::mat3& get_inverse_invertia_tensor() const;
+		const glm::mat3& get_inverse_invertia_tensor_world() const;
 		glm::vec3 get_velocity() const;
 		void add_velocity(glm::vec3 velocity);
 		glm::vec3 get_angular_velocity() const;
@@ -34,6 +36,7 @@ namespace migine {
 		void clear_torque_accum();
 		void clear_accumulators();
 		void calculate_derived_data();
+		float get_kinetic_energy() const;
 
 		void stop_motion();
 

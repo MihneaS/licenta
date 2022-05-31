@@ -14,7 +14,7 @@
 
 namespace migine {
     Scene_base& migine::get_current_scene() {
-        static Scene_03 instance;
+        static Scene_11 instance;
         return instance;
     }
 }
