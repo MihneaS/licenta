@@ -21,6 +21,7 @@ namespace migine {
 		void change_state(glm::vec3 new_pos = k_vec3_zero, glm::vec3 new_scale = {1, 1, 1}, glm::quat new_rot = glm::quat());
 		virtual void internal_update();
 		glm::vec3 transform_to_local(glm::vec3 point) const;
+		glm::vec3 rotate_and_scale_to_local(glm::vec3 point) const;
 		template <Axis axis> glm::vec3 get_axis() const;
 
 	private:

@@ -8,6 +8,7 @@ namespace migine {
 	constexpr float k_default_line_width = 5;
 	constexpr glm::vec3 k_aabb_color = {0.1,0.6,0.1};
 	constexpr float k_deg_to_rad = glm::pi<float>() / 180.0f;
+	constexpr float k_rad_to_deg = 1.0f / k_deg_to_rad;
 	constexpr int k_box_material_shiness = 30;
 	constexpr float k_box_material_kd = 0.5;
 	constexpr float k_box_material_ks = 0.5;
@@ -24,7 +25,7 @@ namespace migine {
 	constexpr glm::vec3 k_forward = { 0, 0,-1};
 	constexpr int k_maximum_position_correcting_iterations = 1000;
 	constexpr int k_maximum_velocity_correcting_iterations = 1000;
-	constexpr float k_angular_move_limit = 0.1f;//0.2f;
+	constexpr float k_angular_move_limit = 0.01;//0.1f;//0.2f;
 	constexpr float k_float_epsilon = 0.0001f;
 	constexpr float k_penetration_epsilon = 0.001f; //0.0f; // TODO revert to non zero! it was 0.001
 	constexpr float k_velocity_epsilon = 0.0001f;

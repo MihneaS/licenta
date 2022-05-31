@@ -66,7 +66,7 @@ namespace migine {
 
 	void Drag_generator::update_force(not_null<Rigid_body*> obj, float delta_time) {
 		vec3 force = obj->get_velocity();
-		float drag_coeff = (float)force.length();
+		float drag_coeff = length(force);
 		drag_coeff = k1 * drag_coeff + k2 * drag_coeff * drag_coeff;
 		force = normalize(force);
 		force *= -drag_coeff;

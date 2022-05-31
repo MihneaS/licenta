@@ -20,6 +20,7 @@ using std::stringstream;
 using std::string;
 using std::vector;
 using std::cout;
+using std::copysign;
 
 namespace migine {
 	quat euler_angles_to_quat(vec3 euler_angles) {
@@ -90,6 +91,10 @@ namespace migine {
 
 	bool is_zero_aprox(float val) {
 		return fabs(val) < k_float_epsilon;
+	}
+
+	bool is_zero_aprox(vec3 vec) {
+		return is_zero_aprox(vec.x) && is_zero_aprox(vec.y) && is_zero_aprox(vec.z);
 	}
 
 	bool is_equal_aprox(float val0, float val1) {
@@ -267,7 +272,7 @@ namespace migine {
 
 		float angle = acos(cos_theta);
 
-		// If there is only a 2° difference, and we are allowed 5°,
+		// If there is only a 2 difference, and we are allowed 5,
 		// then we arrived.
 		if (angle < max_angle) {
 			return q2;
@@ -287,8 +292,34 @@ namespace migine {
 		return glm::mat3{{0,vec.z,-vec.y},{-vec.z,0,vec.x},{vec.y,-vec.x,0}};
 	}
 
+	bool is_point_on_axis(vec3 d0, vec3 d1, vec3 p) {
+		vec3 projected_point = project_point_onto_axis(p, d0, d1);
+		return is_zero_aprox( projected_point - p);
+	}
+
+	bool is_point_on_axis2(glm::vec3 d0, glm::vec3 d1, glm::vec3 p) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				if (d0[j] != d1[j]) {
+					float a = (d0[i] - d1[i]) / (d0[j] - d1[j]);
+					float b = d1[i] - d1[j] * a;
+					if (!is_zero_aprox(p[j] * a + b - p[i])) {
+						return false;
+					}
+				} else if (p[j] != d0[j]) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	vec3 copy_sing_element_wise(vec3 mag, vec3 sign) {
+		return glm::vec3{copysign(mag.x, sign.x), copysign(mag.y, sign.y), copysign(mag.z, sign.z)};
+	}
+
 	quat change_rotation(vec3 old_direction, glm::vec3 desired_direction, glm::vec3 old_up, vec3 desired_up) {
-		if (is_zero_aprox(desired_direction.length())) {
+		if (is_zero_aprox(length(desired_direction))) {
 			return quat();
 		}
 

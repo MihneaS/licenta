@@ -73,7 +73,7 @@ namespace migine {
 	}
 
 	glm::vec3 AABB::get_center() const {
-		return (min_pos + max_pos) * 0.5f;/// 2.0f;
+		return (min_pos + max_pos) * 0.5f;
 	}
 
 	void AABB::enlarge_by(AABB to_enlarge_by) {
@@ -110,8 +110,6 @@ namespace migine {
 		vec3 pos = get_center();
 		vec3 scale = max_pos - min_pos;
 		transform.change_state(pos, scale, quat());
-		//transform.SetWorldPosition((aabb->minPos + aabb->maxPos) / 2.0f);
-		//transform.SetScale(aabb->maxPos - aabb->minPos);
 		Wireframe_renderer::render(camera);
 	}
 #endif

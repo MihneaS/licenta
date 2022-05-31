@@ -100,6 +100,13 @@ namespace migine {
 			// calculate linear and angular movement
 			const Contact& worst_contact = *contacts[worst_collision_idx].get();
 			const Additional_contact_data more_data = additional_contact_data[worst_collision_idx];
+
+			//if (worst_contact.objs[0]->get_inverse_mass() != 0 && worst_contact.objs[1]->get_inverse_mass() != 0) {
+			//	int i = 0;
+			//	assert(true);
+			//	i++;
+			//}
+
 			array<float, 2> angular_inertia = {0};
 			array<float, 2> linear_inertia = {0};
 			float total_inertia = 0;
@@ -128,7 +135,7 @@ namespace migine {
 
 			// avoid excesive rotation
 			for (int i = 0; i < 2; i++) {
-				float limit = k_angular_move_limit * more_data.relative_contact_positions[i].length();
+				float limit = k_angular_move_limit * length(more_data.relative_contact_positions[i]);
 				// Check the angular move is within limits.
 				if (fabs(angular_move[i]) > limit) {
 					float total_move = linear_move[i] + angular_move[i];
@@ -283,7 +290,7 @@ namespace migine {
 
 			// avoid excesive rotation
 			for (int i = 0; i < 2; i++) {
-				float limit = k_angular_move_limit * more_data.relative_contact_positions[i].length();
+				float limit = k_angular_move_limit * length(more_data.relative_contact_positions[i]);
 				// Check the angular move is within limits.
 				if (fabs(angular_move[i]) > limit) {
 					float total_move = linear_move[i] + angular_move[i];
@@ -338,7 +345,7 @@ namespace migine {
 			int worst_collision_idx = -1;
 			float worst_velocity = k_velocity_epsilon;
 			for (int i = 0; i < contacts.size(); i++) {
-				if (additional_contact_data[i].desired_delta_velocity > worst_velocity) { // TODO use abs if desired_delta_velocity might be less then 0
+				if (additional_contact_data[i].desired_delta_velocity > worst_velocity) {
 					worst_velocity = additional_contact_data[i].desired_delta_velocity;
 					worst_collision_idx = i;
 				}

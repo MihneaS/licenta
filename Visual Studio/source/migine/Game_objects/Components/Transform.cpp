@@ -92,7 +92,12 @@ namespace migine {
 	}
 
 	void Transform::change_orientation_with_delta(vec3 rotation) {
-		orientation *= euler_angles_to_quat(rotation);
+		//orientation *= euler_angles_to_quat(rotation);
+		float len = length(rotation);
+		if (len == 0) {
+			return;
+		}
+		orientation = rotate(orientation,len,  rotation / len);
 		internal_update();
 	}
 
@@ -103,6 +108,10 @@ namespace migine {
 
 	glm::vec3 Transform::transform_to_local(glm::vec3 point) const {
 		return inverse(get_model()) * position_to_vec4(point);
+	}
+
+	vec3 Transform::rotate_and_scale_to_local(vec3 point) const {
+		return inverse(toMat4(orientation) * glm::scale(glm::mat4(1), scale)) * position_to_vec4(point);
 	}
 
 	glm::vec3 Transform::get_axis(int axis) const {

@@ -19,6 +19,7 @@ namespace migine {
     //glm::quat quat_add_vec3(glm::quat q, glm::vec3 v);
     float get_elapsed_time();
     bool is_zero_aprox(float val); // credits for ideea: godot
+    bool is_zero_aprox(glm::vec3 vec);
     bool is_equal_aprox(float val0, float val1);
     glm::vec3 lerp(glm::vec3 v0, glm::vec3 v1, float t);
     glm::vec3 mid_point(glm::vec3 v0, glm::vec3 v1);
@@ -30,6 +31,9 @@ namespace migine {
     glm::quat look_at(glm::vec3 direction, glm::vec3 desired_up);
     glm::quat rotate_towards(glm::quat q1, glm::quat q2, float maxAngle);
     glm::mat3 get_skew_symmetric(glm::vec3 vec);
+    bool is_point_on_axis(glm::vec3 d0, glm::vec3 d1, glm::vec3 p);
+    bool is_point_on_axis2(glm::vec3 d0, glm::vec3 d1, glm::vec3 p);
+    glm::vec3 copy_sing_element_wise(glm::vec3 mag, glm::vec3 sign);
 
     glm::quat change_rotation(glm::vec3 old_direction, glm::vec3 desired_direction, glm::vec3 old_up, glm::vec3 desired_up);
 
@@ -74,18 +78,3 @@ namespace migine {
         }
     };
 }
-
-//namespace std {
-//   template<> struct hash<migine::Has_id> {
-//        size_t operator()(const migine::Has_id& x) const {
-//            //size_t operator()(migine::Has_id x) const {
-//            return std::hash<size_t>()(x.id);
-//        }
-//    };
-//    template<> struct hash<migine::Collider_base> {
-//        size_t operator()(const migine::Collider_base& x) const {
-//            //return std::hash<migine::Has_id>()(x);
-//            return std::hash<size_t>()(x.id);
-//        }
-//    };
-//}

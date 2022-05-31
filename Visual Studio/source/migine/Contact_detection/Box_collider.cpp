@@ -338,34 +338,62 @@ namespace migine {
 		return false;
 	}
 
-	unique_ptr<Contact> Box_collider::check_collision_point(vec3 point, Collider_base& other) {
+	std::unique_ptr<Contact> Box_collider::check_collision_point(glm::vec3 point, Collider_base& other) {
 		unique_ptr<Contact> ret = nullptr;
 		vec3 relative_point = transform.transform_to_local(point);
-		vec3 normal;
-
-		float min_depth = abs(transform.get_scale().x) * (half_side_lengths.x - abs(relative_point.x));
-		if (min_depth < 0) {
-			return ret;
-		}
-		normal = normalize(transform.get_axis<Axis::ox>() * ((relative_point.x < 0) ? -1.0f : 1.0f));
-		
-		float depth = abs(transform.get_scale().y) * (half_side_lengths.y - abs(relative_point.y));
-		if (depth < 0) {
-			return ret;
-		} else if (depth < min_depth) {
-			min_depth = depth;
-			normal = normalize(transform.get_axis<Axis::oy>() * ((relative_point.y < 0) ? -1.0f : 1.0f));
+		if (this->get_inverse_mass() != 0 && other.get_inverse_mass() != 0) {
+			int i = false; // debugg break point
 		}
 
-		depth = abs(transform.get_scale().z) * (half_side_lengths.z - abs(relative_point.z));
-		if (depth < 0) {
+		vec3 depths;
+		array<vec3, 3> normals;
+		depths[0] = abs(transform.get_scale().x) * (half_side_lengths.x - abs(relative_point.x));
+		if (depths[0] < 0) {
 			return ret;
-		} else if (depth < min_depth) {
-			min_depth = depth;
-			normal = normalize(transform.get_axis<Axis::oz>() * ((relative_point.z < 0) ? -1.0f : 1.0f));
+		}
+		normals[0] = normalize(transform.get_axis<Axis::ox>() * ((relative_point.x - local_center.x < 0) ? -1.0f : 1.0f));
+
+		depths[1] = abs(transform.get_scale().y) * (half_side_lengths.y - abs(relative_point.y));
+		if (depths[1] < 0) {
+			return ret;
+		}
+		normals[1] = normalize(transform.get_axis<Axis::oy>() * ((relative_point.y - local_center.y < 0) ? -1.0f : 1.0f));
+
+		depths[2] = abs(transform.get_scale().z) * (half_side_lengths.z - abs(relative_point.z));
+		if (depths[2] < 0) {
+			return ret;
+		}
+		normals[2] = normalize(transform.get_axis<Axis::oz>() * ((relative_point.z - local_center.z < 0) ? -1.0f : 1.0f));
+
+		vec3 relative_other_center = transform.transform_to_local(other.transform.get_world_position());
+		vec3 contact_point_to_other_center_local = relative_other_center - relative_point;
+		vec3 contact_point_to_this_center_local = local_center - relative_point;
+
+		constexpr vec3 std_half_len = vec3{0.5};
+
+		vec3 tmp1 = other.transform.get_orientation() * vec3 { 1 };
+		vec3 tmp2 = transform.rotate_and_scale_to_local(tmp1);
+		vec3 direction = normalize(tmp2);
+		vec3 standardised_other_center = relative_point + copy_sing_element_wise(length(std_half_len) * direction, contact_point_to_other_center_local);
+		vec3 standardised_this_center = relative_point + copy_sing_element_wise(std_half_len, contact_point_to_this_center_local);
+
+		// observation: relative point from standardised centers is canceled out in the subtraction below
+		vec3 standardised_this_center_to_other_center = standardised_other_center - standardised_this_center;
+
+		float x_projection = abs(dot({1,0,0}, standardised_this_center_to_other_center));
+		float y_projection = abs(dot({0,1,0}, standardised_this_center_to_other_center));
+		float z_projection = abs(dot({0,0,1}, standardised_this_center_to_other_center));
+
+		int best_axis = -1;
+		if (x_projection > y_projection && x_projection > z_projection) {
+			best_axis = 0;
+		} else if (y_projection > z_projection) {
+			best_axis = 1;
+		} else {
+			best_axis = 2;
 		}
 
-		ret = make_unique<Contact>(this, &other, point, normal, min_depth); // TODO ugly second this! repiar imediatly after call
+		ret = make_unique<Contact>(this, &other, point, normals[best_axis], depths[best_axis]);
 		return ret;
 	}
 
