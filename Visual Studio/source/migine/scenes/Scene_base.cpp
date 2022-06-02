@@ -63,6 +63,24 @@ namespace migine {
 		game_objects.push_back(move(game_object));
 	}
 
+	void Scene_base::basic_bool_button_changer(int key, int mods) {
+		if (key == GLFW_KEY_T) {
+			time_stopped = !time_stopped;
+		}
+		if (key == GLFW_KEY_Y) {
+			time_slowed = !time_slowed;
+		}
+		if (key == GLFW_KEY_P) {
+			do_resolve_penetrations = !do_resolve_penetrations;
+		}
+		if (key == GLFW_KEY_V) {
+			do_resolve_velocities = !do_resolve_velocities;
+		}
+	}
+
+	void Scene_base::modify_contacts(vector<unique_ptr<Contact>>& contacts) {
+	}
+
 	void Scene_base::init_resources() {
 		// sets common GL states
 		glClearColor(0, 0, 0, 1);
@@ -170,7 +188,7 @@ namespace migine {
 
 			// move bodies and update colliders in bvh (aka broad worst_collision phase)
 			for (auto& rigid_body : rigid_bodies) {
-				bool has_moved = rigid_body->integrate(caped_delta_time);
+				rigid_body->integrate(caped_delta_time);
 			}
 
 			// repair bvh
@@ -188,13 +206,21 @@ namespace migine {
 				}
 			}
 
+			modify_contacts(contacts);
+
 			// resolve contacts
 			if (!contacts.empty()) {
 				// prepare resolver
 				Contact_resolver contact_resolver(contacts, caped_delta_time); //DEMO1
 
 				// solve contacts
-				contact_resolver.resolve_contacts(contacts); // DEMO1
+				//contact_resolver.resolve_contacts(contacts); // DEMO1
+				if (do_resolve_penetrations) {
+					contact_resolver.resolve_penetrations(contacts);
+				}
+				if (do_resolve_velocities) {
+					contact_resolver.resolve_velocity(contacts);
+				}
 			}
 		}
 

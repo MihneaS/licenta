@@ -58,7 +58,7 @@ namespace migine {
 		// check for contacts between corners of this and faces of other
 		vector<unique_ptr<Contact>> tmp1;
 		float max_depth_1 = 0;
-		auto this_corners = get_corners();
+		auto this_corners = get_corners_world();
 		for (auto& this_corner : this_corners) {
 			if (auto collision = other.check_collision_point(this_corner, *this); collision) {
 				max_depth_1 = max(max_depth_1, collision->penetration_depth);
@@ -72,7 +72,7 @@ namespace migine {
 		// check for contacts between corners of other and faces of this
 		vector<unique_ptr<Contact>> tmp2;
 		float max_depth_2 = 0;
-		auto other_corners = other.get_corners();
+		auto other_corners = other.get_corners_world();
 		for (auto& others_corner : other_corners) {
 			if (auto collision = check_collision_point(others_corner, other); collision) {
 				max_depth_2 = max(max_depth_2, collision->penetration_depth);
@@ -99,12 +99,25 @@ namespace migine {
 			vec3 saved_pt_on_other;
 			bool found_new_contact = false;
 			vec3 saved_backup_norm{0};
+			//DEBUG
+			array<vec3, 4> saved_corners;
+			array<int, 4> saved_idxes;
+			//DEBUG
 			for (auto& [other_idx1, other_idx2] : other.get_edges_indexes_in_corners()) {
-				auto [pt_on_this_edge, pt_on_other_edge, clipped] = get_closest_points_between_segments(this_corners[this_idx1], this_corners[this_idx2], other_corners[other_idx1], other_corners[other_idx2]);
+				auto& this_corner1 = this_corners[this_idx1];
+				auto& this_corner2 = this_corners[this_idx2];
+				auto& other_corner1 = other_corners[other_idx1];
+				auto& other_corner2 = other_corners[other_idx2];
+				auto [pt_on_this_edge, pt_on_other_edge, clipped] = get_closest_points_between_segments(this_corner1, this_corner2, other_corner1, other_corner2);
 				static_assert(std::is_same<decltype(clipped), bool>());
 				if (clipped) {
 					continue;
 				}
+				assert(is_point_on_axis(this_corner1, this_corner2, pt_on_this_edge));
+				assert(is_point_on_axis(other_corner1, other_corner2, pt_on_other_edge));
+				//assert(is_point_on_axis2(this_corner1, this_corner2, pt_on_this_edge));
+				//assert(is_point_on_axis2(other_corner1, other_corner2, pt_on_other_edge));
+				// Distance^2 from Other's Center to This Edge (edge of this)
 				float d2_oc_to_te = distance2(other_center, pt_on_this_edge);
 				float d2_oc_to_oe = distance2(other_center, pt_on_other_edge);
 				if (d2_oc_to_te > d2_oc_to_oe) {
@@ -115,13 +128,13 @@ namespace migine {
 				if (d2_tc_to_oe > d2_tc_to_te) {
 					continue;
 				}
-				//get_current_scene().register_game_object(move(make_unique<Debug_point>(pt_on_this_edge)));
-				//get_current_scene().register_game_object(move(make_unique<Debug_point>(pt_on_other_edge)));
-				//assert(other.check_collision_point(pt_on_this_edge, *this));
-				//assert(this->check_collision_point(pt_on_other_edge, other));
 				found_new_contact = true;
 				float pen2 = distance2(pt_on_this_edge, pt_on_other_edge);
 				if (pen2 < min_pen2) {
+					// DEBUG
+					saved_corners = {this_corner1, this_corner2, other_corner1, other_corner2};
+					saved_idxes = {this_idx1, this_idx2, other_idx1, other_idx2};
+					// DEBUG
 					min_pen2 = pen2;
 					saved_pt_on_this = pt_on_this_edge;
 					saved_pt_on_other = pt_on_other_edge;
@@ -142,6 +155,8 @@ namespace migine {
 				if (min_pen2 == 0) {
 					norm = saved_backup_norm;
 				} else {
+					// note: saved point on this is closer to other's center and vice versa
+					// therefore norm will point towards other (also, remember AB = OB - BA)
 					norm = normalize(saved_pt_on_this - saved_pt_on_other);
 				}
 				ret.push_back(make_unique<Contact>(
@@ -163,16 +178,18 @@ namespace migine {
 		vector<unique_ptr<Contact>> ret;
 
 		vec3 sphere_center = other.get_center_world();
-		vec3 rel_sphere_center = transform.transform_to_local(sphere_center);
-		if (abs(rel_sphere_center.x) - other.get_radius() > half_side_lengths.x ||
-			abs(rel_sphere_center.y) - other.get_radius() > half_side_lengths.y ||
-			abs(rel_sphere_center.z) - other.get_radius() > half_side_lengths.z) {
+		Transform t(transform.get_world_position(), vec3{1}, transform.get_orientation());
+		vec3 scaled_half_side_lengths = half_side_lengths * transform.get_scale();
+		vec3 rel_sphere_center = t.transform_to_local(sphere_center);
+		if (abs(rel_sphere_center.x) - other.get_radius() > scaled_half_side_lengths.x ||
+			abs(rel_sphere_center.y) - other.get_radius() > scaled_half_side_lengths.y ||
+			abs(rel_sphere_center.z) - other.get_radius() > scaled_half_side_lengths.z) {
 			return ret;
 		}
 
-		vec3 closest_point = clamp(rel_sphere_center, -half_side_lengths, half_side_lengths); // TODO sigur face ce trebuie clamp?
+		vec3 closest_point = clamp(rel_sphere_center, -scaled_half_side_lengths, scaled_half_side_lengths);
 		float r = other.get_radius();
-		vec3 closest_point_world = transform.get_model() * position_to_vec4(closest_point);
+		vec3 closest_point_world = t.get_model() * position_to_vec4(closest_point);
 		float dist2 = distance2(closest_point_world, sphere_center);
 		if (dist2 > r * r) {
 			return ret;
@@ -195,7 +212,7 @@ namespace migine {
 
 	tuple<vec3, vec3> Box_collider::provide_aabb_parameters() const {
 		vec3 min_pos, max_pos;
-		auto corners = get_corners();
+		auto corners = get_corners_world();
 		min_pos = max_pos = corners[0];
 		for (int i = 1; i < corners.size(); i++) {
 			min_pos.x = min(min_pos.x, corners[i].x);
@@ -230,23 +247,29 @@ namespace migine {
 
 		//								seg1 || seg0 => seg0 = a*seg1
 
-		float d1 = dot(q0p0, seg1); //	= d1
-		float d2 = dot(seg1, seg0); //	= a d4
-		float d1d2 = d1 * d2; //		= a d1 d3
-		float d3 = dot(q0p0, seg0); //	= a d1
-		float d4 = dot(seg1, seg1); //	= d4
-		float d3d4 = d3 * d4; //		= a d1 d4
-		float dif1 = d1d2 - d3d4; //	= 0
+		//d2*d2/d4*d5 ~= 1
 
-		// if axis are not paralel, continue the initial algorithm
-		if (dif1 != 0) {
-			float d5 = dot(seg0, seg0); //	= a a d4 
+		float s0_dot_s1 = dot(seg1, seg0);
+		float s0_dot_s0 = dot(seg0, seg0);
+		float s1_dot_s1 = dot(seg1, seg1);
+
+		// if axis are not paralel, do the initial algorithm
+		if (!is_equal_aprox(s0_dot_s1 * s0_dot_s1 / (s0_dot_s0 * s1_dot_s1), 1)) {
+
+			float d1 = dot(q0p0, seg1); //	= d1
+			float d2 = s0_dot_s1;           //	= a d4
+			float d1d2 = d1 * d2;           //	= a d1 d3
+			float d3 = dot(q0p0, seg0); //	= a d1
+			float d4 = s1_dot_s1;           //	= d4
+			float d3d4 = d3 * d4;           //	= a d1 d4
+			float dif1 = d1d2 - d3d4;       //	= 0
+			float d5 = s0_dot_s0;           //	= a a d4 
 			// d6 = d4
-			float d5d6 = d5 * d4; //		= a a d4 d4
+			float d5d6 = d5 * d4;           //	= a a d4 d4
 			// d7 = d2
 			// d8 = d2
-			float d7d8 = d2 * d2; //		= a a d4 d4
-			float dif2 = d5d6 - d7d8; //	= 0
+			float d7d8 = d2 * d2;           //	= a a d4 d4
+			float dif2 = d5d6 - d7d8;       //	= 0
 			float mua = dif1 / dif2;
 			// d9 = d1
 			// d10 = d2
@@ -275,7 +298,7 @@ namespace migine {
 				mub = 1;
 				clipped = true;
 			}
-			return { lerp(seg0_p0, seg0_p1, mua), lerp(seg1_p0, seg1_p1, mub), clipped };
+			return {lerp(seg0_p0, seg0_p1, mua), lerp(seg1_p0, seg1_p1, mub), clipped};
 		} else { // else return projection of mid_point
 			vec3 mid_point = (seg0_p0 + seg0_p1 + seg1_p0 + seg1_p1 ) / 4.0f;
 			vec3 res_p0 = project_point_onto_axis(mid_point, seg0_p0, seg0_p1);
@@ -319,6 +342,12 @@ namespace migine {
 
 	bool Box_collider::fast_do_overlap(const Box_collider& other) const {
 		auto xyz_basis = make_array(vec3{1,0,0}, vec3{0,1,0}, vec3{0,0,1});
+		for (const auto& axis : xyz_basis) {
+			auto axis_other = mat3(transform.get_model()) * axis;
+			if (do_overlap_on_axis(other, axis_other)) {
+				return true;
+			}
+		}
 		for (const auto& axis1 : xyz_basis) {
 			auto axis_this = mat3(transform.get_model()) * axis1;
 			if (do_overlap_on_axis(other, axis_this)) {
@@ -326,9 +355,6 @@ namespace migine {
 			}
 			for (const auto& axis2 : xyz_basis) {
 				auto axis_other = mat3(transform.get_model()) * axis2;
-				if (do_overlap_on_axis(other, axis_other)) {
-					return true;
-				}
 				auto axis_composed = cross(axis_this, axis_other);
 				if (do_overlap_on_axis(other, axis_composed)) {
 					return true;
@@ -370,19 +396,24 @@ namespace migine {
 		vec3 contact_point_to_this_center_local = local_center - relative_point;
 
 		constexpr vec3 std_half_len = vec3{0.5};
-
-		vec3 tmp1 = other.transform.get_orientation() * vec3 { 1 };
-		vec3 tmp2 = transform.rotate_and_scale_to_local(tmp1);
-		vec3 direction = normalize(tmp2);
-		vec3 standardised_other_center = relative_point + copy_sing_element_wise(length(std_half_len) * direction, contact_point_to_other_center_local);
-		vec3 standardised_this_center = relative_point + copy_sing_element_wise(std_half_len, contact_point_to_this_center_local);
+		
+		vec3 direction = normalize(other.transform.get_orientation() * -copy_sing_element_wise(vec3{1}, other.transform.transform_to_local(point)));
+		//vec3 tmp1 = other.transform.get_orientation() * vec3 {1};
+		//vec3 tmp2 = transform.rotate_and_scale_to_local(tmp1);
+		//vec3 direction = normalize(tmp2);
+		//vec3 relative_point_to_standardised_other_center = copy_sing_element_wise(length(std_half_len) * direction, contact_point_to_other_center_local);
+		vec3 relative_point_to_standardised_other_center = length(std_half_len) * direction;
+		vec3 standardised_other_center = relative_point + relative_point_to_standardised_other_center;
+		assert(local_center == vec3{0} && half_side_lengths == vec3{0.5});
+		vec3 standardised_this_center = local_center;
+		//vec3 standardised_this_center = relative_point + copy_sing_element_wise(std_half_len, contact_point_to_this_center_local);
 
 		// observation: relative point from standardised centers is canceled out in the subtraction below
 		vec3 standardised_this_center_to_other_center = standardised_other_center - standardised_this_center;
 
-		float x_projection = abs(dot({1,0,0}, standardised_this_center_to_other_center));
-		float y_projection = abs(dot({0,1,0}, standardised_this_center_to_other_center));
-		float z_projection = abs(dot({0,0,1}, standardised_this_center_to_other_center));
+		float x_projection = abs(standardised_this_center_to_other_center.x);
+		float y_projection = abs(standardised_this_center_to_other_center.y);
+		float z_projection = abs(standardised_this_center_to_other_center.z);
 
 		int best_axis = -1;
 		if (x_projection > y_projection && x_projection > z_projection) {

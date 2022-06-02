@@ -97,7 +97,7 @@ namespace migine {
 	}
 
 	void Scene_07::on_key_press(int key, int mods) {
-		// add key press event
+		basic_bool_button_changer(key, mods);
 	}
 
 	void Scene_07::on_key_release(int key, int mods) {

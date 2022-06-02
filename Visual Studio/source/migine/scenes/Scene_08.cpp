@@ -193,4 +193,8 @@ namespace migine {
 		draw_coordinat_system();
 		Scene_base::frame_end();
 	}
+
+	void Scene_08::on_key_press(int key, int mods) {
+		basic_bool_button_changer(key, mods);
+	}
 } 

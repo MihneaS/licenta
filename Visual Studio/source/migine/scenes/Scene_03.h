@@ -30,7 +30,9 @@ namespace migine {
 		void on_mouse_scroll(int mouse_x, int mouse_y, int offset_x, int offset_y) override;
 		void on_window_resize(int width, int height) override;
 
-	public:
+
+		void modify_contacts(std::vector<std::unique_ptr<Contact>>& contacts) override;
+
 		unsigned int material_shininess;
 		float material_kd;
 		float material_ks;

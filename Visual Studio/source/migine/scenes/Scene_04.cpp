@@ -90,7 +90,6 @@ namespace migine {
 
 	void Scene_04::update(float deltaTimeSeconds) {
 		Scene_base::update(deltaTimeSeconds);
-		float caped_delta_time = min(deltaTimeSeconds, 1.0f / 20); // TODO nu e ok sa fie si aici si in Scene_base::update
 	}
 
 	void Scene_04::frame_end() {
@@ -105,7 +104,7 @@ namespace migine {
 	}
 
 	void Scene_04::on_key_press(int key, int mods) {
-		// add key press event
+		basic_bool_button_changer(key, mods);
 	}
 
 	void Scene_04::on_key_release(int key, int mods) {

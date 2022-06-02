@@ -22,6 +22,7 @@ namespace migine {
 		void frame_end() override;
 
 		void on_key_press(int key, int mods) override;
+		void modify_contacts(std::vector<std::unique_ptr<Contact>>& contacts) override;
 
 	public:
 		unsigned int material_shininess;

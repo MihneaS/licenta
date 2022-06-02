@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\licentaaa\licenta egc\Framework-EGC-master\Visual Studio\source\migine\scenes\Scene_11.cpp" />
     <ClCompile Include="..\Source\Component\CameraInput.cpp" />
     <ClCompile Include="..\Source\Core\Engine.cpp" />
     <ClCompile Include="..\Source\Core\GPU\GPUBuffers.cpp" />
@@ -69,12 +68,12 @@
     <ClCompile Include="source\migine\scenes\Scene_08.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_09.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_10.cpp" />
+    <ClCompile Include="source\migine\scenes\Scene_11.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_input.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_base.cpp" />
     <ClCompile Include="source\migine\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\licentaaa\licenta egc\Framework-EGC-master\Visual Studio\source\migine\scenes\Scene_11.h" />
     <ClInclude Include="..\Source\Component\CameraInput.h" />
     <ClInclude Include="..\Source\Core\Engine.h" />
     <ClInclude Include="..\Source\Core\GPU\GPUBuffers.h" />
@@ -137,6 +136,7 @@
     <ClInclude Include="source\migine\scenes\Scene_07.h" />
     <ClInclude Include="source\migine\scenes\Scene_08.h" />
     <ClInclude Include="source\migine\scenes\Scene_10.h" />
+    <ClInclude Include="source\migine\scenes\Scene_11.h" />
     <ClInclude Include="source\migine\scenes\Scene_input.h" />
     <ClInclude Include="source\migine\scenes\Scene_base.h" />
     <ClInclude Include="source\migine\utils.h" />

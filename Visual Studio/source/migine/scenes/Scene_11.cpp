@@ -81,74 +81,7 @@ namespace migine {
 	}
 
 	void Scene_11::update(float deltaTimeSeconds) {
-		int pairs_in_contact = 0;
-		if (time_slowed) {
-			deltaTimeSeconds /= 10;
-		}
-		if (!time_stopped) {
-			// cap delta time
-			float caped_delta_time = min(deltaTimeSeconds, 1.0f / 20);
-
-			// apply forces
-			force_registry.update_forces(caped_delta_time);
-
-			// move bodies and update colliders in bvh (aka broad worst_collision phase)
-			for (auto& rigid_body : rigid_bodies) {
-				bool has_moved = rigid_body->integrate(caped_delta_time);
-			}
-
-			// repair bvh
-			bvh.clean_dirty_nodes();
-
-			// narrow worst_collision phase
-			vector<unique_ptr<Contact>> contacts;
-			for (auto& [obj0, obj1] : bvh.get_contacts()) {
-				auto new_collisions = obj0->check_collision(*obj1);
-				if (new_collisions.size() > 0) {
-					pairs_in_contact++;
-				}
-				for (auto& new_collision : new_collisions) {
-					contacts.push_back(move(new_collision));
-				}
-			}
-
-			// resolve contacts
-			if (!contacts.empty()) {
-				// prepare resolver
-				Contact_resolver contact_resolver(contacts, caped_delta_time); //DEMO1
-
-				// solve contacts
-				contact_resolver.resolve_contacts(contacts); // DEMO1
-			}
-		}
-
-		// render
-		for (auto& renderer : renderers) {
-			renderer->render(this->get_scene_camera());
-		}
-		bvh.render_all(*camera);
-
-		// print stats
-		static float last_printing_time = 0;
-		static int total_frames = 0;
-		static int frames_since_printing = 0;
-		frames_since_printing++;
-		total_frames++;
-		float current_time = get_elapsed_time();
-		if (float delta_time_printing = current_time - last_printing_time; delta_time_printing > 0.66) {
-			stringstream ss;
-			ss << "fps:" << frames_since_printing / delta_time_printing << ";";
-			frames_since_printing = 0;
-			last_printing_time = current_time;
-			ss << " broad contacts:" << bvh.get_contact_count() << ";";
-			ss << " pairs in narrow contact:" << pairs_in_contact << ";";
-			ss << " insertions:" << bvh.insertion_count << ";";
-			//ss << " broad intersection checks:" << bvh.aabb_intersection_operations_count << ";";
-			ss << " time:" << current_time << ";";
-			ss << " frames:" << total_frames << ";";
-			continous_print_line_reset();
-			continous_print(ss.str());
-		}
+		Scene_base::update(deltaTimeSeconds);
 	}
 
 	void Scene_11::frame_end() {
@@ -157,11 +90,6 @@ namespace migine {
 	}
 
 	void Scene_11::on_key_press(int key, int mods) {
-		if (key == GLFW_KEY_T) {
-			time_stopped = !time_stopped;
-		}
-		if (key == GLFW_KEY_Y) {
-			time_slowed = !time_slowed;
-		}
+		basic_bool_button_changer(key, mods);
 	}
 }

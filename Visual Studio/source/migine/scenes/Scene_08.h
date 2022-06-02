@@ -20,5 +20,7 @@ namespace migine {
 		void frame_start() override;
 		void update(float delta_time_seconds) override;
 		void frame_end() override;
+
+		void on_key_press(int key, int mods) override;
 	};
 }

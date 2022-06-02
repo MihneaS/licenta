@@ -7,6 +7,7 @@
 #include <migine/game_objects/components/Transform.h>
 #include <migine/physics/Rigid_body.h>
 #include <migine/physics/force_generators.h>
+#include <migine/contact_detection/Contact.h>
 
 #include <Core/World.h>
 
@@ -70,6 +71,9 @@ namespace migine {
 		// deprecated
 		void register_game_object2(std::unique_ptr<Game_object> game_object);
 
+		void basic_bool_button_changer(int key, int mods);
+		virtual void modify_contacts(std::vector<std::unique_ptr<Contact>>& contacts);
+
 		glm::vec3 light_position;
 		glm::vec3 light_direction;
 		// TODO use unique
@@ -101,6 +105,8 @@ namespace migine {
 		std::vector<std::unique_ptr<Force_generator_base>> default_fs_gen;
 		bool time_stopped = false;
 		bool time_slowed = false;
+		bool do_resolve_penetrations = true;
+		bool do_resolve_velocities = true;
 
 	private:
 		void init_resources();

@@ -8,6 +8,8 @@
 #include <migine/scenes/Scene_06.h>
 #include <migine/game_objects/shapes/Box.h>
 
+#include <migine/define.h>
+
 using glm::mat3;
 using glm::vec3;
 using glm::quat;
@@ -111,7 +113,7 @@ namespace migine {
 			array<float, 2> linear_inertia = {0};
 			float total_inertia = 0;
 			for (int i = 0; i < 2; i++) {
-				const mat3& inverse_inertia_tensor = worst_contact.objs[i]->get_inverse_invertia_tensor();
+				const mat3& inverse_inertia_tensor = worst_contact.objs[i]->get_inverse_invertia_tensor_world();
 				// Use the same procedure as for calculating frictionless
 				// velocity change to work out the angular inertia.
 				vec3 angular_inertia_world = cross(more_data.relative_contact_positions[i], worst_contact.normal);
@@ -164,7 +166,7 @@ namespace migine {
 				}
 			}
 
-			// update penetrations and velocities
+			// update penetrations
 			for (int i = 0; i < contacts.size(); i++) {
 				for (int j = 0; j < 2; j++) {
 					for (int k = 0; k < 2; k++) {
@@ -363,7 +365,7 @@ namespace migine {
 			// apply move
 			auto [velocity_change, rotation_change] = apply_move(*contacts[worst_collision_idx].get(), additional_contact_data[worst_collision_idx]);
 			
-			// update penetrations and velocities
+			// update velocities
 			for (int i = 0; i < contacts.size(); i++) {
 				for (int j = 0; j < 2; j++) {
 					for (int k = 0; k < 2; k++) {
@@ -398,8 +400,27 @@ namespace migine {
 			rotation_change[i] = sign * obj.get_inverse_invertia_tensor() * impulsive_torque;
 			velocity_change[i] = sign * unit_impulse * obj.get_inverse_mass();
 
+#ifdef DEBUGGING
+			float total_old_kinetic_energy = 0;
+			for (int i = 0; i < 2; i++) {
+				if (contact.objs[i]->get_inverse_mass() != 0) {
+					total_old_kinetic_energy += contact.objs[i]->get_kinetic_energy();
+				}
+			}
+#endif // DEBUGGING
+
 			obj.add_velocity(velocity_change[i]);
-			obj.add_angular_velocity(rotation_change[i]); // TODO TODO nu cred ca e ok ca am pus minus aici!
+			obj.add_angular_velocity(rotation_change[i]);
+		
+#ifdef DEBUGGING
+			float total_new_kinetic_energy = 0;
+			for (int i = 0; i < 2; i++) {
+				if (contact.objs[i]->get_inverse_mass() != 0) {
+					total_new_kinetic_energy += contact.objs[i]->get_kinetic_energy();
+				}
+			}
+			//assert(total_new_kinetic_energy <= total_old_kinetic_energy);
+#endif // DEBUGGING
 		}
 
 		return {velocity_change, rotation_change};

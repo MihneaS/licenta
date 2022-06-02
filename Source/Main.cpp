@@ -7,6 +7,12 @@ using namespace std;
 
 #include <migine/scenes/current_scene.h>
 
+extern "C" {
+	// use dedicated graphics card if available
+	__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
+	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+}
+
 int main(int argc, char **argv)
 {
 	srand((unsigned int)time(NULL));

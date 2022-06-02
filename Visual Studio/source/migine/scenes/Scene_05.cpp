@@ -80,6 +80,21 @@ namespace migine {
 			vec3 v3{ 0 };
 
 			cout << "cross vs skew_mat:" << glm::cross(v1, v2).z << " " << (get_skew_symmetric(v1) * v2).z << "\n";
+
+
+			vec3 y{0,1,0};
+			vec3 x{1,0,0};
+			quat qx(0, 1, 0, 0);
+			quat qy(0, 0, 1, 0);
+			quat q(cos(90 * k_deg_to_rad), vec3{1,0,0});
+			cout << "y doar o rotatie: " << q * y << "\n";
+			cout << "y ambele rotatii: " << q * y * glm::conjugate(q) << "\n";
+			cout << "x doar o rotatie: " << q * x << "\n";
+			cout << "x ambele rotatii: " << q * x * glm::conjugate(q) << "\n";
+			cout << "qy doar o rotatie: " << q * qy << "\n";
+			cout << "qy ambele rotatii: " << q * qy * glm::conjugate(q) << "\n";
+			cout << "qx doar o rotatie: " << q * qx << "\n";
+			cout << "qx ambele rotatii: " << q * qx * glm::conjugate(q) << "\n";
 		}
 
 		for (auto& game_object : game_objects) {
@@ -94,7 +109,6 @@ namespace migine {
 
 	void Scene_05::update(float deltaTimeSeconds) {
 		Scene_base::update(deltaTimeSeconds);
-		float caped_delta_time = min(deltaTimeSeconds, 1.0f / 20); // TODO nu e ok sa fie si aici si in Scene_base::update
 	}
 
 	void Scene_05::frame_end() {
@@ -109,7 +123,7 @@ namespace migine {
 	}
 
 	void Scene_05::on_key_press(int key, int mods) {
-		// add key press event
+		basic_bool_button_changer(key, mods);
 	}
 
 	void Scene_05::on_key_release(int key, int mods) {

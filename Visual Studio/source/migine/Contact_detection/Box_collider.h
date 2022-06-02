@@ -34,7 +34,7 @@ namespace migine {
 		bool do_overlap_on_axis(const Box_collider& other, glm::vec3 axis) const;
 		bool fast_do_overlap(const Box_collider& other) const;
 		std::unique_ptr<Contact> check_collision_point(glm::vec3 point, Collider_base& other);
-		auto get_corners() const { // TODO force inline maybe??? if this is not inlined, std::vector is better
+		auto get_corners_world() const { // TODO force inline maybe??? if this is not inlined, std::vector is better
 			auto corners = make_array(
 				local_center + glm::vec3({-half_side_lengths.x, -half_side_lengths.y, -half_side_lengths.z}), //0
 				local_center + glm::vec3({+half_side_lengths.x, -half_side_lengths.y, -half_side_lengths.z}), //1

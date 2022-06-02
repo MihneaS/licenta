@@ -38,7 +38,7 @@ namespace migine {
 		float dist2 = distance2(center, other.center);
 		if (dist2 < radii_sum * radii_sum) {
 			vec3 this_to_other = other.center - center;
-			vec3 contact_point = this_to_other / 2.0f;
+			vec3 contact_point = (other.center + center) / 2.0f;
 			float pen_depth = radii_sum - sqrtf(dist2);
 			ret.push_back(make_unique<Contact>(this, &other, contact_point, normalize(this_to_other), pen_depth));
 #ifdef DEBUGGING
