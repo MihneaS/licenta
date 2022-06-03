@@ -381,7 +381,7 @@ namespace migine {
 				}
 			}
 			
-			assert(more_data.desired_delta_velocity < debug_original_desired_delta_velocity); // assert that penetration depth was improved
+			assert(more_data.desired_delta_velocity < debug_original_desired_delta_velocity); // assert that desired velocity decreased
 		}
 	}
 
