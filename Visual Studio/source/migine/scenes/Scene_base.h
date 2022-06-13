@@ -107,6 +107,7 @@ namespace migine {
 		bool time_slowed = false;
 		bool do_resolve_penetrations = true;
 		bool do_resolve_velocities = true;
+		int penetration_type = 1;
 
 	private:
 		void init_resources();

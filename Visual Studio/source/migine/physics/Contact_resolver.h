@@ -29,7 +29,7 @@ namespace migine {
 		void resolve_contacts(std::vector<std::unique_ptr<Contact>>& contacts);
 		void resolve_penetrations(std::vector<std::unique_ptr<Contact>>& contacts);
 		void resolve_penetrations_linearly(std::vector<std::unique_ptr<Contact>>& contacts);
-		void resolve_penetrations_linearly_01(std::vector<std::unique_ptr<Contact>>& contacts);
+		void resolve_penetrations_by_rotation(std::vector<std::unique_ptr<Contact>>& contacts);
 		void resolve_velocity(std::vector<std::unique_ptr<Contact>>& contacts);
 
 	private:

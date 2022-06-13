@@ -10,25 +10,6 @@ using glm::quat;
 using glm::toMat4;
 using glm::rotate;
 
-/*
-namespace migine {
-	Transform::Transform(const vec3& position, const vec3& scale, const quat& orientation) {
-		world_model = glm::scale(world_model, scale);
-		rotate(orientation);
-		translate(position);
-	}
-	
-	void Transform::translate(const vec3& delta_position) {
-		world_model = glm::translate(world_model, delta_position);
-	}
-
-	void Transform::rotate(const quat& delta_rotation) {
-		world_model = toMat4(delta_rotation) * world_model;
-	}
-
-}
-*/
-
 namespace migine {
 	Transform::Transform(vec3 position, vec3 scale, glm::quat orientation) :
 		world_position(position), scale(scale),  orientation(orientation) {
@@ -38,7 +19,7 @@ namespace migine {
 	void Transform::change_state_with_delta (vec3 delta_pos, vec3 relative_scale_change, vec3 delta_rot) {
 		world_position += delta_pos;
 		scale *= relative_scale_change;
-		orientation *= euler_angles_to_quat(delta_rot);
+		change_orientation_with_delta(delta_rot);
 
 		internal_update();
 	}

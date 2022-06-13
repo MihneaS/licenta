@@ -76,6 +76,15 @@ namespace migine {
 		if (key == GLFW_KEY_V) {
 			do_resolve_velocities = !do_resolve_velocities;
 		}
+		if (key == GLFW_KEY_1) {
+			penetration_type = 1;
+		}
+		if (key == GLFW_KEY_2) {
+			penetration_type = 2;
+		}
+		if (key == GLFW_KEY_3) {
+			penetration_type = 3;
+		}
 	}
 
 	void Scene_base::modify_contacts(vector<unique_ptr<Contact>>& contacts) {
@@ -216,7 +225,16 @@ namespace migine {
 				// solve contacts
 				//contact_resolver.resolve_contacts(contacts); // DEMO1
 				if (do_resolve_penetrations) {
-					contact_resolver.resolve_penetrations(contacts);
+					switch (penetration_type) {
+					case 2:
+						contact_resolver.resolve_penetrations_linearly(contacts);
+						break;
+					case 3:
+						contact_resolver.resolve_penetrations_by_rotation(contacts);
+						break;
+					default:
+						contact_resolver.resolve_penetrations(contacts);
+					}
 				}
 				if (do_resolve_velocities) {
 					contact_resolver.resolve_velocity(contacts);

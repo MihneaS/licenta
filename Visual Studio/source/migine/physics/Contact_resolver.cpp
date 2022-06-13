@@ -157,7 +157,7 @@ namespace migine {
 
 				// apply angular move
 				if (!is_zero_aprox(angular_inertia[i])) {
-					const mat3& inverse_inertia_tensor = worst_contact.objs[i]->get_inverse_invertia_tensor();
+					const mat3& inverse_inertia_tensor = worst_contact.objs[i]->get_inverse_invertia_tensor_world();
 					vec3 impulsive_torque = cross(more_data.relative_contact_positions[i], worst_contact.normal);
 					vec3 impulse_per_move = inverse_inertia_tensor * impulsive_torque;
 					vec3 rotation_per_move = impulse_per_move / angular_inertia[i];
@@ -167,66 +167,6 @@ namespace migine {
 			}
 
 			// update penetrations
-			for (int i = 0; i < contacts.size(); i++) {
-				for (int j = 0; j < 2; j++) {
-					for (int k = 0; k < 2; k++) {
-						if (contacts[i]->objs[j] == worst_contact.objs[k]) {
-							// update penetrations
-							vec3 cross_product = cross(orientation_change[k], additional_contact_data[i].relative_contact_positions[j]);
-							cross_product += position_change[k];
-							//int sign = -1 + 2 * j; // = j ? 1 : -1;
-							int sign = 1 - 2 * j; // = j ? -1 : 1;
-							contacts[i]->penetration_depth += sign * dot(cross_product, contacts[i]->normal);
-						}
-					}
-				}
-			}
-			assert(worst_penetration >= worst_contact.penetration_depth); // assert that penetration depth was improved
-		}
-	}
-
-	void Contact_resolver::resolve_penetrations_linearly_01(vector<unique_ptr<Contact>>& contacts) {
-		for (int position_iteration = 0; position_iteration < k_maximum_position_correcting_iterations; position_iteration++) {
-			// find worst (deepest) worst_contact
-			int worst_collision_idx = -1;
-			float worst_penetration = k_penetration_epsilon;
-			for (int i = 0; i < contacts.size(); i++) {
-				if (contacts[i]->penetration_depth > worst_penetration) {
-					worst_penetration = contacts[i]->penetration_depth;
-					worst_collision_idx = i;
-				}
-			}
-			if (worst_collision_idx < 0) {
-				break;
-			}
-
-			// solve worst worst_contact
-			// calculate linear and angular movement
-			const Contact& worst_contact = *contacts[worst_collision_idx].get();
-			const Additional_contact_data more_data = additional_contact_data[worst_collision_idx];
-			array<float, 2> linear_inertia = { 0 };
-			float total_inertia = 0;
-			for (int i = 0; i < 2; i++) {
-				const mat3& inverse_inertia_tensor = worst_contact.objs[i]->get_inverse_invertia_tensor();
-				linear_inertia[i] = worst_contact.objs[i]->get_inverse_mass();
-				// Keep track of the total inertia from all components.
-				total_inertia += linear_inertia[i];
-			}
-			float inverse_inertia = 1 / total_inertia;
-			auto linear_move = make_array(
-				-worst_contact.penetration_depth * linear_inertia[0] * inverse_inertia,
-				worst_contact.penetration_depth * linear_inertia[1] * inverse_inertia
-			);
-
-			// apply move
-			vec3 position_change[2], orientation_change[2];
-			for (int i = 0; i < 2; i++) {
-				// apply linear move
-				position_change[i] = worst_contact.normal * linear_move[i];
-				worst_contact.objs[i]->transform.change_position_with_delta(position_change[i]);
-			}
-
-			// update penetrations and velocities
 			for (int i = 0; i < contacts.size(); i++) {
 				for (int j = 0; j < 2; j++) {
 					for (int k = 0; k < 2; k++) {
@@ -264,65 +204,28 @@ namespace migine {
 			// calculate linear and angular movement
 			const Contact& worst_contact = *contacts[worst_collision_idx].get();
 			const Additional_contact_data more_data = additional_contact_data[worst_collision_idx];
-			array<float, 2> angular_inertia = { 0 };
 			array<float, 2> linear_inertia = { 0 };
 			float total_inertia = 0;
 			for (int i = 0; i < 2; i++) {
-				const mat3& inverse_inertia_tensor = worst_contact.objs[i]->get_inverse_invertia_tensor();
-				// Use the same procedure as for calculating frictionless
-				// velocity change to work out the angular inertia.
-				vec3 angular_inertia_world = cross(more_data.relative_contact_positions[i], worst_contact.normal);
-				angular_inertia_world = inverse_inertia_tensor * angular_inertia_world;
-				angular_inertia_world = cross(angular_inertia_world, more_data.relative_contact_positions[i]);
-				angular_inertia[i] = dot(angular_inertia_world, worst_contact.normal);
-				// The linear component is simply the inverse mass.
 				linear_inertia[i] = worst_contact.objs[i]->get_inverse_mass();
 				// Keep track of the total inertia from all components.
-				total_inertia += linear_inertia[i] + angular_inertia[i];
+				total_inertia += linear_inertia[i];
 			}
 			float inverse_inertia = 1 / total_inertia;
 			auto linear_move = make_array(
 				-worst_contact.penetration_depth * linear_inertia[0] * inverse_inertia,
 				worst_contact.penetration_depth * linear_inertia[1] * inverse_inertia
 			);
-			auto angular_move = make_array(
-				-worst_contact.penetration_depth * angular_inertia[0] * inverse_inertia,
-				worst_contact.penetration_depth * angular_inertia[1] * inverse_inertia
-			);
-
-			// avoid excesive rotation
-			for (int i = 0; i < 2; i++) {
-				float limit = k_angular_move_limit * length(more_data.relative_contact_positions[i]);
-				// Check the angular move is within limits.
-				if (fabs(angular_move[i]) > limit) {
-					float total_move = linear_move[i] + angular_move[i];
-					// Set the new angular move, with the same sign as before.
-					angular_move[i] = copysign(angular_move[i], limit);
-					// Make the linear move take the extra slack.
-					linear_move[i] = total_move - angular_move[i];
-				}
-			}
 
 			// apply move
 			vec3 position_change[2], orientation_change[2];
 			for (int i = 0; i < 2; i++) {
-				assert(worst_contact.objs[i]->get_inverse_mass() != 0 || (position_change[i] == k_vec3_zero && angular_move[i] == 0));
 				// apply linear move
 				position_change[i] = worst_contact.normal * linear_move[i];
 				worst_contact.objs[i]->transform.change_position_with_delta(position_change[i]);
-
-				// apply angular move
-				if (!is_zero_aprox(angular_inertia[i])) {
-					const mat3& inverse_inertia_tensor = worst_contact.objs[i]->get_inverse_invertia_tensor();
-					vec3 impulsive_torque = cross(more_data.relative_contact_positions[i], worst_contact.normal);
-					vec3 impulse_per_move = inverse_inertia_tensor * impulsive_torque;
-					vec3 rotation_per_move = impulse_per_move / angular_inertia[i];
-					orientation_change[i] = rotation_per_move * angular_move[i];
-					worst_contact.objs[i]->transform.change_orientation_with_delta(orientation_change[i]);
-				}
 			}
 
-			// update penetrations
+			// update penetrations and velocities
 			for (int i = 0; i < contacts.size(); i++) {
 				for (int j = 0; j < 2; j++) {
 					for (int k = 0; k < 2; k++) {
@@ -338,6 +241,82 @@ namespace migine {
 				}
 			}
 			assert(worst_penetration >= worst_contact.penetration_depth); // assert that penetration depth was improved
+		}
+	}
+
+	void Contact_resolver::resolve_penetrations_by_rotation(vector<unique_ptr<Contact>>& contacts) {
+		for (int position_iteration = 0; position_iteration < k_maximum_position_correcting_iterations; position_iteration++) {
+			// find worst (deepest) worst_contact
+			int worst_collision_idx = -1;
+			float worst_penetration = k_penetration_epsilon;
+			for (int i = 0; i < contacts.size(); i++) {
+				if (contacts[i]->penetration_depth > worst_penetration) {
+					worst_penetration = contacts[i]->penetration_depth;
+					worst_collision_idx = i;
+				}
+			}
+			if (worst_collision_idx < 0) {
+				break;
+			}
+
+			// solve worst worst_contact
+			// calculate linear and angular movement
+			Contact& worst_contact = *contacts[worst_collision_idx].get();
+			const Additional_contact_data more_data = additional_contact_data[worst_collision_idx];
+
+			//if (worst_contact.objs[0]->get_inverse_mass() != 0 && worst_contact.objs[1]->get_inverse_mass() != 0) {
+			//	int i = 0;
+			//	assert(true);
+			//	i++;
+			//}
+
+			array<float, 2> angular_inertia = {0};
+			float total_inertia = 0;
+			for (int i = 0; i < 2; i++) {
+				const mat3& inverse_inertia_tensor = worst_contact.objs[i]->get_inverse_invertia_tensor_world();
+				// Use the same procedure as for calculating frictionless
+				// velocity change to work out the angular inertia.
+				vec3 angular_inertia_world = cross(more_data.relative_contact_positions[i], worst_contact.normal);
+				angular_inertia_world = inverse_inertia_tensor * angular_inertia_world;
+				angular_inertia_world = cross(angular_inertia_world, more_data.relative_contact_positions[i]);
+				angular_inertia[i] = dot(angular_inertia_world, worst_contact.normal);
+				// Keep track of the total inertia from all components.
+				total_inertia += angular_inertia[i];
+			}
+			float inverse_inertia = 1 / total_inertia;
+			auto angular_move = make_array(
+				-worst_contact.penetration_depth * angular_inertia[0] * inverse_inertia,
+				worst_contact.penetration_depth * angular_inertia[1] * inverse_inertia
+			);
+
+			// avoid excesive rotation
+			for (int i = 0; i < 2; i++) {
+				float limit = k_angular_move_limit * length(more_data.relative_contact_positions[i]);
+				// Check the angular move is within limits.
+				if (fabs(angular_move[i]) > limit) {
+					float total_move = angular_move[i];
+					// Set the new angular move, with the same sign as before.
+					angular_move[i] = copysign(angular_move[i], limit);
+				}
+			}
+
+			// apply move
+			vec3 orientation_change[2];
+			for (int i = 0; i < 2; i++) {
+
+				// apply angular move
+				if (!is_zero_aprox(angular_inertia[i])) {
+					const mat3& inverse_inertia_tensor = worst_contact.objs[i]->get_inverse_invertia_tensor_world();
+					vec3 impulsive_torque = cross(more_data.relative_contact_positions[i], worst_contact.normal);
+					vec3 impulse_per_move = inverse_inertia_tensor * impulsive_torque;
+					vec3 rotation_per_move = impulse_per_move / angular_inertia[i];
+					orientation_change[i] = rotation_per_move * angular_move[i];
+					worst_contact.objs[i]->transform.change_orientation_with_delta(orientation_change[i]);
+				}
+			}
+
+			// update penetrations
+			worst_contact.penetration_depth = 0;
 		}
 	}
 
@@ -397,7 +376,7 @@ namespace migine {
 			float sign = -1 + 2 * i; // = i ? -1 : 1;
 			auto& obj = *contact.objs[i];
 			vec3 impulsive_torque = cross(more_data.relative_contact_positions[i], unit_impulse);
-			rotation_change[i] = sign * obj.get_inverse_invertia_tensor() * impulsive_torque;
+			rotation_change[i] = sign * obj.get_inverse_invertia_tensor_world() * impulsive_torque;
 			velocity_change[i] = sign * unit_impulse * obj.get_inverse_mass();
 
 #ifdef DEBUGGING
@@ -432,7 +411,7 @@ namespace migine {
 		float delta_velocity = 0;
 		for (int i = 0; i < 2; i++) {
 			vec3 delta_vel_world = cross(more_data.relative_contact_positions[i], contact.normal);
-			delta_vel_world = contact.objs[i]->get_inverse_invertia_tensor() * delta_vel_world;
+			delta_vel_world = contact.objs[i]->get_inverse_invertia_tensor_world() * delta_vel_world;
 			delta_vel_world = cross(delta_vel_world, more_data.relative_contact_positions[i]);
 
 			delta_velocity += dot(delta_vel_world, contact.normal);
@@ -455,7 +434,7 @@ namespace migine {
 			inverse_mass += contact.objs[i]->get_inverse_mass();
 			mat3 impulse_to_torque = get_skew_symmetric(more_data.relative_contact_positions[i]);
 			mat3 delta_vel_world_i = impulse_to_torque;
-			delta_vel_world_i *= contact.objs[i]->get_inverse_invertia_tensor();
+			delta_vel_world_i *= contact.objs[i]->get_inverse_invertia_tensor_world();
 			delta_vel_world_i *= impulse_to_torque;
 			delta_vel_world_i *= -1;
 			delta_vel_world += delta_vel_world_i;

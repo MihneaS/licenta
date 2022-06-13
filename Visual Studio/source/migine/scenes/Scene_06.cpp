@@ -150,7 +150,7 @@ namespace migine {
 
 			// prepare resolver
 			Contact_resolver contact_resolver_l(linearly, caped_delta_time); //DEMO1
-			contact_resolver_l.resolve_penetrations_linearly_01(linearly);
+			contact_resolver_l.resolve_penetrations_linearly(linearly);
 			Contact_resolver contact_resolver_n(normaly, caped_delta_time);
 			//contact_resolver_n.resolve_penetrations_linearly(normaly);
 			contact_resolver_n.resolve_penetrations(normaly);
