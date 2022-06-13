@@ -78,7 +78,9 @@ namespace migine {
 		if (len == 0) {
 			return;
 		}
-		orientation = rotate(orientation,len,  rotation / len);
+		quat tmp = rotate(quat(), len, rotation / len);
+		orientation = tmp * orientation;
+		//orientation = rotate(orientation, len,  rotation / len);
 		internal_update();
 	}
 
