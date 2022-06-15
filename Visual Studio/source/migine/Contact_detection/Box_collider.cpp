@@ -213,7 +213,7 @@ namespace migine {
 		return ret;
 	}
 
-	tuple<vec3, vec3> Box_collider::provide_aabb_parameters() const {
+	tuple<vec3, vec3> Box_collider::provide_slim_aabb_parameters() const {
 		vec3 min_pos, max_pos;
 		auto corners = get_corners_world();
 		min_pos = max_pos = corners[0];
@@ -225,6 +225,26 @@ namespace migine {
 			max_pos.y = max(max_pos.y, corners[i].y);
 			max_pos.z = max(max_pos.z, corners[i].z);
 		}
+		return {min_pos, max_pos};
+	}
+
+	tuple<vec3, vec3> Box_collider::provide_fat_aabb_parameters() const {
+		vec3 scaled_half_side_lenghts = transform.get_scale() * half_side_lengths; // TODO suppose element wise multiplication
+		float dist_to_corner = length(scaled_half_side_lenghts);
+		vec3 center_world = transform.get_model() * position_to_vec4(local_center);
+		vec3 moved_center_world = center_world + k_aabb_fattening_time * get_velocity();
+
+		vec3 min_pos;
+		vec3 max_pos;
+
+		min_pos.x = min(center_world.x, moved_center_world.x) - dist_to_corner;
+		min_pos.y = min(center_world.y, moved_center_world.y) - dist_to_corner;
+		min_pos.z = min(center_world.z, moved_center_world.z) - dist_to_corner;
+
+		max_pos.x = max(center_world.x, moved_center_world.x) + dist_to_corner;
+		max_pos.y = max(center_world.y, moved_center_world.y) + dist_to_corner;
+		max_pos.z = max(center_world.z, moved_center_world.z) + dist_to_corner;
+
 		return {min_pos, max_pos};
 	}
 

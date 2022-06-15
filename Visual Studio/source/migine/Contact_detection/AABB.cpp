@@ -35,7 +35,7 @@ namespace migine {
 	}
 
 	AABB::AABB(not_null<const Collider_base*> collider) :
-		AABB(collider->provide_aabb_parameters()) {
+		AABB(collider->provide_fat_aabb_parameters()) {
 	}
 
 
@@ -100,9 +100,16 @@ namespace migine {
 	}
 
 	bool AABB::contains(glm::vec3 point) const {
-		return min_pos.x < point.x&& point.x < max_pos.x&&
-			min_pos.y < point.y&& point.y < max_pos.y&&
-			min_pos.z < point.z&& point.z < max_pos.z;
+		return min_pos.x <= point.x && point.x <= max_pos.x &&
+		       min_pos.y <= point.y && point.y <= max_pos.y &&
+		       min_pos.z <= point.z && point.z <= max_pos.z;
+	}
+
+	bool AABB::contains(std::tuple<glm::vec3, glm::vec3> min_pos_max_pos) const {
+		auto [p_min, p_max] = min_pos_max_pos;
+		return min_pos.x <= p_min.x && p_max.x <= max_pos.x &&
+		       min_pos.y <= p_min.y && p_max.y <= max_pos.y &&
+		       min_pos.z <= p_min.z && p_max.z <= max_pos.z;
 	}
 
 

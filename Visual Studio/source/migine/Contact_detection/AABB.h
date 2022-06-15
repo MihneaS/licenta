@@ -6,6 +6,8 @@
 
 #include <gsl/gsl>
 
+#include <tuple>
+
 #ifdef DEBUGGING
 #include <migine/game_objects/rendering/Wireframe_renderer.h>
 #include <migine/game_objects/components/Has_transform.h>
@@ -34,6 +36,7 @@ namespace migine {
 		void resize(AABB child0, AABB child1);
 		bool does_intersect(AABB other) const;
 		bool contains(glm::vec3 point) const;
+		bool contains(std::tuple<glm::vec3, glm::vec3> min_pos_max_pos) const;
 
 #ifdef DEBUGGING
 		void render(const Camera& camera) override;

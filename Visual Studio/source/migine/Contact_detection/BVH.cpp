@@ -320,7 +320,10 @@ namespace migine {
 
 	void BVH::clean_dirty_nodes() {
 		for (auto& node : dirty_nodes) {
-			update(node->bounded_object);
+			auto [min_pos, max_pos] = node->bounded_object->provide_slim_aabb_parameters();
+			if (!node->bounding_volume.contains(node->bounded_object->provide_slim_aabb_parameters())) {
+				update(node->bounded_object);
+			}
 		}
 		dirty_nodes.clear();
 	}

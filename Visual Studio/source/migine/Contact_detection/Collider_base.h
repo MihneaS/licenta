@@ -26,6 +26,7 @@ namespace migine {
 		virtual std::vector<std::unique_ptr<Contact>> check_collision(Box_collider& other)  = 0;
 		virtual std::vector<std::unique_ptr<Contact>> check_collision(Sphere_collider& other) = 0;
 
-		virtual std::tuple<glm::vec3, glm::vec3> provide_aabb_parameters() const = 0;
+		virtual std::tuple<glm::vec3, glm::vec3> provide_slim_aabb_parameters() const = 0;
+		virtual std::tuple<glm::vec3, glm::vec3> provide_fat_aabb_parameters() const = 0;
 	};
 }

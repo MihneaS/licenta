@@ -10,7 +10,8 @@ namespace migine {
 		std::vector<std::unique_ptr<Contact>> check_collision(Box_collider& other) override;
 		std::vector<std::unique_ptr<Contact>> check_collision(Sphere_collider& other) override;
 
-		virtual std::tuple<glm::vec3, glm::vec3> provide_aabb_parameters() const override;
+		virtual std::tuple<glm::vec3, glm::vec3> provide_slim_aabb_parameters() const override;
+		virtual std::tuple<glm::vec3, glm::vec3> provide_fat_aabb_parameters() const override;
 
 		float get_diameter() const;
 		float get_radius() const;

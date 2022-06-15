@@ -34,6 +34,7 @@ namespace migine {
 	constexpr float k_friction_coef = 0.7;
 	constexpr float k_motion_base_bias = 0.6;
 	constexpr float k_sleep_epsilon = 0.05;
+	constexpr float k_aabb_fattening_time = 0.1;
 
 	enum class Axis {
 		ox = 0,

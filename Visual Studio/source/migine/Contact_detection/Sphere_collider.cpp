@@ -1,6 +1,7 @@
 #include "Box_collider.h"
 #include "Sphere_collider.h"
 #include <migine/Resource_manager.h>
+#include <migine/constants.h>
 
 #include <numeric>
 #include <algorithm>
@@ -22,6 +23,8 @@ using std::accumulate;
 using std::max;
 using std::unique_ptr;
 using std::make_unique;
+using std::min;
+using std::max;
 
 namespace migine {
 	vector<unique_ptr<Contact>> Sphere_collider::check_collision(Collider_base& other) {
@@ -53,10 +56,27 @@ namespace migine {
 		return ret;
 	}
 
-	tuple<vec3, vec3> Sphere_collider::provide_aabb_parameters() const {
-		vec3 center_world = transform.get_model() * vec4 { center, 1 };
+	tuple<vec3, vec3> Sphere_collider::provide_slim_aabb_parameters() const {
+		vec3 center_world = get_center_world();
 		vec3 min_pos = {center_world.x - radius, center_world.y - radius, center_world.z - radius};
 		vec3 max_pos = {center_world.x + radius, center_world.y + radius, center_world.z + radius};
+		return {min_pos, max_pos};
+	}
+
+	tuple<vec3, vec3> Sphere_collider::provide_fat_aabb_parameters() const {
+		auto [min_pos, max_pos] = provide_slim_aabb_parameters();
+		vec3 delta_pos = k_aabb_fattening_time * get_velocity();
+		vec3 min_after_moving = min_pos + delta_pos;
+		vec3 max_after_moving = max_pos + delta_pos;
+		
+		min_pos.x = min(min_pos.x, min_after_moving.x);
+		min_pos.y = min(min_pos.y, min_after_moving.y);
+		min_pos.z = min(min_pos.z, min_after_moving.z);
+
+		max_pos.x = max(max_pos.x, max_after_moving.x);
+		max_pos.y = max(max_pos.y, max_after_moving.y);
+		max_pos.z = max(max_pos.z, max_after_moving.z);
+
 		return {min_pos, max_pos};
 	}
 

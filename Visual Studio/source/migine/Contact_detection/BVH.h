@@ -73,8 +73,8 @@ namespace migine {
 			std::unordered_map<gsl::not_null<const Node*>, float> cache;
 		};
 
-		//typedef ManhattanDistanceGreater NodeGreater; // easy to switch Greater
-		typedef Enlarged_volume_greater Node_greater; // easy to switch Greater
+		typedef Manhattan_distance_greater Node_greater; // easy to switch Greater
+		//typedef Enlarged_volume_greater Node_greater; // easy to switch Greater
 		typedef std::unordered_set<std::tuple<gsl::not_null<Collider_base*>, gsl::not_null<Collider_base*>>, migine::Tuple_hasher<Collider_base*, Collider_base*>> contacts_cache_t;
 
 	public:

@@ -21,7 +21,8 @@ namespace migine {
 		std::vector<std::unique_ptr<Contact>> check_collision(Collider_base& other) override; // double dispatch T.T I hate it
 		std::vector<std::unique_ptr<Contact>> check_collision(Box_collider& other) override;
 		std::vector<std::unique_ptr<Contact>> check_collision(Sphere_collider& other) override;
-		std::tuple<glm::vec3, glm::vec3> provide_aabb_parameters() const override;
+		std::tuple<glm::vec3, glm::vec3> provide_slim_aabb_parameters() const override;
+		std::tuple<glm::vec3, glm::vec3> provide_fat_aabb_parameters() const override;
 		// credits godot :https://github.com/godotengine/godot/blob/master/core/math/geometry_3d.h line 40
 		std::tuple<glm::vec3, glm::vec3, bool> get_closest_points_between_segments(glm::vec3 seg1_pt1, glm::vec3 seg1_pt2, glm::vec3 seg2_pt1, glm::vec3 seg2_pt2) const;
 
