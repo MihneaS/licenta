@@ -32,6 +32,8 @@ namespace migine {
 	constexpr float k_velocity_restitution_limit = 0.25f;
 	constexpr float k_default_restitution = 0.4f;
 	constexpr float k_friction_coef = 0.7;
+	constexpr float k_motion_base_bias = 0.6;
+	constexpr float k_sleep_epsilon = 0.05;
 
 	enum class Axis {
 		ox = 0,
@@ -39,3 +41,58 @@ namespace migine {
 		oz = 2
 	};
 }
+
+
+
+/* keys:
+ * 0     :
+ * 1     : SET PENETRATION RESOLVER TYPE TO 1 (DEFAULT, LINEAR + ROTATION)
+ * 2     : SET PENETRATION RESOLVER TYPE TO 2 (LINEAR, OUTDATED)
+ * 3     : SET PENETRATION RESOLVER TYPE TO 3 (ROTATION, OUTDAET)
+ * 4     :
+ * 5     :
+ * 6     :
+ * 7     :
+ * 8     :
+ * 9     :
+ * A     :
+ * B     :
+ * C     :
+ * D     :
+ * E     :
+ * F     :
+ * G     :
+ * H     :
+ * I     :
+ * J     :
+ * K     :
+ * L     :
+ * M     :
+ * N     :
+ * O     :
+ * P     : TOGGLE PENETRATION RESOLVER
+ * Q     :
+ * R     :
+ * S     :
+ * T     : START/STOP TIME
+ * U     :
+ * V     : TOGGLE CONTACT VELOCITY RESOLVER
+ * W     :
+ * X     : TOGGLE  BVH RENDERING
+ * Y     : TOGGLE SLOWING TIME TENFOLDS
+ * Z     :
+ * SPACE : SHOOT SHPERE (SCENE_14 ONLY)
+ * [     :
+ * ]     : ADVANCE ONE FRAME IF TIME IS STOPPED
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */

@@ -85,6 +85,12 @@ namespace migine {
 		if (key == GLFW_KEY_3) {
 			penetration_type = 3;
 		}
+		if (key == GLFW_KEY_X) {
+			see_bvh = !see_bvh;
+		}
+		if (key == GLFW_KEY_RIGHT_BRACKET) {
+			run_one_frame = true;
+		}
 	}
 
 	void Scene_base::modify_contacts(vector<unique_ptr<Contact>>& contacts) {
@@ -188,7 +194,9 @@ namespace migine {
 		if (time_slowed) {
 			delta_time_seconds /= 10;
 		}
-		if (!time_stopped) {
+		if (!time_stopped || run_one_frame) {
+			run_one_frame = false;
+
 			// cap delta time
 			float caped_delta_time = min(delta_time_seconds, 1.0f / 20);
 
@@ -258,14 +266,15 @@ namespace migine {
 		if (float delta_time_printing = current_time - last_printing_time; delta_time_printing > 0.66) {
 			stringstream ss;
 			ss << "fps:" << frames_since_printing / delta_time_printing << ";";
+			ss << "obj_count:" << game_objects.size() << ";";
 			frames_since_printing = 0;
 			last_printing_time = current_time;
 			ss << " broad contacts:" << bvh.get_contact_count() << ";";
-			ss << " pairs in narrow contact:" << pairs_in_contact << ";";
-			ss << " insertions:" << bvh.insertion_count << ";";
+			//ss << " pairs in narrow contact:" << pairs_in_contact << ";";
+			//ss << " insertions:" << bvh.insertion_count << ";";
 			//ss << " broad intersection checks:" << bvh.aabb_intersection_operations_count << ";";
 			ss << " time:" << current_time << ";";
-			ss << " frames:" << total_frames << ";";
+			//ss << " frames:" << total_frames << ";";
 			continous_print_line_reset();
 			continous_print(ss.str());
 		}

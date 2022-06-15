@@ -6,6 +6,7 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include <cmath>
 
 using glm::quat;
 using glm::vec3;
@@ -21,6 +22,7 @@ using std::string;
 using std::vector;
 using std::cout;
 using std::copysign;
+using std::isfinite;
 
 namespace migine {
 	quat euler_angles_to_quat(vec3 euler_angles) {
@@ -316,6 +318,14 @@ namespace migine {
 
 	vec3 copy_sing_element_wise(vec3 mag, vec3 sign) {
 		return glm::vec3{copysign(mag.x, sign.x), copysign(mag.y, sign.y), copysign(mag.z, sign.z)};
+	}
+
+	bool is_finite(glm::vec3 v) {
+		return isfinite(v.x) && isfinite(v.y) && isfinite(v.z);
+	}
+
+	bool is_finite(glm::quat q) {
+		return isfinite(q.w) && isfinite(q.x) && isfinite(q.y) && isfinite(q.z);
 	}
 
 	quat change_rotation(vec3 old_direction, glm::vec3 desired_direction, glm::vec3 old_up, vec3 desired_up) {

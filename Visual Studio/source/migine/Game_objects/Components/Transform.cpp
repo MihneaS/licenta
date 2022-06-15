@@ -13,10 +13,16 @@ using glm::rotate;
 namespace migine {
 	Transform::Transform(vec3 position, vec3 scale, glm::quat orientation) :
 		world_position(position), scale(scale),  orientation(orientation) {
+		assert(is_finite(position));
+		assert(is_finite(scale));
+		assert(is_finite(orientation));
 		internal_update();
 	}
 
 	void Transform::change_state_with_delta (vec3 delta_pos, vec3 relative_scale_change, vec3 delta_rot) {
+		assert(is_finite(delta_pos));
+		assert(is_finite(relative_scale_change));
+		assert(is_finite(delta_rot));
 		world_position += delta_pos;
 		scale *= relative_scale_change;
 		change_orientation_with_delta(delta_rot);
@@ -25,6 +31,9 @@ namespace migine {
 	}
 
 	void Transform::change_state(vec3 new_pos, vec3 new_scale, quat new_rot) {
+		assert(is_finite(new_pos));
+		assert(is_finite(new_scale));
+		assert(is_finite(new_rot));
 		world_position = new_pos;
 		scale = new_scale;
 		orientation = new_rot;
@@ -68,11 +77,13 @@ namespace migine {
 	}
 
 	void Transform::change_position_with_delta(vec3 delta_pos) {
+		assert(is_finite(delta_pos));
 		world_position += delta_pos;
 		internal_update();
 	}
 
 	void Transform::change_orientation_with_delta(vec3 rotation) {
+		assert(is_finite(rotation));
 		//orientation *= euler_angles_to_quat(rotation);
 		float len = length(rotation);
 		if (len == 0) {

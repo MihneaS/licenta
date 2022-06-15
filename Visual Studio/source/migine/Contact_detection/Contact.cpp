@@ -13,6 +13,9 @@ using gsl::not_null;
 namespace migine {
 	Contact::Contact(not_null<Collider_base*> obj0, not_null<Collider_base*> obj1, vec3 contact_point, vec3 normal, float penetration_depth) :
 		objs{obj0, obj1}, contact_point(contact_point), normal(normal), penetration_depth(penetration_depth) {
+		assert(is_finite(contact_point));
+		assert(is_finite(normal));
+		assert(isfinite(penetration_depth));
 		assert(is_equal_aprox(length(normal), 1)); // DEMO1
 		if (std::abs(glm::dot(normal, vec3{0,1,0})) < 1.0f / 1.41f) {
 			// TODO delete this for

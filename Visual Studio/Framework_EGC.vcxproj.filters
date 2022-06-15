@@ -123,6 +123,10 @@
     <ClCompile Include="source\migine\scenes\Scene_11.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_12.cpp" />
     <ClCompile Include="source\migine\scenes\Scene_13.cpp" />
+    <ClCompile Include="source\migine\scenes\Scene_14.cpp" />
+    <ClCompile Include="source\migine\scenes\Scene_15.cpp" />
+    <ClCompile Include="source\migine\scenes\Scene_16.cpp" />
+    <ClCompile Include="source\migine\scenes\Scene_17.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Core\World.h">
@@ -229,6 +233,10 @@
     <ClInclude Include="source\migine\scenes\Scene_11.h" />
     <ClInclude Include="source\migine\scenes\Scene_12.h" />
     <ClInclude Include="source\migine\scenes\Scene_13.h" />
+    <ClInclude Include="source\migine\scenes\Scene_14.h" />
+    <ClInclude Include="source\migine\scenes\Scene_15.h" />
+    <ClInclude Include="source\migine\scenes\Scene_16.h" />
+    <ClInclude Include="source\migine\scenes\Scene_17.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Source\Laboratoare\Laborator8\Shaders\FragmentShader.glsl">

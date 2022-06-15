@@ -7,6 +7,7 @@
 #include <migine/scenes/current_scene.h>
 #include <migine/scenes/Scene_06.h>
 #include <migine/game_objects/shapes/Box.h>
+#include <migine/utils.h>
 
 #include <migine/define.h>
 
@@ -24,6 +25,7 @@ using std::array;
 using std::vector;
 using std::unique_ptr;
 using std::tuple;
+using std::isfinite;
 
 // worst_contact resolution, heavily inspired by Ian Millington's "Game Physics Engine" (as many other things in this project)
 namespace migine {
@@ -35,6 +37,7 @@ namespace migine {
 		relative_contact_positions[1] = contact->contact_point - contact->objs[1]->transform.get_world_position();
 
 		contact_local_velocity = calculate_local_velocity(contact, 1, delta_time) - calculate_local_velocity(contact, 0, delta_time); // TODO o fi corect? era cu minus
+		assert(is_finite(contact_local_velocity));
 		calculate_desired_delta_velocity(contact, delta_time);
 	}
 
@@ -42,6 +45,7 @@ namespace migine {
 		vec3 velocity = contact->objs[obj_idx]->get_velocity();
 		velocity += cross(contact->objs[obj_idx]->get_angular_velocity(), relative_contact_positions[obj_idx]);
 		velocity = world_to_contact_rotation * velocity;
+		assert(is_finite(velocity));
 		return velocity;
 	}
 
@@ -64,6 +68,7 @@ namespace migine {
 		// acceleration velocity.
  		//desired_delta_velocity = -contact_local_velocity.y - this_restitution * (contact_local_velocity.y - velocity_from_acc);
 		desired_delta_velocity = -contact_local_velocity.y * (1 + this_restitution) - velocity_from_acc;
+		assert(isfinite(desired_delta_velocity));
 	}
 
 	Contact_resolver::Contact_resolver(const vector<unique_ptr<Contact>>& collisions, float delta_time) :
@@ -89,6 +94,7 @@ namespace migine {
 			int worst_collision_idx = -1;
 			float worst_penetration = k_penetration_epsilon;
 			for (int i = 0; i < contacts.size(); i++) {
+				//if (contacts[i]->penetration_depth > worst_penetration && !contacts[i]->pen_resolved) {
 				if (contacts[i]->penetration_depth > worst_penetration) {
 					worst_penetration = contacts[i]->penetration_depth;
 					worst_collision_idx = i;
@@ -100,8 +106,14 @@ namespace migine {
 
 			// solve worst worst_contact
 			// calculate linear and angular movement
+			//contacts[worst_collision_idx]->pen_resolved = true;
 			const Contact& worst_contact = *contacts[worst_collision_idx].get();
 			const Additional_contact_data more_data = additional_contact_data[worst_collision_idx];
+
+			if (!worst_contact.objs[0]->is_asleep() || !worst_contact.objs[1]->is_asleep()) {
+				worst_contact.objs[0]->set_asleep(false);
+				worst_contact.objs[1]->set_asleep(false);
+			}
 
 			//if (worst_contact.objs[0]->get_inverse_mass() != 0 && worst_contact.objs[1]->get_inverse_mass() != 0) {
 			//	int i = 0;
@@ -326,6 +338,7 @@ namespace migine {
 			int worst_collision_idx = -1;
 			float worst_velocity = k_velocity_epsilon;
 			for (int i = 0; i < contacts.size(); i++) {
+				//if (additional_contact_data[i].desired_delta_velocity > worst_velocity && !contacts[i]->vel_resolved) {
 				if (additional_contact_data[i].desired_delta_velocity > worst_velocity) {
 					worst_velocity = additional_contact_data[i].desired_delta_velocity;
 					worst_collision_idx = i;
@@ -337,9 +350,15 @@ namespace migine {
 
 			// solve worst worst_contact
 			// calculate linear and angular movement
+			//contacts[worst_collision_idx]->vel_resolved = true;
 			const Contact& worst_contact = *contacts[worst_collision_idx].get();
 			const Additional_contact_data& more_data = additional_contact_data[worst_collision_idx];
 			float debug_original_desired_delta_velocity = more_data.desired_delta_velocity;
+
+			if (!worst_contact.objs[0]->is_asleep() || !worst_contact.objs[1]->is_asleep()) {
+				worst_contact.objs[0]->set_asleep(false);
+				worst_contact.objs[1]->set_asleep(false);
+			}
 
 			// apply move
 			auto [velocity_change, rotation_change] = apply_move(*contacts[worst_collision_idx].get(), additional_contact_data[worst_collision_idx]);
@@ -354,6 +373,7 @@ namespace migine {
 							float sign = -1 + 2 * j; // = j ? -1 : 1;
 							auto tmp = conjugate(additional_contact_data[i].contact_to_world_rotation) * delta_vel * sign;
 							additional_contact_data[i].contact_local_velocity += tmp;
+							assert(is_finite(additional_contact_data[i].contact_local_velocity));
 							additional_contact_data[i].calculate_desired_delta_velocity(&worst_contact, delta_time);
 						}
 					}

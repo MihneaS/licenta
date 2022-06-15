@@ -78,6 +78,7 @@ namespace migine {
 		glm::vec3 light_direction;
 		// TODO use unique
 		std::unique_ptr<Camera> camera;
+		bool see_bvh = true;
 
 	protected:
 		virtual void draw_coordinat_system();
@@ -103,6 +104,7 @@ namespace migine {
 		Force_registry force_registry;
 
 		std::vector<std::unique_ptr<Force_generator_base>> default_fs_gen;
+		bool run_one_frame = false;
 		bool time_stopped = false;
 		bool time_slowed = false;
 		bool do_resolve_penetrations = true;

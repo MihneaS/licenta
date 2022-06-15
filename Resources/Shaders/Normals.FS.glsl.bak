@@ -9,4 +9,5 @@ void main()
 {
 	vec3 tmp = (frag_normal - abs(frag_normal)) / 4.0f;
 	out_color = vec4(abs(frag_normal) + tmp, 1);
+	
 }

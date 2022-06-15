@@ -44,6 +44,9 @@ using std::numeric_limits;
 
 namespace migine {
 	vector<unique_ptr<Contact>> Box_collider::check_collision(Collider_base& other) {
+		if (is_asleep() && other.is_asleep()) {
+			return vector<unique_ptr<Contact>>();
+		}
 		return other.check_collision(*this);
 	}
 
@@ -117,15 +120,11 @@ namespace migine {
 				assert(is_point_on_axis(other_corner1, other_corner2, pt_on_other_edge));
 				//assert(is_point_on_axis2(this_corner1, this_corner2, pt_on_this_edge));
 				//assert(is_point_on_axis2(other_corner1, other_corner2, pt_on_other_edge));
-				// Distance^2 from Other's Center to This Edge (edge of this)
-				float d2_oc_to_te = distance2(other_center, pt_on_this_edge);
-				float d2_oc_to_oe = distance2(other_center, pt_on_other_edge);
-				if (d2_oc_to_te > d2_oc_to_oe) {
+
+				if (!is_point_inside(pt_on_other_edge)) {
 					continue;
 				}
-				float d2_tc_to_oe = distance2(this_center, pt_on_other_edge);
-				float d2_tc_to_te = distance2(this_center, pt_on_this_edge);
-				if (d2_tc_to_oe > d2_tc_to_te) {
+				if (!other.is_point_inside(pt_on_this_edge)) {
 					continue;
 				}
 				found_new_contact = true;
@@ -195,7 +194,11 @@ namespace migine {
 			return ret;
 		}
 
-		vec3 normal = normalize(sphere_center - closest_point_world);
+		vec3 normal = sphere_center - closest_point_world;
+		if (normal == k_vec3_zero) {
+			normal = sphere_center - transform.get_world_position();
+		}
+		normal = normalize(normal);
 		float pen_depth = r - sqrtf(dist2);
 		ret.push_back(make_unique<Contact>(this, &other, closest_point_world, normal, pen_depth));
 		//ret.push_back(make_unique<Contact>(&other, this, closest_point_world, -normal, pen_depth));
@@ -367,9 +370,6 @@ namespace migine {
 	std::unique_ptr<Contact> Box_collider::check_collision_point(glm::vec3 point, Collider_base& other) {
 		unique_ptr<Contact> ret = nullptr;
 		vec3 relative_point = transform.transform_to_local(point);
-		if (this->get_inverse_mass() != 0 && other.get_inverse_mass() != 0) {
-			int i = false; // debugg break point
-		}
 
 		vec3 depths;
 		array<vec3, 3> normals;
@@ -426,6 +426,14 @@ namespace migine {
 
 		ret = make_unique<Contact>(this, &other, point, normals[best_axis], depths[best_axis]);
 		return ret;
+	}
+
+	bool Box_collider::is_point_inside(vec3 point) const {
+		vec3 relative_point = transform.transform_to_local(point);
+
+		return (half_side_lengths.x - abs(relative_point.x)) >= 0 &&
+		       (half_side_lengths.y - abs(relative_point.y)) >= 0 &&
+		       (half_side_lengths.z - abs(relative_point.z)) >= 0;
 	}
 
 	Box_collider::Cache_entry::Cache_entry(glm::vec3 local_center, glm::vec3 half_side_lenghts) :

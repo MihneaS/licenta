@@ -14,7 +14,7 @@ namespace migine {
 
 	class Rigid_body : virtual public Has_spcon_transform {
 	public:
-		bool integrate(float delta_time);
+		void integrate(float delta_time);
 		float get_mass() const;
 		void set_mass(float mass);
 		float get_inverse_mass() const;
@@ -37,6 +37,8 @@ namespace migine {
 		void clear_accumulators();
 		void calculate_derived_data();
 		float get_kinetic_energy() const;
+		bool is_asleep() const;
+		void set_asleep(bool new_state);
 
 		void stop_motion();
 
@@ -65,6 +67,8 @@ namespace migine {
 		//float angular_damping = 0.995f;
 		float linear_damping = 0.9f;
 		float angular_damping = 0.9f;
+		bool asleep = true;
+		float motion = 0;
 
 		std::vector<std::unique_ptr<Force_generator_base>> default_fs_gen;
 	};

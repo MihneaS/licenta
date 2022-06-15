@@ -22,6 +22,8 @@ namespace migine {
 		glm::vec3 contact_point;
 		glm::vec3 normal;
 		float penetration_depth;
+		//bool pen_resolved = false;
+		//bool vel_resolved = false;
 #ifdef DEBUGGING
 		std::string type = "no type";
 #endif // DEBUGGING

@@ -34,7 +34,8 @@ namespace migine {
     bool is_point_on_axis(glm::vec3 d0, glm::vec3 d1, glm::vec3 p);
     bool is_point_on_axis2(glm::vec3 d0, glm::vec3 d1, glm::vec3 p);
     glm::vec3 copy_sing_element_wise(glm::vec3 mag, glm::vec3 sign);
-
+    bool is_finite(glm::vec3 v);
+    bool is_finite(glm::quat q);
     glm::quat change_rotation(glm::vec3 old_direction, glm::vec3 desired_direction, glm::vec3 old_up, glm::vec3 desired_up);
 
     inline void _transform_inertia_tensor(glm::mat3& iitWorld, const glm::mat3& iitBody, const glm::mat4& rotmat);

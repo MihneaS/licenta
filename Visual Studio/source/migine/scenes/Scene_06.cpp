@@ -113,7 +113,7 @@ namespace migine {
 
 		// move bodies and update colliders in bvh (aka broad worst_collision phase)
 		for (auto& rigid_body : rigid_bodies) {
-			bool has_moved = rigid_body->integrate(caped_delta_time);
+			rigid_body->integrate(caped_delta_time);
 		}
 
 		// repair bvh

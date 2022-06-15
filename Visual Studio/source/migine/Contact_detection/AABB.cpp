@@ -3,6 +3,7 @@
 #include <migine/contact_detection/Collider_base.h>
 #include <migine/game_objects/components/Transform.h>
 #include <migine/Resource_manager.h>
+#include <migine/scenes/current_scene.h>
 
 #include <cassert>
 
@@ -107,10 +108,12 @@ namespace migine {
 
 #ifdef DEBUGGING
 	void AABB::render(const Camera& camera) {
-		vec3 pos = get_center();
-		vec3 scale = max_pos - min_pos;
-		transform.change_state(pos, scale, quat());
-		Wireframe_renderer::render(camera);
+		if (get_current_scene().see_bvh) {
+			vec3 pos = get_center();
+			vec3 scale = max_pos - min_pos;
+			transform.change_state(pos, scale, quat());
+			Wireframe_renderer::render(camera);
+		}
 	}
 #endif
 }

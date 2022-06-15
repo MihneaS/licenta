@@ -9,11 +9,10 @@ using glm::mat4;
 using glm::inverse;
 using glm::transpose;
 using glm::cross;
+using glm::dot;
 
 namespace migine {
-	bool Rigid_body::integrate(float delta_time) {
-		bool has_moved = false;
-
+	void Rigid_body::integrate(float delta_time) {
 		// Calculate linear acceleration from force inputs.
 		vec3 acceleration = constant_acceleration;
 		acceleration += force_accumulator * get_inverse_mass();
@@ -28,18 +27,32 @@ namespace migine {
 		// Impose drag.
 		velocity *= pow(linear_damping, delta_time);
 		angular_velocity *= pow(angular_damping, delta_time);
-		if (velocity != k_vec3_zero || angular_velocity != k_vec3_zero) {
-			has_moved = true;
+		
+		assert(is_finite(velocity));
+		assert(is_finite(angular_velocity));
+
+		float bias = powf(k_motion_base_bias, delta_time);
+		float current_motion = dot(velocity, velocity) + dot(angular_velocity, angular_velocity);
+		motion = bias * motion + (1 - bias) * current_motion;
+		if (motion > 10 * k_sleep_epsilon) {
+			motion = 10 * k_sleep_epsilon;
+		} else if (motion < k_sleep_epsilon) {
+			motion = 0;
+			velocity = k_vec3_zero;
+			angular_velocity = k_vec3_zero;
+			set_asleep(true);
+		}
+		
+		if (!is_asleep()) {
 			// Adjust position and orientation
 			transform.change_position_with_delta(velocity * delta_time);
 			transform.change_orientation_with_delta(angular_velocity * delta_time);
 			// Normalize the orientation, and update the matrices with the new position and orientation.
 			calculate_derived_data();
 		}
+
 		// Clear accumulators.
 		clear_accumulators();
-
-		return has_moved;
 	}
 
 	float Rigid_body::get_mass() const {
@@ -211,6 +224,14 @@ namespace migine {
 			angular_kinetic_energy = rotation_inertia_around_rotating_axis * ang_v_len * ang_v_len * 0.5;
 		}
 		return (get_mass() * v_len * v_len) * 0.5f + angular_kinetic_energy;
+	}
+
+	bool Rigid_body::is_asleep() const {
+		return asleep;
+	}
+
+	void Rigid_body::set_asleep(bool new_state) {
+		asleep = new_state;
 	}
 
 	void Rigid_body::stop_motion() {

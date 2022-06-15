@@ -25,6 +25,9 @@ using std::make_unique;
 
 namespace migine {
 	vector<unique_ptr<Contact>> Sphere_collider::check_collision(Collider_base& other) {
+		if (is_asleep() && other.is_asleep()) {
+			return vector<unique_ptr<Contact>>();
+		}
 		return other.check_collision(*this);
 	}
 
@@ -35,10 +38,12 @@ namespace migine {
 	vector<unique_ptr<Contact>> Sphere_collider::check_collision(Sphere_collider& other) {
 		vector<unique_ptr<Contact>> ret;
 		float radii_sum = get_radius() + other.get_radius();
-		float dist2 = distance2(center, other.center);
+		vec3 this_center = get_center_world();
+		vec3 other_center = other.get_center_world();
+		float dist2 = distance2(this_center, other_center);
 		if (dist2 < radii_sum * radii_sum) {
-			vec3 this_to_other = other.center - center;
-			vec3 contact_point = (other.center + center) / 2.0f;
+			vec3 this_to_other = other_center - this_center;
+			vec3 contact_point = (other_center + this_center) / 2.0f;
 			float pen_depth = radii_sum - sqrtf(dist2);
 			ret.push_back(make_unique<Contact>(this, &other, contact_point, normalize(this_to_other), pen_depth));
 #ifdef DEBUGGING
