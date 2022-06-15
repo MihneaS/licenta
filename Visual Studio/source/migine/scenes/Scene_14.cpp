@@ -83,7 +83,6 @@ namespace migine {
 	}
 
 	void Scene_14::frame_end() {
-		draw_coordinat_system();
 		Scene_base::frame_end();
 	}
 
@@ -104,7 +103,7 @@ namespace migine {
 		obj_h->set_inverse_mass(1);
 		obj_h->set_asleep(false);
 		set_name(obj_h.get(), "shooted sphere " + std::to_string(++i));
-		float initial_speed = 25;
+		float initial_speed = 12;
 		obj_h->add_velocity(orientation * euler_angles_deg_to_quat(vec3{0,90,0}) * (initial_speed * vec3{1,0,0}));
 		register_game_object(move(obj_h));
 	}

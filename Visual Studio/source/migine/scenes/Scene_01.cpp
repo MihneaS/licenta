@@ -126,7 +126,6 @@ namespace migine {
 	}
 
 	void Scene_01::frame_end() {
-		draw_coordinat_system();
 		Scene_base::frame_end();
 	}
 

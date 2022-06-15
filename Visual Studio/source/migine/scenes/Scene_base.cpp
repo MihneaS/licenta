@@ -281,6 +281,7 @@ namespace migine {
 	}
 
 	void Scene_base::frame_end() {
+		//draw_coordinat_system();
 	}
 
 	void Scene_base::draw_coordinat_system() {
