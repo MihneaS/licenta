@@ -40,7 +40,8 @@ namespace migine {
 		bool is_asleep() const;
 		void set_asleep(bool new_state);
 
-		void stop_motion();
+		void stop_motion(); // deprecated
+		void set_motion(float new_value);
 
 		std::vector<std::unique_ptr<Force_generator_base>>& get_default_fs_gen();
 
@@ -51,7 +52,6 @@ namespace migine {
 		void compute_inverse_inertia_tensor_world();
 
 	private:
-
 		glm::vec3 velocity = k_vec3_zero;
 		glm::vec3 angular_velocity = k_vec3_zero;
 		glm::vec3 constant_acceleration = k_vec3_zero; // = k_default_gravity;
@@ -67,7 +67,7 @@ namespace migine {
 		//float angular_damping = 0.995f;
 		float linear_damping = 0.9f;
 		float angular_damping = 0.9f;
-		bool asleep = true;
+		bool asleep = false;
 		float motion = 0;
 
 		std::vector<std::unique_ptr<Force_generator_base>> default_fs_gen;

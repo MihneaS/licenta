@@ -65,7 +65,7 @@ void Shader::OnLoad(function<void()> onLoad)
 }
 
 void Shader::GetUniforms()
-{
+{ // TODO separa in clase
 	// MVP
 	loc_model_matrix	= GetUniformLocation("Model");
 	loc_view_matrix		= GetUniformLocation("View");
@@ -82,6 +82,10 @@ void Shader::GetUniforms()
 	loc_eye_forward = GetUniformLocation("eye_forward");
 	loc_z_far = GetUniformLocation("zFar");
 	loc_z_near = GetUniformLocation("zNear");
+
+	// Sphere
+	loc_sphere_center = GetUniformLocation("sphere_center");
+	loc_sphere_radius = GetUniformLocation("sphere_radius");
 
 	// General
 	loc_resolution = GetUniformLocation("resolution");

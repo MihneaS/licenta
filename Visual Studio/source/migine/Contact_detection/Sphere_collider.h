@@ -23,8 +23,8 @@ namespace migine {
 	private:
 		void compute_center_and_radius();
 
-		glm::vec3 center;
-		float radius;
+		glm::vec3 local_center;
+		float local_radius;
 
 		static inline std::unordered_map<Mesh_id, std::tuple<glm::vec3, float>> cache;
 	};

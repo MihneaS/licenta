@@ -54,6 +54,7 @@ namespace migine {
 			//auto obj_h = make_unique<Sphere>(vec3{0, 2, -2});
 			auto obj_h = make_unique<Box>(vec3{ 0, 2, -2 });
 			obj_h->set_inverse_mass(1);
+			obj_h->set_motion(10 * k_sleep_epsilon);
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "falling obj 1");
 		}
@@ -66,6 +67,7 @@ namespace migine {
 		{ // falling obj
 			auto obj_h = make_unique<Box>(vec3{ 0, 2, -4 });
 			obj_h->set_inverse_mass(1);
+			obj_h->set_motion(10 * k_sleep_epsilon);
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "falling obj 2");
 		}
@@ -79,6 +81,7 @@ namespace migine {
 		{ // falling obj
 			auto obj_h = make_unique<Box>(vec3{ -2, 2, -2 });
 			obj_h->set_inverse_mass(1);
+			obj_h->set_motion(10 * k_sleep_epsilon);
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "falling obj 3");
 		}
@@ -92,6 +95,7 @@ namespace migine {
 		{ // falling obj
 			auto obj_h = make_unique<Box>(vec3{ -2, 2, -4 });
 			obj_h->set_inverse_mass(1);
+			obj_h->set_motion(10 * k_sleep_epsilon);
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "falling obj 4");
 		}

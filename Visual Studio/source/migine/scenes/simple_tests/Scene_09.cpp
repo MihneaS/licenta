@@ -53,6 +53,7 @@ namespace migine {
 			//auto obj_h = make_unique<Box>(vec3{ 2, 2, -4 });
 			auto obj_h = make_unique<Box>(vec3{2, 2, -4}, vec3{1}, euler_angles_deg_to_quat(vec3{180, 0, 0}));
 			obj_h->set_inverse_mass(1);
+			obj_h->set_motion(10 * k_sleep_epsilon);
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "falling obj");
 		}

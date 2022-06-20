@@ -68,6 +68,7 @@ namespace migine {
 			//auto obj_h = make_unique<Box>(vec3{-4, 2, -4}, vec3{1}, euler_angles_deg_to_quat(vec3{0,45,0}));
 			auto obj_h = make_unique<Box>(vec3{-4, 2, -3.9}, vec3{1}, euler_angles_deg_to_quat(vec3{0,45,0}));
 			obj_h->set_inverse_mass(1);
+			obj_h->set_motion(10 * k_sleep_epsilon);
 			obj_h->add_angular_velocity(vec3{0,1,0});
 			obj_h->add_velocity(vec3{1,0,0});
 			register_game_object(move(obj_h));
@@ -76,6 +77,7 @@ namespace migine {
 		{ // obj 2-r
 			auto obj_h = make_unique<Box>(vec3{4, 2, -4}, vec3{1}, euler_angles_deg_to_quat(vec3{90,-45,0}));
 			obj_h->set_inverse_mass(1);
+			obj_h->set_motion(10 * k_sleep_epsilon);
 			obj_h->add_angular_velocity(vec3{0,1.2,0});
 			obj_h->add_velocity(vec3{-1,0,0});
 			register_game_object(move(obj_h));

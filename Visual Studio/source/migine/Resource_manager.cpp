@@ -151,4 +151,12 @@ namespace migine {
 		shader->CreateAndLink();
 		store_shader(move(shader));
 	}
+
+	template<> void Resource_manager::load_shader<Shader_id::sphere>() {
+		unique_ptr<Shader> shader = make_unique<Shader>(Shader_id::sphere);
+		shader->AddShader("Source/Laboratoare/Laborator8/Shaders/MVP.texture_sphere.VS.glsl", GL_VERTEX_SHADER);
+		shader->AddShader("Source/Laboratoare/Laborator8/Shaders/Normals.FS.glsl", GL_FRAGMENT_SHADER);
+		shader->CreateAndLink();
+		store_shader(move(shader));
+	}
 }

@@ -58,8 +58,8 @@ namespace migine {
 
 	tuple<vec3, vec3> Sphere_collider::provide_slim_aabb_parameters() const {
 		vec3 center_world = get_center_world();
-		vec3 min_pos = {center_world.x - radius, center_world.y - radius, center_world.z - radius};
-		vec3 max_pos = {center_world.x + radius, center_world.y + radius, center_world.z + radius};
+		vec3 min_pos = {center_world.x - get_radius(), center_world.y - get_radius(), center_world.z - get_radius()};
+		vec3 max_pos = {center_world.x + get_radius(), center_world.y + get_radius(), center_world.z + get_radius()};
 		return {min_pos, max_pos};
 	}
 
@@ -87,7 +87,8 @@ namespace migine {
 	}
 
 	float Sphere_collider::get_radius() const {
-		return radius;
+		assert(transform.get_scale().x == transform.get_scale().y && transform.get_scale().y == transform.get_scale().z);
+		return local_radius * transform.get_scale().x;
 	}
 	
 	vec3 Sphere_collider::get_center_world() const {
@@ -95,7 +96,7 @@ namespace migine {
 	}
 
 	vec3 Sphere_collider::get_center_local() const {
-		return center;
+		return local_center;
 	}
 
 
@@ -105,13 +106,13 @@ namespace migine {
 
 	void Sphere_collider::compute_center_and_radius() {
 		if (auto cached_corners_iter = cache.find(mesh.get_id()); cached_corners_iter != cache.end()) {
-			center = get<vec3>(cached_corners_iter->second);
-			radius = get<float>(cached_corners_iter->second);
+			local_center = get<vec3>(cached_corners_iter->second);
+			local_radius = get<float>(cached_corners_iter->second);
 		} else {
-			center = accumulate(mesh.positions.begin(), mesh.positions.end(), vec3{0,0,0});
-			radius = accumulate(mesh.positions.begin(), mesh.positions.end(), 0.0f,
-				[=](float accumulator, vec3 point) { return max(accumulator, distance(center, point)); });
-			cache[mesh.get_id()] = {center, radius};
+			local_center = accumulate(mesh.positions.begin(), mesh.positions.end(), vec3{0,0,0});
+			local_radius = accumulate(mesh.positions.begin(), mesh.positions.end(), 0.0f,
+				[=](float accumulator, vec3 point) { return max(accumulator, distance(local_center, point)); });
+			cache[mesh.get_id()] = {local_center, local_radius};
 		}
 	}
 }

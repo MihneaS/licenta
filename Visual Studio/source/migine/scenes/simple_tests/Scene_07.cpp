@@ -66,6 +66,7 @@ namespace migine {
 		{
 			auto obj_h = make_unique<Box>(vec3{ 1, 1.8, -2 });
 			obj_h->set_inverse_mass(1);
+			obj_h->set_motion(10 * k_sleep_epsilon);
 			cub1 = obj_h.get();
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "cub_1");

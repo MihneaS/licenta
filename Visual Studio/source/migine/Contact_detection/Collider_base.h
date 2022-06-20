@@ -28,5 +28,8 @@ namespace migine {
 
 		virtual std::tuple<glm::vec3, glm::vec3> provide_slim_aabb_parameters() const = 0;
 		virtual std::tuple<glm::vec3, glm::vec3> provide_fat_aabb_parameters() const = 0;
+
+		bool is_in_contact_with_other_static();
+		bool is_static();
 	};
 }

@@ -386,3 +386,7 @@ FodyWeavers.xsd
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# more added by Mihnea
+# current scene, that can change in function of what I am testing
+*current_scene.cpp

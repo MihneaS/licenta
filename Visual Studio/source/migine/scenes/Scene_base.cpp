@@ -28,6 +28,7 @@ using std::stringstream;
 using std::pair;
 using std::vector;
 using std::array;
+using std::unordered_set;
 
 using glm::quat;
 using glm::vec3;
@@ -94,6 +95,10 @@ namespace migine {
 	}
 
 	void Scene_base::modify_contacts(vector<unique_ptr<Contact>>& contacts) {
+	}
+
+	const unordered_set<not_null<Collider_base*>> Scene_base::get_objects_in_contact_with(not_null<Collider_base*> collider) const {
+		return bvh.get_objects_in_contact_with(collider);
 	}
 
 	void Scene_base::init_resources() {
@@ -170,6 +175,14 @@ namespace migine {
 			auto shader = make_unique<Shader>(Shader_id::vertex_color);
 			shader->AddShader(RESOURCE_PATH::SHADERS + "MVP.Texture.VS.glsl", GL_VERTEX_SHADER);
 			shader->AddShader(RESOURCE_PATH::SHADERS + "VertexColor.FS.glsl", GL_FRAGMENT_SHADER);
+			shader->CreateAndLink();
+			rm.store_shader(move(shader));
+		}
+
+		{ // Create a shader program for drawing spheres with the color of the normal
+			auto shader = make_unique<Shader>(Shader_id::sphere);
+			shader->AddShader(RESOURCE_PATH::SHADERS + "MVP.texture_sphere.VS.glsl", GL_VERTEX_SHADER);
+			shader->AddShader(RESOURCE_PATH::SHADERS + "Normals.FS.glsl", GL_FRAGMENT_SHADER);
 			shader->CreateAndLink();
 			rm.store_shader(move(shader));
 		}

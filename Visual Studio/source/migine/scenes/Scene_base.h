@@ -73,6 +73,7 @@ namespace migine {
 
 		void basic_bool_button_changer(int key, int mods);
 		virtual void modify_contacts(std::vector<std::unique_ptr<Contact>>& contacts);
+		const std::unordered_set<gsl::not_null<Collider_base*>> get_objects_in_contact_with(gsl::not_null<Collider_base*> collider) const;
 
 		glm::vec3 light_position;
 		glm::vec3 light_direction;

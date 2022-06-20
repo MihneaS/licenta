@@ -90,6 +90,7 @@ namespace migine {
 		const contacts_cache_t& get_contacts() const;
 		size_t get_contact_count() const;
 		void clean_dirty_nodes();
+		const std::unordered_set<gsl::not_null<Collider_base*>> get_objects_in_contact_with(gsl::not_null<Collider_base*> collider) const;
 
 #ifdef DEBUGGING
 		void render_all(const Camera& camera) const;

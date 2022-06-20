@@ -19,6 +19,8 @@ using std::unique_ptr;
 using std::make_unique;
 using std::move;
 using std::array;
+using std::unordered_set;
+using std::swap;
 
 using std::cout;
 
@@ -213,12 +215,13 @@ namespace migine {
 		if (collider0->get_inverse_mass() == 0 && collider1->get_inverse_mass() == 0) {
 			return;
 		}
-
-		if (less_for_unique_cache_entry(collider0, collider1)) {
-			contacts_cache.insert(make_tuple(collider0, collider1));
-		} else {
-			contacts_cache.insert(make_tuple(collider1, collider0));
+		if (!less_for_unique_cache_entry(collider0, collider1)) {
+			swap(collider0, collider1);
 		}
+
+
+		contacts_cache.insert(make_tuple(collider0, collider1));
+
 		contacts_graph[collider0].insert(collider1);
 		contacts_graph[collider1].insert(collider0);
 	}
@@ -325,6 +328,15 @@ namespace migine {
 			}
 		}
 		dirty_nodes.clear();
+	}
+
+	const unordered_set<not_null<Collider_base*>> BVH::get_objects_in_contact_with(not_null<Collider_base*> collider) const {
+		auto it = contacts_graph.find(collider);
+		if (it != contacts_graph.end()) {
+			return contacts_graph.at(collider);
+		} else {
+			return unordered_set<not_null<Collider_base*>>();
+		}
 	}
 
 	void BVH::print_recursive(std::ostream& out_stream, Node* root, int level) const {

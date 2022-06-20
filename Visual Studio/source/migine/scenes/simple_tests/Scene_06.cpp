@@ -65,6 +65,7 @@ namespace migine {
 		{
 			auto obj_h = make_unique<Box>(vec3{ -4, 20, -2 });
 			obj_h->set_inverse_mass(1);
+			obj_h->set_motion(10 * k_sleep_epsilon);
 			cub1 = obj_h.get();
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "cub_1");
@@ -73,6 +74,7 @@ namespace migine {
 		{
 			auto obj_h = make_unique<Box>(vec3{ -1, 20, -2 });
 			obj_h->set_inverse_mass(1);
+			obj_h->set_motion(10 * k_sleep_epsilon);
 			cub2 = obj_h.get();
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "cub_2");
@@ -81,6 +83,7 @@ namespace migine {
 		{
 			auto obj_h = make_unique<Box>(vec3{ 1, 20, -2 }, vec3{1}, euler_angles_deg_to_quat(vec3{0, 45, 45}));
 			obj_h->set_inverse_mass(1);
+			obj_h->set_motion(10 * k_sleep_epsilon);
 			cub3 = obj_h.get();
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "cub_3");
@@ -89,6 +92,7 @@ namespace migine {
 		{
 			auto obj_h = make_unique<Box>(vec3{ 4, 20, -2 }, vec3{ 1 }, euler_angles_deg_to_quat(vec3{ 0, 45, 45 }));
 			obj_h->set_inverse_mass(1);
+			obj_h->set_motion(10 * k_sleep_epsilon);
 			cub4 = obj_h.get();
 			register_game_object(move(obj_h));
 			set_name(game_objects.rbegin()->get(), "cub_4");

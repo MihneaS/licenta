@@ -1,6 +1,7 @@
 #include "Rigid_body.h"
 #include <migine/constants.h>
 #include <migine/utils.h>
+#include <migine/contact_detection/Collider_base.h>
 
 using glm::vec3;
 using glm::quat;
@@ -13,6 +14,11 @@ using glm::dot;
 
 namespace migine {
 	void Rigid_body::integrate(float delta_time) {
+		if (get_inverse_mass() == 0) {
+			last_frame_acceleration = k_vec3_zero;
+			return;
+		}
+
 		// Calculate linear acceleration from force inputs.
 		vec3 acceleration = constant_acceleration;
 		acceleration += force_accumulator * get_inverse_mass();
@@ -36,6 +42,7 @@ namespace migine {
 		motion = bias * motion + (1 - bias) * current_motion;
 		if (motion > 10 * k_sleep_epsilon) {
 			motion = 10 * k_sleep_epsilon;
+			//} else if (motion < k_sleep_epsilon && dynamic_cast<Collider_base*>(this)->is_in_contact_with_other_static()) {
 		} else if (motion < k_sleep_epsilon) {
 			motion = 0;
 			velocity = k_vec3_zero;
@@ -70,6 +77,12 @@ namespace migine {
 
 	void Rigid_body::set_inverse_mass(float inverse_mass) {
 		this->inverse_mass = inverse_mass;
+		if (inverse_mass == 0) {
+			motion = 0;
+			velocity = k_vec3_zero;
+			angular_velocity = k_vec3_zero;
+			set_asleep(true);
+		}
 		compute_inverse_inertia_tensor();
 	}
 
@@ -240,6 +253,10 @@ namespace migine {
 		last_frame_acceleration = k_vec3_zero;
 		force_accumulator = k_vec3_zero; // e necesar?
 		torque_accumulator = k_vec3_zero; // e necesar?
+	}
+
+	void Rigid_body::set_motion(float new_value) {
+		motion = new_value;
 	}
 
 	std::vector<std::unique_ptr<Force_generator_base>>& Rigid_body::get_default_fs_gen() {

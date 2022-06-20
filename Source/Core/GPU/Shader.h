@@ -15,7 +15,8 @@ namespace migine {
 		vertex_normal,
 		vertex_color,
 		simple,
-		lab8
+		lab8,
+		sphere
 	};
 }
 
@@ -67,6 +68,10 @@ class Shader
 		GLint loc_eye_forward;
 		GLint loc_z_far;
 		GLint loc_z_near;
+
+		// Sphere
+		GLint loc_sphere_center;
+		GLint loc_sphere_radius;
 
 		// General
 		GLint loc_resolution;

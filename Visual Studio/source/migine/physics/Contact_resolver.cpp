@@ -5,7 +5,6 @@
 #include <migine/constants.h>
 
 #include <migine/scenes/current_scene.h>
-#include <migine/scenes/Scene_06.h>
 #include <migine/game_objects/shapes/Box.h>
 #include <migine/utils.h>
 

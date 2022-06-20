@@ -51,49 +51,49 @@ namespace migine {
 	}
 
 	vector<unique_ptr<Contact>> Box_collider::check_collision(Box_collider& other) {
-		vector<unique_ptr<Contact>> ret;
-
 		// check intersection of projections on 15 axis
 		if (!fast_do_overlap(other)) {
-			return ret;
+			return vector<unique_ptr<Contact>>();
 		}
 
 		// check for contacts between corners of this and faces of other
-		vector<unique_ptr<Contact>> tmp1;
+		vector<unique_ptr<Contact>> corner_contacts_1;
 		float max_depth_1 = 0;
 		auto this_corners = get_corners_world();
 		for (auto& this_corner : this_corners) {
 			if (auto collision = other.check_collision_point(this_corner, *this); collision) {
 				max_depth_1 = max(max_depth_1, collision->penetration_depth);
-				tmp1.push_back(move(collision));
+				corner_contacts_1.push_back(move(collision));
 #ifdef DEBUGGING
-				(*tmp1.rbegin())->type = "box-box point-face";
+				(*corner_contacts_1.rbegin())->type = "box-box point-face";
 #endif // DEBUGGING
 			}
 		}
 
 		// check for contacts between corners of other and faces of this
-		vector<unique_ptr<Contact>> tmp2;
+		vector<unique_ptr<Contact>> corner_contacts_2;
 		float max_depth_2 = 0;
 		auto other_corners = other.get_corners_world();
 		for (auto& others_corner : other_corners) {
 			if (auto collision = check_collision_point(others_corner, other); collision) {
 				max_depth_2 = max(max_depth_2, collision->penetration_depth);
-				tmp2.push_back(move(collision));
+				corner_contacts_2.push_back(move(collision));
 #ifdef DEBUGGING
-				(*tmp2.rbegin())->type = "box-box point-face";
+				(*corner_contacts_2.rbegin())->type = "box-box point-face";
 #endif // DEBUGGING
 			}
 		}
 
 		// keep deepest
-		if (max_depth_1 > max_depth_2) {
-			ret = move(tmp1);
-		} else {
-			ret = move(tmp2);
-		}
+		//if (max_depth_1 > max_depth_2) {
+		//	ret = move(corner_contacts_1);
+		//} else {
+		//	ret = move(corner_contacts_2);
+		//}
 
 		// check for edge-edge contacts
+		vector<unique_ptr<Contact>> edge_contacts;
+		float max_depth_edges = 0;
 		vec3 this_center = transform.get_world_position();
 		vec3 other_center = other.transform.get_world_position();
 		for (auto& [this_idx1, this_idx2] : get_edges_indexes_in_corners()) {
@@ -158,19 +158,27 @@ namespace migine {
 					// therefore norm will point towards other (also, remember AB = OB - BA)
 					norm = normalize(saved_pt_on_this - saved_pt_on_other);
 				}
-				ret.push_back(make_unique<Contact>(
+				float depth = sqrtf(min_pen2);
+				max_depth_edges = max(max_depth_edges, depth);
+				edge_contacts.push_back(make_unique<Contact>(
 						this,
 						&other, 
 						mid_point(saved_pt_on_other, saved_pt_on_this), 
 						norm, 
-						sqrtf(min_pen2)));
+						depth));
 #ifdef DEBUGGING
-				(*ret.rbegin())->type = "box-box edge-edge";
+				(*edge_contacts.rbegin())->type = "box-box edge-edge";
 #endif // DEBUGGING
 			}
 		}
 
-		return ret;
+		if (max_depth_1 > max_depth_2 && max_depth_1 > max_depth_edges) {
+			return corner_contacts_1;
+		} else if (max_depth_2 > max_depth_edges) {
+			return corner_contacts_2;
+		} else {
+			return edge_contacts;
+		}
 	}
 
 	vector<unique_ptr<Contact>> Box_collider::check_collision(Sphere_collider& other) {
