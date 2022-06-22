@@ -15,6 +15,7 @@ namespace migine {
 		struct Additional_contact_data {
 			Additional_contact_data(gsl::not_null<const Contact*> contact, float delta_time);
 			glm::vec3 calculate_local_velocity(gsl::not_null<const Contact*> contact, int obj_idx, float delta_time);
+			glm::vec3 calculate_world_contact_velocity(gsl::not_null<const Contact*> contact, int obj_idx, float delta_time);
 			void calculate_desired_delta_velocity(gsl::not_null<const Contact*> contact, float delta_time);
 
 			glm::quat world_to_contact_rotation;

@@ -48,14 +48,21 @@ namespace migine {
 		return velocity;
 	}
 
+	glm::vec3 Contact_resolver::Additional_contact_data::calculate_world_contact_velocity(gsl::not_null<const Contact*> contact, int obj_idx, float delta_time) {
+		vec3 velocity = contact->objs[obj_idx]->get_velocity();
+		velocity += cross(contact->objs[obj_idx]->get_angular_velocity(), relative_contact_positions[obj_idx]);
+		assert(is_finite(velocity));
+		return velocity;
+	}
+
 	void Contact_resolver::Additional_contact_data::calculate_desired_delta_velocity(gsl::not_null<const Contact*> contact, float delta_time) {
 
 		// Calculate the acceleration induced velocity accumulated this frame
 		float velocity_from_acc = 0;
 
 		// TODO verifica
-		velocity_from_acc -= dot(contact->objs[0]->get_last_frame_acceleration() * delta_time, contact->normal);
-		velocity_from_acc += dot(contact->objs[1]->get_last_frame_acceleration() * delta_time, contact->normal); // aici era plus
+		//velocity_from_acc -= dot(contact->objs[0]->get_last_frame_acceleration() * delta_time, contact->normal);
+		//velocity_from_acc += dot(contact->objs[1]->get_last_frame_acceleration() * delta_time, contact->normal); // aici era plus
 
 		// If the velocity is very slow, limit the restitution
 		float this_restitution = k_default_restitution;
@@ -88,13 +95,15 @@ namespace migine {
 	}
 
 	void Contact_resolver::resolve_penetrations(vector<unique_ptr<Contact>>& contacts) {
+		vector<bool> resolved_contacts(contacts.size(), false);
+		
 		for (int position_iteration = 0; position_iteration < k_maximum_position_correcting_iterations; position_iteration++) {
 			// find worst (deepest) worst_contact
 			int worst_collision_idx = -1;
 			float worst_penetration = k_penetration_epsilon;
 			for (int i = 0; i < contacts.size(); i++) {
 				//if (contacts[i]->penetration_depth > worst_penetration && !contacts[i]->pen_resolved) {
-				if (contacts[i]->penetration_depth > worst_penetration) {
+				if (contacts[i]->penetration_depth > worst_penetration && !resolved_contacts[i]) {
 					worst_penetration = contacts[i]->penetration_depth;
 					worst_collision_idx = i;
 				}
@@ -102,6 +111,7 @@ namespace migine {
 			if (worst_collision_idx < 0) {
 				break;
 			}
+			resolved_contacts[worst_collision_idx] = true;
 
 			// solve worst worst_contact
 			// calculate linear and angular movement
@@ -332,13 +342,15 @@ namespace migine {
 	}
 
 	void Contact_resolver::resolve_velocity(std::vector<std::unique_ptr<Contact>>& contacts) {
+		vector<bool> resolved_contacts(contacts.size(), false);
+
 		for (int velocity_iteration = 0; velocity_iteration < k_maximum_velocity_correcting_iterations; velocity_iteration++) {
 			// find worst (deepest) worst_contact
 			int worst_collision_idx = -1;
 			float worst_velocity = k_velocity_epsilon;
 			for (int i = 0; i < contacts.size(); i++) {
 				//if (additional_contact_data[i].desired_delta_velocity > worst_velocity && !contacts[i]->vel_resolved) {
-				if (additional_contact_data[i].desired_delta_velocity > worst_velocity) {
+				if (additional_contact_data[i].desired_delta_velocity > worst_velocity && !resolved_contacts[i]) {
 					worst_velocity = additional_contact_data[i].desired_delta_velocity;
 					worst_collision_idx = i;
 				}
@@ -346,6 +358,7 @@ namespace migine {
 			if (worst_collision_idx < 0) {
 				break;
 			}
+			resolved_contacts[worst_collision_idx] = true;
 
 			// solve worst worst_contact
 			// calculate linear and angular movement
@@ -392,7 +405,7 @@ namespace migine {
 		vec3 unit_impulse = more_data.contact_to_world_rotation * unit_impulse_local_contact;
 
 		for (int i = 0; i < 2; i++) {
-			float sign = -1 + 2 * i; // = i ? -1 : 1;
+			float sign = -1 + 2 * i; // = i ? -1 : +1; // in cyclone e pe dos.............. unde ce semn am mai schimbat?
 			auto& obj = *contact.objs[i];
 			vec3 impulsive_torque = cross(more_data.relative_contact_positions[i], unit_impulse);
 			rotation_change[i] = sign * obj.get_inverse_invertia_tensor_world() * impulsive_torque;
@@ -487,6 +500,15 @@ namespace migine {
 			unit_impulse_local_contact.y = more_data.desired_delta_velocity / unit_impulse_local_contact.y;
 			unit_impulse_local_contact.x *= k_friction_coef * unit_impulse_local_contact.y;
 			unit_impulse_local_contact.z *= k_friction_coef * unit_impulse_local_contact.y;
+
+			// TEST
+			//vec3 vt{-more_data.contact_local_velocity.x, 0, -more_data.contact_local_velocity.z};
+			//vec3 friction = glm::normalize(vt) * more_data.desired_delta_velocity * k_friction_coef;
+			//vec3 vel_kill2 = {friction.x, more_data.desired_delta_velocity, friction.z};
+			//vec3 unit_impulse2_local_contact = impulse_matrix * vel_kill2;
+			////unit_impulse_local_contact = unit_impulse2_local_contact;
+			//assert(false);
+
 		}
 		return unit_impulse_local_contact;
 	}
