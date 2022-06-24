@@ -9,7 +9,7 @@ namespace migine {
 	public:
 		Sphere_renderer(const Shader& shader, const Mesh& mesh, const Sphere& sphere, glm::vec3 position = {0, 0, 0}, glm::vec3 scale = {1, 1, 1}, glm::quat rotation = glm::quat());
 
-		virtual void render(const Camera& camera) override;
+		void render(const Camera& camera) override;
 
 	protected:
 		Sphere_renderer(const Sphere& sphere);

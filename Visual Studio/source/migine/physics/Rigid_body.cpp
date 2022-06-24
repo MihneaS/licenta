@@ -40,8 +40,8 @@ namespace migine {
 		float bias = powf(k_motion_base_bias, delta_time);
 		float current_motion = dot(velocity, velocity) + dot(angular_velocity, angular_velocity);
 		motion = bias * motion + (1 - bias) * current_motion;
-		if (motion > 10 * k_sleep_epsilon) {
-			motion = 10 * k_sleep_epsilon;
+		if (motion > k_max_motion) {
+			motion = k_max_motion;
 			//} else if (motion < k_sleep_epsilon && dynamic_cast<Collider_base*>(this)->is_in_contact_with_other_static()) {
 		} else if (motion < k_sleep_epsilon) {
 			motion = 0;
@@ -128,6 +128,7 @@ namespace migine {
 	}
 
 	void Rigid_body::add_velocity(vec3 velocity) {
+		//assert(length(velocity) < 24);
 		this->velocity += velocity;
 	}
 
@@ -245,6 +246,11 @@ namespace migine {
 
 	void Rigid_body::set_asleep(bool new_state) {
 		asleep = new_state;
+	}
+
+	void Rigid_body::awake() {
+		set_asleep(false);
+		set_motion(k_max_motion);
 	}
 
 	void Rigid_body::stop_motion() {

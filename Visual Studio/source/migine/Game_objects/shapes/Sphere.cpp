@@ -1,6 +1,7 @@
 #include "Sphere.h"
 
 #include <migine/Resource_manager.h>
+#include <migine/scenes/Scene_base.h>
 
 using glm::vec3;
 using glm::quat;
@@ -18,5 +19,8 @@ namespace migine {
 		float im_10_div_d2 = get_inverse_mass()*10 / (d*d);
 		set_inverse_inertia_tensor(mat3() * im_10_div_d2);
 		compute_inverse_inertia_tensor_world();
+	}
+	std::unique_ptr<Game_object> Sphere::self_unregister(Scene_base& scene) {
+		return scene.unregister_game_object(this);
 	}
 }

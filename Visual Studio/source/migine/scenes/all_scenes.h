@@ -19,3 +19,5 @@
 #include "simple_tests/Scene_17.h"
 #include "simple_tests/Scene_18.h"
 #include "simple_tests/Scene_19.h"
+#include "simple_tests/Scene_20.h"
+#include "simple_tests/Scene_21.h"

@@ -10,10 +10,10 @@ namespace migine {
 	/*
 	 * Scene for testing contact resolution with rotation between 2 cubes
 	 */
-	class Scene_14 : public migine::Scene_base {
+	class Scene_20 : public migine::Scene_base {
 	public:
-		Scene_14();
-		~Scene_14();
+		Scene_20();
+		~Scene_20();
 
 		void init() override;
 

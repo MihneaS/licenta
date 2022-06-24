@@ -12,6 +12,7 @@ using std::unique_ptr;
 using std::make_unique;
 using std::move;
 using std::cos;
+using std::remove_if;
 
 namespace migine {
 	Force_registry::Entry::Entry(gsl::not_null<Rigid_body*> obj, std::unique_ptr<Force_generator_base> force_generator) :
@@ -23,21 +24,15 @@ namespace migine {
 	}
 
 	void Force_registry::remove(gsl::not_null<Rigid_body*> obj, gsl::not_null<Force_generator_base*> force_generator) {
-		for (auto it = registrations.begin(); it != registrations.end(); it++) {
-			if (it->obj == obj && it->force_generator.get() == force_generator.get()) {
-				registrations.erase(it);
-				break;
-			}
-		}
+		registrations.erase(remove_if(registrations.begin(), registrations.end(),
+		                              [&](Entry& e) { return e.obj.get() == obj.get() && e.force_generator.get() == force_generator.get();}),
+		                    registrations.end());
 	}
 
 	void Force_registry::remove(gsl::not_null<Rigid_body*> obj) {
-		for (auto it = registrations.begin(); it != registrations.end(); it++) {
-			if (it->obj == obj) {
-				registrations.erase(it);
-				break;
-			}
-		}
+		registrations.erase(remove_if(registrations.begin(), registrations.end(),
+		                              [&](Entry& e) { return e.obj.get() == obj.get(); }),
+		                    registrations.end());
 	}
 
 	void Force_registry::clear() {
@@ -174,13 +169,23 @@ namespace migine {
 		force(force), point(point) {
 	}
 
-	std::unique_ptr<Force_generator_base> Sinusiodal_force_on_point_generator::make_deep_copy()
-	{
-		return make_unique< Sinusiodal_force_on_point_generator>(*this);
+	std::unique_ptr<Force_generator_base> Sinusiodal_force_on_point_generator::make_deep_copy() {
+		return make_unique<Sinusiodal_force_on_point_generator>(*this);
 	}
 
 	void Sinusiodal_force_on_point_generator::update_force(gsl::not_null<Rigid_body*> obj, float delta_time) {
 		total_time += delta_time;
 		obj->add_force_at_body_point(force * cos(total_time), point);
+	}
+
+	std::unique_ptr<Force_generator_base> To_center_gravity_generator::make_deep_copy() {
+		return make_unique<To_center_gravity_generator>(*this);
+	}
+
+	float To_center_gravity_generator::gravity_magnitude = glm::length(k_default_gravity);
+
+	void To_center_gravity_generator::update_force(gsl::not_null<Rigid_body*> obj, float delta_time) {
+		vec3 direction = glm::normalize(vec3{0} - obj->transform.get_world_position());
+		obj->add_force(direction * gravity_magnitude);
 	}
 }

@@ -120,8 +120,12 @@ namespace migine {
 			const Additional_contact_data more_data = additional_contact_data[worst_collision_idx];
 
 			if (!worst_contact.objs[0]->is_asleep() || !worst_contact.objs[1]->is_asleep()) {
-				worst_contact.objs[0]->set_asleep(false);
-				worst_contact.objs[1]->set_asleep(false);
+				if (worst_contact.objs[0]->is_asleep()) {
+					worst_contact.objs[0]->awake();
+				}
+				if (worst_contact.objs[1]->is_asleep()) {
+					worst_contact.objs[1]->awake();
+				}
 			}
 
 			//if (worst_contact.objs[0]->get_inverse_mass() != 0 && worst_contact.objs[1]->get_inverse_mass() != 0) {
@@ -368,8 +372,12 @@ namespace migine {
 			float debug_original_desired_delta_velocity = more_data.desired_delta_velocity;
 
 			if (!worst_contact.objs[0]->is_asleep() || !worst_contact.objs[1]->is_asleep()) {
-				worst_contact.objs[0]->set_asleep(false);
-				worst_contact.objs[1]->set_asleep(false);
+				if (worst_contact.objs[0]->is_asleep()) {
+					worst_contact.objs[0]->awake();
+				}
+				if (worst_contact.objs[1]->is_asleep()) {
+					worst_contact.objs[1]->awake();
+				}
 			}
 
 			// apply move

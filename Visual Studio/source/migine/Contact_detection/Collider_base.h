@@ -15,7 +15,7 @@ namespace migine {
 	class Box_collider;
 	class Sphere_collider;
 
-	class Collider_base : virtual public Has_spcon_transform, virtual public Has_id, public Rigid_body 
+	class Collider_base : virtual public Has_id, public Rigid_body, virtual public Has_mesh
 #ifdef DEBUGGING 
 		, virtual public Has_name
 #endif // DEBUGGING

@@ -7,6 +7,7 @@ namespace migine {
 	constexpr glm::vec3 k_default_color = {1,0,1};
 	constexpr float k_default_line_width = 5;
 	constexpr glm::vec3 k_aabb_color = {0.1,0.6,0.1};
+	constexpr glm::vec3 k_default_wall_color = {1, 0.6, 0};
 	constexpr float k_deg_to_rad = glm::pi<float>() / 180.0f;
 	constexpr float k_rad_to_deg = 1.0f / k_deg_to_rad;
 	constexpr int k_box_material_shiness = 30;
@@ -34,6 +35,7 @@ namespace migine {
 	constexpr float k_friction_coef = 0.7;
 	constexpr float k_motion_base_bias = 0.6;
 	constexpr float k_sleep_epsilon = 0.05;
+	constexpr float k_max_motion = 10 * k_sleep_epsilon;
 	constexpr float k_aabb_fattening_time = 0.1;
 
 	enum class Axis {
@@ -79,10 +81,11 @@ namespace migine {
  * U     :
  * V     : TOGGLE CONTACT VELOCITY RESOLVER
  * W     :
- * X     : TOGGLE  BVH RENDERING
+ * X     : TOGGLE BVH RENDERING
  * Y     : TOGGLE SLOWING TIME TENFOLDS
- * Z     :
- * SPACE : SHOOT SHPERE (SCENE_14 ONLY)
+ * Z     : TOGGLE WALLS RENDERING 
+ * SPACE :
+ * RIGHT_SHIFT : CREATE AND SHOOT BALLS
  * [     :
  * ]     : ADVANCE ONE FRAME IF TIME IS STOPPED
  * 

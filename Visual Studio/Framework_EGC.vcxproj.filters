@@ -131,6 +131,10 @@
     <ClCompile Include="source\migine\scenes\simple_tests\Scene_18.cpp" />
     <ClCompile Include="source\migine\scenes\simple_tests\Scene_19.cpp" />
     <ClCompile Include="source\migine\game_objects\rendering\Sphere_renderer.cpp" />
+    <ClCompile Include="source\migine\game_objects\shapes\Box_base.cpp" />
+    <ClCompile Include="source\migine\game_objects\shapes\Wall.cpp" />
+    <ClCompile Include="source\migine\scenes\simple_tests\Scene_20.cpp" />
+    <ClCompile Include="source\migine\scenes\simple_tests\Scene_21.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Core\World.h">
@@ -245,6 +249,10 @@
     <ClInclude Include="source\migine\scenes\simple_tests\Scene_18.h" />
     <ClInclude Include="source\migine\scenes\simple_tests\Scene_19.h" />
     <ClInclude Include="source\migine\game_objects\rendering\Sphere_renderer.h" />
+    <ClInclude Include="source\migine\game_objects\shapes\Box_base.h" />
+    <ClInclude Include="source\migine\game_objects\shapes\Wall.h" />
+    <ClInclude Include="source\migine\scenes\simple_tests\Scene_20.h" />
+    <ClInclude Include="source\migine\scenes\simple_tests\Scene_21.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Source\Laboratoare\Laborator8\Shaders\FragmentShader.glsl">

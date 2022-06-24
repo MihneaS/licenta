@@ -9,7 +9,7 @@
 #include <tuple>
 
 namespace migine {
-	class Box_collider: public Collider_base, virtual public Has_mesh {
+	class Box_collider: public Collider_base{
 		struct Cache_entry {
 			Cache_entry(glm::vec3 local_center, glm::vec3 half_side_lenghts);
 

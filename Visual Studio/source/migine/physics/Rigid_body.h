@@ -39,6 +39,7 @@ namespace migine {
 		float get_kinetic_energy() const;
 		bool is_asleep() const;
 		void set_asleep(bool new_state);
+		void awake();
 
 		void stop_motion(); // deprecated
 		void set_motion(float new_value);

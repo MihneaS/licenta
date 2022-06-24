@@ -18,6 +18,8 @@
 #include <migine/Resource_manager.h>
 #include <migine/contact_detection/Collider_base.h>
 #include <migine/physics/Contact_resolver.h>
+#include <migine/game_objects/shapes/Wall.h>
+#include <migine/game_objects/shapes/Sphere.h>
 
 using std::vector;
 using std::unique_ptr;
@@ -65,32 +67,40 @@ namespace migine {
 	}
 
 	void Scene_base::basic_bool_button_changer(int key, int mods) {
-		if (key == GLFW_KEY_T) {
+		switch (key) {
+		case GLFW_KEY_T:
 			time_stopped = !time_stopped;
-		}
-		if (key == GLFW_KEY_Y) {
+			break;
+		case GLFW_KEY_Y:
 			time_slowed = !time_slowed;
-		}
-		if (key == GLFW_KEY_P) {
+			break;
+		case GLFW_KEY_P:
 			do_resolve_penetrations = !do_resolve_penetrations;
-		}
-		if (key == GLFW_KEY_V) {
+			break;
+		case GLFW_KEY_V:
 			do_resolve_velocities = !do_resolve_velocities;
-		}
-		if (key == GLFW_KEY_1) {
+			break;
+		case GLFW_KEY_1:
 			penetration_type = 1;
-		}
-		if (key == GLFW_KEY_2) {
+			break;
+		case GLFW_KEY_2:
 			penetration_type = 2;
-		}
-		if (key == GLFW_KEY_3) {
+			break;
+		case GLFW_KEY_3:
 			penetration_type = 3;
-		}
-		if (key == GLFW_KEY_X) {
+			break;
+		case GLFW_KEY_X:
 			see_bvh = !see_bvh;
-		}
-		if (key == GLFW_KEY_RIGHT_BRACKET) {
+			break;
+		case GLFW_KEY_Z:
+			see_walls = !see_walls;
+			break;
+		case GLFW_KEY_RIGHT_BRACKET:
 			run_one_frame = true;
+			break;
+		case GLFW_KEY_RIGHT_SHIFT:
+			create_and_shoot_ball();
+			break;
 		}
 	}
 
@@ -99,6 +109,77 @@ namespace migine {
 
 	const unordered_set<not_null<Collider_base*>> Scene_base::get_objects_in_contact_with(not_null<Collider_base*> collider) const {
 		return bvh.get_objects_in_contact_with(collider);
+	}
+
+	void Scene_base::spawn_walls(vec3 pos_down_center, vec3 enclosed_volume_scale) {
+		constexpr float wall_thickness = 20;
+		constexpr float half_thickness = wall_thickness / 2;
+		vec3 half_scale = enclosed_volume_scale / 2.0f;
+
+		{ // wall below
+			vec3 wall_below_pos = vec3{0, -half_thickness, 0};
+			vec3 wall_below_scale = vec3{enclosed_volume_scale.x + 2 * wall_thickness,
+										 wall_thickness,
+										 enclosed_volume_scale.z + 2 * wall_thickness};
+			auto wall_below = make_unique<Wall>(wall_below_pos, wall_below_scale, quat(), k_default_wall_color - vec3{0.05, 0.05, 0});
+			set_name(wall_below.get(), "pamant");
+			register_game_object(move(wall_below));
+		}
+
+		{ // wall left
+			vec3 wall_left_pos = vec3{-(half_scale.x + half_thickness), half_scale.y, 0};
+			vec3 wall_left_scale = vec3{wall_thickness, enclosed_volume_scale.y, enclosed_volume_scale.z + 2 * wall_thickness};
+			auto wall_left = make_unique<Wall>(wall_left_pos, wall_left_scale);
+			set_name(wall_left.get(), "wall_left");
+			register_game_object(move(wall_left));
+		}
+
+		{ // wall right
+			vec3 wall_right_pos = vec3{half_scale.x + half_thickness, half_scale.y, 0};
+			vec3 wall_right_scale = vec3{wall_thickness, enclosed_volume_scale.y, enclosed_volume_scale.z + 2 * wall_thickness};
+			auto wall_right = make_unique<Wall>(wall_right_pos, wall_right_scale);
+			set_name(wall_right.get(), "wall_right");
+			register_game_object(move(wall_right));
+		}
+
+		{ // wall front
+			vec3 wall_front_pos = vec3{0, half_scale.y, -(half_scale.z + half_thickness)};
+			vec3 wall_front_scale = vec3{enclosed_volume_scale.x, enclosed_volume_scale.y, wall_thickness};
+			auto wall_front = make_unique<Wall>(wall_front_pos, wall_front_scale);
+			set_name(wall_front.get(), "wall_front");
+			register_game_object(move(wall_front));
+		}
+
+		{ // wall back
+			vec3 wall_back_pos = vec3{0, half_scale.y, half_scale.z + half_thickness};
+			vec3 wall_back_scale = vec3{enclosed_volume_scale.x, enclosed_volume_scale.y, wall_thickness};
+			auto wall_back = make_unique<Wall>(wall_back_pos, wall_back_scale);
+			set_name(wall_back.get(), "wall_back");
+			register_game_object(move(wall_back));
+		}
+	}
+
+	void Scene_base::spawn_walls_large() {
+		spawn_walls(vec3{0}, {200, 20, 200});
+	}
+
+	void Scene_base::spawn_walls_small() {
+		spawn_walls(vec3{0}, {10, 5, 10});
+	}
+
+	void Scene_base::create_and_shoot_ball() {
+		static int i = 0;
+
+		vec3 pos = camera->transform->GetWorldPosition();
+		quat orientation = camera->transform->GetWorldRotation();
+
+		auto obj_h = make_unique<Sphere>(pos, 1, orientation);
+		obj_h->set_inverse_mass(1);
+		obj_h->set_asleep(false);
+		set_name(obj_h.get(), "shooted sphere " + std::to_string(++i));
+		float initial_speed = 12;
+		obj_h->add_velocity(orientation * euler_angles_deg_to_quat(vec3{0,90,0}) * (initial_speed * vec3{1,0,0}));
+		register_game_object(move(obj_h));
 	}
 
 	void Scene_base::init_resources() {
@@ -263,6 +344,16 @@ namespace migine {
 			}
 		}
 
+		vector<gsl::not_null<Game_object*>> to_destroy;
+		for (auto& game_object : game_objects) {
+			if (game_object->get_transform().get_world_position().y < -100) {
+				to_destroy.push_back(game_object.get());
+			}
+		}
+		for (auto& obj : to_destroy) {
+			unregister_game_object(obj);
+		}
+
 		// render
 		for (auto& renderer : renderers) {
 			renderer->render(this->get_scene_camera());
@@ -295,6 +386,10 @@ namespace migine {
 
 	void Scene_base::frame_end() {
 		//draw_coordinat_system();
+	}
+
+	std::unique_ptr<Game_object> Scene_base::unregister_game_object(gsl::not_null<Game_object*> game_object) {
+		return game_object->self_unregister(*this);
 	}
 
 	void Scene_base::draw_coordinat_system() {
@@ -337,6 +432,64 @@ namespace migine {
 			simple_line->Render();
 
 			object_model->SetWorldRotation(glm::vec3(90, 0, 0));
+			glUniformMatrix4fv(shader.loc_model_matrix, 1, GL_FALSE, glm::value_ptr(object_model->GetModel()));
+			glUniform3f(shader.GetUniformLocation("color"), 0, 0, 1);
+			simple_line->Render();
+
+			object_model->SetWorldRotation(glm::quat());
+
+			glLineWidth(1);
+		}
+	}
+
+	void Scene_base::draw_coordinat_system2() {
+		draw_coordinat_system2(camera->GetViewMatrix(), camera->GetProjectionMatrix());
+	}
+
+	void Scene_base::draw_coordinat_system2(const glm::mat4& view_matrix, const glm::mat4& projection_maxtix) {
+		Resource_manager& rm = get_resource_manager();
+		// Render the coordinate system
+		{
+			const Shader& shader = rm.get_shader(Shader_id::color);
+			shader.Use();
+			glUniformMatrix4fv(shader.loc_view_matrix, 1, GL_FALSE, glm::value_ptr(view_matrix));
+			glUniformMatrix4fv(shader.loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(projection_maxtix));
+
+
+
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+			glLineWidth(3);
+			object_model->SetScale(glm::vec3(1, 25, 1));
+			object_model->SetWorldRotation(glm::quat());
+			glUniformMatrix4fv(shader.loc_model_matrix, 1, GL_FALSE, glm::value_ptr(object_model->GetModel()));
+			glUniform3f(shader.GetUniformLocation("color"), 0, 1, 0);
+			simple_line->Render();
+
+
+			object_model->SetWorldRotation(vec3{0,0,180});
+			glUniformMatrix4fv(shader.loc_model_matrix, 1, GL_FALSE, glm::value_ptr(object_model->GetModel()));
+			glUniform3f(shader.GetUniformLocation("color"), 0, 1, 0);
+			simple_line->Render();
+
+			object_model->SetWorldRotation(glm::vec3(0, 0, -90));
+			glUniformMatrix4fv(shader.loc_model_matrix, 1, GL_FALSE, glm::value_ptr(object_model->GetModel()));
+			glUniform3f(shader.GetUniformLocation("color"), 1, 0, 0);
+			simple_line->Render();
+
+
+			object_model->SetWorldRotation(vec3{0,0,90});
+			glUniformMatrix4fv(shader.loc_model_matrix, 1, GL_FALSE, glm::value_ptr(object_model->GetModel()));
+			glUniform3f(shader.GetUniformLocation("color"), 1, 0, 0);
+			simple_line->Render();
+
+			object_model->SetWorldRotation(glm::vec3(90, 0, 0));
+			glUniformMatrix4fv(shader.loc_model_matrix, 1, GL_FALSE, glm::value_ptr(object_model->GetModel()));
+			glUniform3f(shader.GetUniformLocation("color"), 0, 0, 1);
+			simple_line->Render();
+
+
+			object_model->SetWorldRotation(vec3{-90,0,0});
 			glUniformMatrix4fv(shader.loc_model_matrix, 1, GL_FALSE, glm::value_ptr(object_model->GetModel()));
 			glUniform3f(shader.GetUniformLocation("color"), 0, 0, 1);
 			simple_line->Render();

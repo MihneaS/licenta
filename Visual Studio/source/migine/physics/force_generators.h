@@ -53,6 +53,16 @@ namespace migine {
 		static glm::vec3 gravity;
 	};
 
+	class To_center_gravity_generator : public Force_generator_base {
+	public:
+		To_center_gravity_generator() = default;
+		To_center_gravity_generator(const To_center_gravity_generator&) = default;
+		~To_center_gravity_generator() override = default;
+		std::unique_ptr<Force_generator_base> make_deep_copy() override;
+		void update_force(gsl::not_null<Rigid_body*> obj, float delta_time) override;
+		static float gravity_magnitude;
+	};
+
 	class Drag_generator: public Force_generator_base {
 	public:
 		Drag_generator(float k1, float k2);

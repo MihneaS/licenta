@@ -12,5 +12,6 @@ namespace migine {
 	public:
 		explicit Sphere(glm::vec3 position = { 0,0,0 }, float diameter = 1, glm::quat rotation = glm::quat());
 		void compute_inverse_inertia_tensor() override;
+		std::unique_ptr<Game_object> self_unregister(Scene_base& scene) override;
 	};
 }

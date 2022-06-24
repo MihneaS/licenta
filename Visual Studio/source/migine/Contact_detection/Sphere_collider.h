@@ -4,7 +4,7 @@
 #include <migine/game_objects/components/Has_mesh.h>
 
 namespace migine {
-	class Sphere_collider: public Collider_base, virtual public Has_mesh {
+	class Sphere_collider: public Collider_base {
 	public:
 		std::vector<std::unique_ptr<Contact>> check_collision(Collider_base& other) override; // double dispatch T.T I hate it
 		std::vector<std::unique_ptr<Contact>> check_collision(Box_collider& other) override;

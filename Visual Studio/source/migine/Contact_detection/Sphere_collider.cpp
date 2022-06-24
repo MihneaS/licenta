@@ -44,6 +44,9 @@ namespace migine {
 		vec3 this_center = get_center_world();
 		vec3 other_center = other.get_center_world();
 		float dist2 = distance2(this_center, other_center);
+		if (dist2 == 0) {
+			return ret;
+		}
 		if (dist2 < radii_sum * radii_sum) {
 			vec3 this_to_other = other_center - this_center;
 			vec3 contact_point = (other_center + this_center) / 2.0f;

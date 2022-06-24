@@ -39,6 +39,8 @@ namespace migine {
 		void update(float delta_time_seconds) override;
 		void frame_end() override;
 
+		std::unique_ptr<Game_object> unregister_game_object(gsl::not_null<Game_object*> game_object);
+
 		template<class Obj_t>
 		void register_game_object(std::unique_ptr<Obj_t> game_object) {
 			static_assert(std::is_base_of<Game_object, Obj_t>());
@@ -60,6 +62,49 @@ namespace migine {
 			game_objects.push_back(move(game_object));
 		}
 
+		template<class Obj_t>
+		std::unique_ptr<Game_object> _unregister_game_object(gsl::not_null<Obj_t*> game_object) {
+			static_assert(std::is_base_of<Game_object, Obj_t>());
+			if constexpr (std::is_base_of<Renderer_base, Obj_t>()) {
+				gsl::not_null<Renderer_base*> renderer = static_cast<Renderer_base*>(game_object.get());
+				for (auto it = renderers.begin(); it != renderers.end(); ++it) {
+					if (*it == renderer.get()) {
+						renderers.erase(it);
+						break;
+					}
+				}
+			}
+			if constexpr (std::is_base_of<Rigid_body, Obj_t>()) {
+				gsl::not_null<Rigid_body*> rigid_body = static_cast<Rigid_body*>(game_object.get());
+				for (auto it = rigid_bodies.begin(); it != rigid_bodies.end(); ++it) {
+					if (*it == rigid_body.get()) {
+						rigid_bodies.erase(it);
+						break;
+					}
+				}
+				force_registry.remove(game_object);
+			}
+			if constexpr (std::is_base_of<Collider_base, Obj_t>()) {
+				gsl::not_null<Collider_base*> collider = static_cast<Collider_base*>(game_object.get());
+				bvh.remove(collider);
+			}
+
+			std::unique_ptr<Game_object> ret;
+			for (auto it = game_objects.begin(); it != game_objects.end(); ++it) {
+				if (it->get() == game_object.get()) {
+					ret = move(*it);
+					game_objects.erase(it);
+					break;
+				}
+			}
+			return ret;
+		}
+
+		template<class Obj_t>
+		std::unique_ptr<Game_object> unregister_game_object(Obj_t* game_object) { // for convinience....
+			return _unregister_game_object(gsl::not_null(game_object));
+		}
+
 		template <class Obj_t, typename... Params>
 		gsl::not_null<Obj_t*> make_game_object(Params... params) {
 			std::unique_ptr<Obj_t> new_obj = std::make_unique<Obj_t>(std::forward<Params>(params)...);
@@ -74,16 +119,23 @@ namespace migine {
 		void basic_bool_button_changer(int key, int mods);
 		virtual void modify_contacts(std::vector<std::unique_ptr<Contact>>& contacts);
 		const std::unordered_set<gsl::not_null<Collider_base*>> get_objects_in_contact_with(gsl::not_null<Collider_base*> collider) const;
+		void spawn_walls(glm::vec3 pos_down_center, glm::vec3 enclosed_volume_scale);
+		void spawn_walls_large();
+		void spawn_walls_small();
+		void create_and_shoot_ball();
 
 		glm::vec3 light_position;
 		glm::vec3 light_direction;
 		// TODO use unique
 		std::unique_ptr<Camera> camera;
 		bool see_bvh = true;
+		bool see_walls = true;
 
 	protected:
 		virtual void draw_coordinat_system();
 		virtual void draw_coordinat_system(const glm::mat4& view_matrix, const glm::mat4& projection_maxtix);
+		virtual void draw_coordinat_system2();
+		virtual void draw_coordinat_system2(const glm::mat4& view_matrix, const glm::mat4& projection_maxtix);
 
 		virtual void render_mesh(const Mesh& mesh, const Shader& shader, glm::vec3 position, glm::vec3 scale = glm::vec3(1));
 		virtual void render_mesh(const Mesh& mesh, glm::vec3 position, glm::vec3 scale = glm::vec3(1));

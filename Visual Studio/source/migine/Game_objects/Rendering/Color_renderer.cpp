@@ -7,7 +7,7 @@ using glm::vec3;
 using glm::quat;
 
 namespace migine {
-	Color_renderer::Color_renderer(const Shader& shader, const Mesh& mesh, vec3 position, vec3 scale, quat rotation, vec3 color) :
+	Color_renderer::Color_renderer(const Shader& shader, const Mesh& mesh, vec3 color, vec3 position, vec3 scale, quat rotation) :
 		Has_shader(shader), Has_mesh(mesh), color(color) {
 	}
 
@@ -27,7 +27,7 @@ namespace migine {
 		mesh.Render();
 	}
 
-	Color_renderer::Color_renderer() :
-		Color_renderer(get_shader<Shader_id::color>(), get_mesh<Mesh_id::box>()) {
+	Color_renderer::Color_renderer(vec3 color) :
+		Color_renderer(get_shader<Shader_id::color>(), get_mesh<Mesh_id::box>(), color) {
 	}
 }
