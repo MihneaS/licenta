@@ -188,4 +188,59 @@ namespace migine {
 		vec3 direction = glm::normalize(vec3{0} - obj->transform.get_world_position());
 		obj->add_force(direction * gravity_magnitude);
 	}
+
+	float To_points_gravity_generator::gravity_magnitude = glm::length(k_default_gravity);
+	To_points_gravity_generator::To_points_gravity_generator(int power_n, float side_len) {
+		vec3 min_pos{-(power_n - 1) * side_len / 2.0f};
+		for (int i = 0; i < power_n; i++) {
+			for (int j = 0; j < power_n; j++) {
+				for (int k = 0; k < power_n; k++) {
+					points.push_back(min_pos + side_len * vec3{i,j,k});
+				}
+			}
+		}
+	}
+
+	std::unique_ptr<Force_generator_base> To_points_gravity_generator::make_deep_copy() {
+		return make_unique<To_points_gravity_generator>(*this);
+	}
+	void To_points_gravity_generator::update_force(gsl::not_null<Rigid_body*> obj, float delta_time) {
+		vec3* closest_point = nullptr;
+		float min_dist2 = std::numeric_limits<float>::max();
+		for (auto& p : points) {
+			float d2 = glm::distance2(obj->transform.get_world_position(), p);
+			if (d2 < min_dist2) {
+				min_dist2 = d2;
+				closest_point = &p;
+			}
+		}
+		vec3 direction = glm::normalize(*closest_point - obj->transform.get_world_position());
+		obj->add_force(direction * gravity_magnitude);
+	}
+
+	float In_out_gravity_generator::gravity_magnitude = glm::length(k_default_gravity);
+	In_out_gravity_generator::In_out_gravity_generator(float in_limit, float out_limit) :
+			in_limit(in_limit), out_limit(out_limit) {
+	}
+	std::unique_ptr<Force_generator_base> In_out_gravity_generator::make_deep_copy() {
+		return make_unique<In_out_gravity_generator>(*this);
+	}
+	void In_out_gravity_generator::update_force(gsl::not_null<Rigid_body*> obj, float delta_time) {
+		vec3 obj_to_center = vec3{0} - obj->transform.get_world_position();
+		float d2_to_center = glm::length2(obj_to_center);
+		if (to_center) {
+			if (d2_to_center < in_limit * in_limit) {
+				to_center = false;
+			}
+		} else {
+			if (d2_to_center > out_limit * out_limit) {
+				to_center = true;
+			}
+		}
+		vec3 force = obj_to_center / sqrtf(d2_to_center) * gravity_magnitude;
+		if (!to_center) {
+			force *= -1;
+		}
+		obj->add_force(force);
+	}
 }

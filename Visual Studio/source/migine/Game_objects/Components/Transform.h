@@ -23,6 +23,8 @@ namespace migine {
 		glm::vec3 transform_to_local(glm::vec3 point) const;
 		glm::vec3 rotate_and_scale_to_local(glm::vec3 point) const;
 		template <Axis axis> glm::vec3 get_axis() const;
+		void change_state_with_delta(glm::vec3 delta_pos, glm::vec3 relative_scale_change, glm::vec3 delta_rot);
+		void change_state_with_delta(glm::vec3 delta_pos, glm::vec3 delta_rot);
 
 	private:
 		Transform(const Transform& transform) = default; // can cause slicing if it reaciesvs a child of Transform
@@ -35,8 +37,6 @@ namespace migine {
 
 		glm::vec3 get_axis(int axis) const;
 		// old - deprecated 
-		void change_state_with_delta(glm::vec3 delta_pos, glm::vec3 relative_scale_change, glm::vec3 delta_rot);
-		void change_state_with_delta(glm::vec3 delta_pos, glm::vec3 delta_rot);
 		void change_state(glm::vec3 new_pos = k_vec3_zero, glm::quat new_rot = glm::quat());
 	};
 }

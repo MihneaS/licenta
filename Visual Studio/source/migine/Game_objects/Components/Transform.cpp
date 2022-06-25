@@ -25,6 +25,12 @@ namespace migine {
 		assert(is_finite(delta_rot));
 		world_position += delta_pos;
 		scale *= relative_scale_change;
+		float len = length(delta_rot);
+		if (len == 0) {
+			return;
+		}
+		quat tmp = rotate(quat(), len, delta_rot / len);
+		orientation = tmp * orientation;
 		change_orientation_with_delta(delta_rot);
 
 		internal_update();
@@ -42,7 +48,18 @@ namespace migine {
 	}
 
 	void Transform::change_state_with_delta(vec3 delta_pos, vec3 delta_rot) {
-		change_state_with_delta(delta_pos, {1,1,1}, delta_rot);
+		assert(is_finite(delta_pos));
+		assert(is_finite(delta_rot));
+		world_position += delta_pos;
+		float len = length(delta_rot);
+		if (len == 0) {
+			return;
+		}
+		quat tmp = rotate(quat(), len, delta_rot / len);
+		orientation = tmp * orientation;
+		change_orientation_with_delta(delta_rot);
+
+		internal_update();
 	}
 
 	void Transform::change_state(vec3 new_pos, quat new_rot) {
@@ -84,14 +101,12 @@ namespace migine {
 
 	void Transform::change_orientation_with_delta(vec3 rotation) {
 		assert(is_finite(rotation));
-		//orientation *= euler_angles_to_quat(rotation);
 		float len = length(rotation);
 		if (len == 0) {
 			return;
 		}
 		quat tmp = rotate(quat(), len, rotation / len);
 		orientation = tmp * orientation;
-		//orientation = rotate(orientation, len,  rotation / len);
 		internal_update();
 	}
 

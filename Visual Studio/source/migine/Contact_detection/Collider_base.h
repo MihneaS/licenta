@@ -3,6 +3,7 @@
 #include <migine/game_objects/components/Has_spcon_transform.h>
 #include <migine/game_objects/components/Has_name.h>
 #include <migine/game_objects/components/Has_id.h>
+#include <migine/game_objects/components/Has_mesh.h>
 #include <migine/contact_detection/Contact.h>
 #include <migine/physics/Rigid_body.h>
 #include <migine/define.h>

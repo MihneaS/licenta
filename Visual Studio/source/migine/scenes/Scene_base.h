@@ -26,6 +26,7 @@ class InputController;
 
 namespace migine {
 	class Spcon_transform;
+	class Renderer_base;
 
 	class Scene_base : public World
 	{
@@ -122,6 +123,8 @@ namespace migine {
 		void spawn_walls(glm::vec3 pos_down_center, glm::vec3 enclosed_volume_scale);
 		void spawn_walls_large();
 		void spawn_walls_small();
+		void spawn_balls(int n);
+		void spawn_boxes(int n);
 		void create_and_shoot_ball();
 
 		glm::vec3 light_position;
@@ -162,6 +165,7 @@ namespace migine {
 		bool time_slowed = false;
 		bool do_resolve_penetrations = true;
 		bool do_resolve_velocities = true;
+		bool destroy_objects_deep_down = true;
 		int penetration_type = 1;
 
 	private:

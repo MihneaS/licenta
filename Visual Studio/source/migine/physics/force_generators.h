@@ -63,6 +63,29 @@ namespace migine {
 		static float gravity_magnitude;
 	};
 
+	class To_points_gravity_generator : public Force_generator_base {
+	public:
+		To_points_gravity_generator(int power_n, float side_len = 10);
+		To_points_gravity_generator(const To_points_gravity_generator&) = default;
+		~To_points_gravity_generator() override = default;
+		std::unique_ptr<Force_generator_base> make_deep_copy() override;
+		void update_force(gsl::not_null<Rigid_body*> obj, float delta_time) override;
+		static float gravity_magnitude;
+		std::vector<glm::vec3> points;
+	};
+	class In_out_gravity_generator : public Force_generator_base {
+	public:
+		In_out_gravity_generator(float in_limit, float out_limit);
+		In_out_gravity_generator(const In_out_gravity_generator&) = default;
+		~In_out_gravity_generator() override = default;
+		std::unique_ptr<Force_generator_base> make_deep_copy() override;
+		void update_force(gsl::not_null<Rigid_body*> obj, float delta_time) override;
+		static float gravity_magnitude;
+		float in_limit;
+		float out_limit;
+		bool to_center = true;
+	};
+
 	class Drag_generator: public Force_generator_base {
 	public:
 		Drag_generator(float k1, float k2);

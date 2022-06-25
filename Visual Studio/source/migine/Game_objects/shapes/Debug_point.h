@@ -2,6 +2,7 @@
 #include <migine/game_objects/Game_object.h>
 #include <migine/game_objects/rendering/Color_renderer.h>
 #include <migine/physics/Rigid_body.h>
+#include <migine/game_objects/components/Has_transform.h>
 
 namespace migine {
 	class Debug_point : public Game_object, public Color_renderer, public Has_transform { // , public Rigid_body{

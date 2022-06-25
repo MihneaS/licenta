@@ -128,12 +128,6 @@ namespace migine {
 				}
 			}
 
-			//if (worst_contact.objs[0]->get_inverse_mass() != 0 && worst_contact.objs[1]->get_inverse_mass() != 0) {
-			//	int i = 0;
-			//	assert(true);
-			//	i++;
-			//}
-
 			array<float, 2> angular_inertia = {0};
 			array<float, 2> linear_inertia = {0};
 			float total_inertia = 0;

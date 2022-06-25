@@ -426,15 +426,10 @@ namespace migine {
 		constexpr vec3 std_half_len = vec3{0.5};
 		
 		vec3 direction = normalize(other.transform.get_orientation() * -copy_sing_element_wise(vec3{1}, other.transform.transform_to_local(point)));
-		//vec3 tmp1 = other.transform.get_orientation() * vec3 {1};
-		//vec3 tmp2 = transform.rotate_and_scale_to_local(tmp1);
-		//vec3 direction = normalize(tmp2);
-		//vec3 relative_point_to_standardised_other_center = copy_sing_element_wise(length(std_half_len) * direction, contact_point_to_other_center_local);
 		vec3 relative_point_to_standardised_other_center = length(std_half_len) * direction;
 		vec3 standardised_other_center = relative_point + relative_point_to_standardised_other_center;
 		assert(local_center == vec3{0} && half_side_lengths == vec3{0.5});
 		vec3 standardised_this_center = local_center;
-		//vec3 standardised_this_center = relative_point + copy_sing_element_wise(std_half_len, contact_point_to_this_center_local);
 
 		// observation: relative point from standardised centers is canceled out in the subtraction below
 		vec3 standardised_this_center_to_other_center = standardised_other_center - standardised_this_center;

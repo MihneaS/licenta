@@ -6,6 +6,7 @@
 #include <memory>
 #include <algorithm>
 #include <sstream>
+#include <random>
 
 #include <Component/CameraInput.h>
 #include <Component/Transform/Transform.h>
@@ -20,6 +21,7 @@
 #include <migine/physics/Contact_resolver.h>
 #include <migine/game_objects/shapes/Wall.h>
 #include <migine/game_objects/shapes/Sphere.h>
+#include <migine/game_objects/shapes/Box.h>
 
 using std::vector;
 using std::unique_ptr;
@@ -31,6 +33,9 @@ using std::pair;
 using std::vector;
 using std::array;
 using std::unordered_set;
+using std::bind;
+using std::default_random_engine;
+using std::uniform_real_distribution;
 
 using glm::quat;
 using glm::vec3;
@@ -165,6 +170,63 @@ namespace migine {
 
 	void Scene_base::spawn_walls_small() {
 		spawn_walls(vec3{0}, {10, 5, 10});
+	}
+
+
+	void Scene_base::spawn_balls(int n) {
+		// build random generatior with the same seed in order to have the same output at every run
+		auto rand = bind(uniform_real_distribution<float>{0, 1}, default_random_engine{42});
+		static int ball_counter = 0;
+		constexpr float init_r = 5;
+		constexpr float r_step = 2;
+		constexpr float max_initial_speed = 10; // 100;
+		float r = init_r;
+		for (int i = 0; i < n / 10; i++, r += r_step) {
+			int j_limit = i == n / 10 ? n % 10 : 10;
+			vec3 axis = generate_point_on_sphere(rand);
+			quat q_axis = glm::rotate(quat(), axis);
+			for (int j = 0; j < j_limit; j++) {
+				quat q_around_axis = euler_angles_deg_to_quat({0, 360 / 10 * j, 0});
+				vec3 pos{r,0,0};
+				pos = q_axis * q_around_axis * pos;
+				vec3 initial_velocity_direction = generate_point_on_sphere(rand);
+				vec3 initial_velocity = rand() * max_initial_speed * initial_velocity_direction;
+				auto ball = make_unique<Sphere>(pos);
+				ball->set_inverse_mass(1);
+				ball->awake();
+				ball->add_velocity(initial_velocity);
+				set_name(ball.get(), "spawned ball" + std::to_string(++ball_counter));
+				register_game_object(move(ball));
+			}
+		}
+	}
+
+	void Scene_base::spawn_boxes(int n) {
+		// build random generatior with the same seed in order to have the same output at every run
+		auto rand = bind(uniform_real_distribution<float>{0, 1}, default_random_engine{42});
+		static int ball_counter = 0;
+		constexpr float init_r = 5;
+		constexpr float r_step = 2;
+		constexpr float max_initial_speed = 10; // 100;
+		float r = init_r;
+		for (int i = 0; i < n / 10; i++, r += r_step) {
+			int j_limit = i == n / 10 ? n % 10 : 10;
+			vec3 axis = generate_point_on_sphere(rand);
+			quat q_axis = glm::rotate(quat(), axis);
+			for (int j = 0; j < j_limit; j++) {
+				quat q_around_axis = euler_angles_deg_to_quat({0, 360 / 10 * j, 0});
+				vec3 pos{r,0,0};
+				pos = q_axis * q_around_axis * pos;
+				vec3 initial_velocity_direction = generate_point_on_sphere(rand);
+				vec3 initial_velocity = rand() * max_initial_speed * initial_velocity_direction;
+				auto ball = make_unique<Box>(pos);
+				ball->set_inverse_mass(1);
+				ball->awake();
+				ball->add_velocity(initial_velocity);
+				set_name(ball.get(), "spawned box" + std::to_string(++ball_counter));
+				register_game_object(move(ball));
+			}
+		}
 	}
 
 	void Scene_base::create_and_shoot_ball() {
@@ -344,14 +406,16 @@ namespace migine {
 			}
 		}
 
-		vector<gsl::not_null<Game_object*>> to_destroy;
-		for (auto& game_object : game_objects) {
-			if (game_object->get_transform().get_world_position().y < -100) {
-				to_destroy.push_back(game_object.get());
+		if (destroy_objects_deep_down) {
+			vector<gsl::not_null<Game_object*>> to_destroy;
+			for (auto& game_object : game_objects) {
+				if (game_object->get_transform().get_world_position().y < -100) {
+					to_destroy.push_back(game_object.get());
+				}
 			}
-		}
-		for (auto& obj : to_destroy) {
-			unregister_game_object(obj);
+			for (auto& obj : to_destroy) {
+				unregister_game_object(obj);
+			}
 		}
 
 		// render

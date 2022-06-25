@@ -21,6 +21,7 @@ namespace migine {
     bool is_zero_aprox(float val); // credits for ideea: godot
     bool is_zero_aprox(glm::vec3 vec);
     bool is_equal_aprox(float val0, float val1);
+    float manhatten_distance(glm::vec3 p0, glm::vec3 p1);
     glm::vec3 lerp(glm::vec3 v0, glm::vec3 v1, float t);
     glm::vec3 mid_point(glm::vec3 v0, glm::vec3 v1);
     void set_name(Game_object* obj, std::string name);
@@ -38,7 +39,15 @@ namespace migine {
     bool is_finite(glm::quat q);
     glm::quat change_rotation(glm::vec3 old_direction, glm::vec3 desired_direction, glm::vec3 old_up, glm::vec3 desired_up);
 
-    inline void _transform_inertia_tensor(glm::mat3& iitWorld, const glm::mat3& iitBody, const glm::mat4& rotmat);
+    template <class Randome_generator>
+    glm::vec3 generate_point_on_sphere(Randome_generator rand) {
+        glm::vec3 p{0};
+        do {
+            p = {rand() - 0.5, rand() -0.5, rand() -0.5};
+        } while (is_zero_aprox(p));
+        p = glm::normalize(p);
+        return p;
+    }
 
     // credits to answer from https://stackoverflow.com/questions/7110301/generic-hash-for-tuples-in-unordered-map-unordered-set
     namespace {

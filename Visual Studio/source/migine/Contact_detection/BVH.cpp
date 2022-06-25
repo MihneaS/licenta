@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <queue>
+#include <stack>
 
 #include <iostream>
 
@@ -13,6 +14,7 @@ using glm::vec3;
 using std::vector;
 using std::priority_queue;
 using std::queue;
+using std::stack;
 using std::make_tuple;
 using std::array;
 using std::unique_ptr;
@@ -137,6 +139,10 @@ namespace migine {
 	}
 
 	void BVH::insert(Node* root, not_null<Collider_base*> collider, AABB bounding_volume) {
+		insert_by_volume(root, collider, bounding_volume);
+	}
+
+	void BVH::insert_old(Node* root, not_null<Collider_base*> collider, AABB bounding_volume) {
 		unique_ptr<Node> new_leaf_node = make_unique<Node>(collider, bounding_volume, nullptr);
 		collider->transform.bvh_node = new_leaf_node.get();
 		if (!bvh_root) {
@@ -169,15 +175,151 @@ namespace migine {
 				new_intern_node->children[1]->parent = new_intern_node.get();
 				new_intern_node->parent->children[root_idx] = move(new_intern_node);
 				root = root->parent;
-				/*
-				* TODO also optimize upwards
-				*/
 				do {
 					root->bounding_volume.enlarge_by(bounding_volume);
 					root = root->parent;
 				} while (root);
 			}
-			//print(cout);
+		}
+	}
+
+
+	// inspired by godot that was inspired by bullet
+	void BVH::insert_by_manhatten(Node* root, not_null<Collider_base*> collider, AABB bounding_volume) {
+		unique_ptr<Node> new_leaf_node = make_unique<Node>(collider, bounding_volume, nullptr);
+		collider->transform.bvh_node = new_leaf_node.get();
+		if (!bvh_root) {
+			bvh_root = move(new_leaf_node);
+		} else {
+			while (!root->is_leaf()) {
+				float d0 = manhatten_distance(root->children[0]->bounding_volume.get_center(), bounding_volume.get_center());
+				float d1 = manhatten_distance(root->children[1]->bounding_volume.get_center(), bounding_volume.get_center());
+				root = d0 < d1 ? root->children[0].get() : root->children[1].get();
+			}
+			if (Node* parent = root->parent; !parent) {
+				bvh_root = make_unique<Node>(BVH::Node::children_array_t{move(bvh_root), move(new_leaf_node)}, nullptr);
+				bvh_root->children[0]->parent = bvh_root.get();
+				bvh_root->children[1]->parent = bvh_root.get();
+			} else {
+				int root_idx = parent->get_index_of_child(root);
+				unique_ptr<Node> new_intern_node = make_unique<Node>(BVH::Node::children_array_t{move(parent->children[root_idx]), move(new_leaf_node)}, root->parent);
+				new_intern_node->children[0]->parent = new_intern_node.get();
+				new_intern_node->children[1]->parent = new_intern_node.get();
+				new_intern_node->parent->children[root_idx] = move(new_intern_node);
+				root = root->parent;
+				do {
+					root->bounding_volume.enlarge_by(bounding_volume);
+					root = root->parent;
+				} while (root);
+			}
+		}
+	}
+
+	void BVH::insert_by_manhatten_mid_stop(Node* root, gsl::not_null<Collider_base*> collider, AABB bounding_volume) {
+		unique_ptr<Node> new_leaf_node = make_unique<Node>(collider, bounding_volume, nullptr);
+		collider->transform.bvh_node = new_leaf_node.get();
+		if (!bvh_root) {
+			bvh_root = move(new_leaf_node);
+		} else {
+			while (!root->is_leaf()) {
+				float dr = manhatten_distance(root->bounding_volume.get_center(), bounding_volume.get_center());
+				float d0 = manhatten_distance(root->children[0]->bounding_volume.get_center(), bounding_volume.get_center());
+				float d1 = manhatten_distance(root->children[1]->bounding_volume.get_center(), bounding_volume.get_center());
+				if (dr < d0 && dr < d1) {
+					break;
+				}
+				root = d0 < d1 ? root->children[0].get() : root->children[1].get();
+			}
+			if (Node* parent = root->parent; !parent) {
+				bvh_root = make_unique<Node>(BVH::Node::children_array_t{move(bvh_root), move(new_leaf_node)}, nullptr);
+				bvh_root->children[0]->parent = bvh_root.get();
+				bvh_root->children[1]->parent = bvh_root.get();
+			} else {
+				int root_idx = parent->get_index_of_child(root);
+				unique_ptr<Node> new_intern_node = make_unique<Node>(BVH::Node::children_array_t{move(parent->children[root_idx]), move(new_leaf_node)}, root->parent);
+				new_intern_node->children[0]->parent = new_intern_node.get();
+				new_intern_node->children[1]->parent = new_intern_node.get();
+				new_intern_node->parent->children[root_idx] = move(new_intern_node);
+				root = root->parent;
+				do {
+					root->bounding_volume.enlarge_by(bounding_volume);
+					root = root->parent;
+				} while (root);
+			}
+		}
+	}
+
+	// inspired by box2d
+	void BVH::insert_by_volume(Node* root, gsl::not_null<Collider_base*> collider, AABB bounding_volume) {
+		unique_ptr<Node> new_leaf_node = make_unique<Node>(collider, bounding_volume, nullptr);
+		collider->transform.bvh_node = new_leaf_node.get();
+		if (!bvh_root) {
+			bvh_root = move(new_leaf_node);
+		} else {
+			while (!root->is_leaf()) {
+				float volume = root->bounding_volume.get_volume();
+
+				AABB combined_AABB(root->bounding_volume, bounding_volume);
+				float combined_volume = combined_AABB.get_volume();
+
+				// Cost of creating a new parent for this node and the new leaf
+				float cost = 2.0f * combined_volume;
+
+				// Minimum cost of pushing the leaf further down the tree
+				float inheritance_cost = 2.0f * (combined_volume - volume);
+
+				// Cost of descending into child 0
+				float cost_0;
+				if (root->children[0]->is_leaf()) {
+					AABB aabb(bounding_volume, root->children[0]->bounding_volume);
+					cost_0 = aabb.get_volume() + inheritance_cost;
+				} else {
+					AABB aabb(bounding_volume, root->children[0]->bounding_volume);
+					float old_volume = root->children[0]->bounding_volume.get_volume();
+					float new_volume = aabb.get_volume();
+					cost_0 = (new_volume - old_volume) + inheritance_cost;
+				}
+
+				// Cost of descending into child 1
+				float cost_1;
+				if (root->children[1]->is_leaf()) {
+					AABB aabb(bounding_volume, root->children[1]->bounding_volume);
+					cost_1 = aabb.get_volume() + inheritance_cost;
+				} else {
+					AABB aabb(bounding_volume, root->children[1]->bounding_volume);
+					float old_volume = root->children[1]->bounding_volume.get_volume();
+					float new_volume = aabb.get_volume();
+					cost_1 = (new_volume - old_volume) + inheritance_cost;
+				}
+
+				// Descend according to the minimum cost.
+				if (cost < cost_0 && cost < cost_1) {
+					break;
+				}
+
+				// Descend
+				if (cost_0 < cost_1) {
+					root = root->children[0].get();
+				} else {
+					root = root->children[1].get();
+				}
+			}
+			if (Node* parent = root->parent; !parent) {
+				bvh_root = make_unique<Node>(BVH::Node::children_array_t{move(bvh_root), move(new_leaf_node)}, nullptr);
+				bvh_root->children[0]->parent = bvh_root.get();
+				bvh_root->children[1]->parent = bvh_root.get();
+			} else {
+				int root_idx = parent->get_index_of_child(root);
+				unique_ptr<Node> new_intern_node = make_unique<Node>(BVH::Node::children_array_t{move(parent->children[root_idx]), move(new_leaf_node)}, root->parent);
+				new_intern_node->children[0]->parent = new_intern_node.get();
+				new_intern_node->children[1]->parent = new_intern_node.get();
+				new_intern_node->parent->children[root_idx] = move(new_intern_node);
+				root = root->parent;
+				do {
+					root->bounding_volume.enlarge_by(bounding_volume);
+					root = root->parent;
+				} while (root);
+			}
 		}
 	}
 
@@ -188,11 +330,19 @@ namespace migine {
 	}
 
 	void BVH::remove_leaf(not_null<Node*> leaf) {
+		if (!bvh_root) {
+			return;
+		}
+
 		if (leaf == bvh_root.get()) {
 			bvh_root.reset();
 		} else {
 			Node* grand_parent = leaf->parent->parent;
-			int bro_idx = leaf->parent->get_index_of_brother(leaf);
+			int leaf_idx = leaf->get_index_in_parent();
+			int bro_idx = 1 - leaf_idx;
+			//int bro_idx = leaf->parent->get_index_of_brother(leaf);
+			//int my_idx = 1 - bro_idx;
+			auto unique_ptr_leaf = move(leaf->parent->children[leaf_idx]);// .reset(); // reset crapa. dc?
 			auto brother = move(leaf->parent->children[bro_idx]);
 			if (!grand_parent) {
 				bvh_root = move(brother);
@@ -211,6 +361,25 @@ namespace migine {
 		}
 	}
 
+	void BVH::generate_contacts(not_null<Collider_base*> collider, AABB bounding_volume) {
+		if (bvh_root != nullptr) {
+			stack<Node*, vector<Node*>> s;
+			s.push(bvh_root.get());
+			do {
+				Node* node = s.top();
+				s.pop();
+				if (node->bounding_volume.does_intersect(bounding_volume)) {
+					if (node->is_leaf()) {
+						cache_contact(collider, node->bounded_object);
+					} else {
+						s.push(node->children[0].get());
+						s.push(node->children[1].get());
+					}
+				}
+			} while (!s.empty());
+		}
+	}
+
 	void BVH::cache_contact(not_null<Collider_base*> collider0, not_null<Collider_base*> collider1) {
 		if (collider0->get_inverse_mass() == 0 && collider1->get_inverse_mass() == 0) {
 			return;
@@ -224,6 +393,8 @@ namespace migine {
 
 		contacts_graph[collider0].insert(collider1);
 		contacts_graph[collider1].insert(collider0);
+
+		//assert(contacts_cache.size() == get_graph_size() / 2);
 	}
 
 	void BVH::remove_contact(not_null<Collider_base*> collider0, not_null<Collider_base*> collider1) {
@@ -243,11 +414,9 @@ namespace migine {
 		out_stream << "\n";
 	}
 
-	void BVH::update(not_null<Collider_base*> collider) {
-		// TODO foloseste un volum mai strans si unul mai mare, daca volumul mai stramt nu iese din ala mare nu modifica
+	void BVH::update(gsl::not_null<Collider_base*> collider) {
 		remove(collider);
 		insert(collider);
-
 	}
 
 	void BVH::cache_contacts(not_null<Collider_base*> collider) {
@@ -272,6 +441,10 @@ namespace migine {
 	}
 
 	void BVH::cache_contacts_and_insert(not_null<Collider_base*> collider) {
+		cache_contacts_and_insert_new(collider);
+	}
+
+	void BVH::cache_contacts_and_insert_old(not_null<Collider_base*> collider) {
 		Node* best_insertion_place = bvh_root.get();
 		AABB aabb_for_game_obj(collider);
 		if (bvh_root != nullptr) {
@@ -295,6 +468,27 @@ namespace migine {
 			} while (!q.empty());
 		}
 		insert(best_insertion_place, collider, aabb_for_game_obj);
+	}
+
+	void BVH::cache_contacts_and_insert_new(gsl::not_null<Collider_base*> collider) {
+		AABB aabb_for_game_obj(collider);
+		if (bvh_root != nullptr) {
+			stack<Node*, vector<Node*>> s;
+			s.push(bvh_root.get());
+			do {
+				Node* node = s.top();
+				s.pop();
+				if (node->bounding_volume.does_intersect(aabb_for_game_obj)) {
+					if (node->is_leaf()) {
+						cache_contact(collider, node->bounded_object);
+					} else {
+						s.push(node->children[0].get());
+						s.push(node->children[1].get());
+					}
+				}
+			} while (!s.empty());
+		}
+		insert(bvh_root.get(), collider, aabb_for_game_obj);
 	}
 
 	void BVH::erase_from_all_contacts(not_null<Collider_base*> collider) {
@@ -322,12 +516,33 @@ namespace migine {
 	}
 
 	void BVH::clean_dirty_nodes() {
+		clean_dirty_nodes_new();
+	}
+
+	void BVH::clean_dirty_nodes_old() {
 		for (auto& node : dirty_nodes) {
 			if (!node->bounding_volume.contains(node->bounded_object->provide_slim_aabb_parameters())) {
 				update(node->bounded_object);
 			}
 		}
 		dirty_nodes.clear();
+	}
+
+	void BVH::clean_dirty_nodes_new() {
+		vector<Collider_base*> to_modify;
+		to_modify.reserve(dirty_nodes.size());
+		for (auto& node : dirty_nodes) {
+			if (!node->bounding_volume.contains(node->bounded_object->provide_slim_aabb_parameters())) {
+				to_modify.push_back(node->bounded_object);
+				remove(node->bounded_object);
+			}
+		}
+		dirty_nodes.clear();
+		for (auto& obj : to_modify) {
+			AABB aabb_for_node(obj);
+			generate_contacts(obj, aabb_for_node);
+			insert(bvh_root.get(), obj, aabb_for_node);
+		}
 	}
 
 	const unordered_set<not_null<Collider_base*>> BVH::get_objects_in_contact_with(not_null<Collider_base*> collider) const {
@@ -356,7 +571,9 @@ namespace migine {
 			}
 			out_stream << "}\n";
 		} else {
+#ifdef DEBUGGING
 			out_stream << root->bounded_object->name << "\n";
+#endif // DEBUGGING
 		}
 	}
 

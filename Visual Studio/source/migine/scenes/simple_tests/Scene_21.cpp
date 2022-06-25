@@ -39,10 +39,26 @@ namespace migine {
 	}
 
 	void Scene_21::init() {
+		see_bvh = false;
+		//time_stopped = true;
+		destroy_objects_deep_down = false;
 
 		{ //defualt forces
 			default_fs_gen.clear();
-			default_fs_gen.push_back(make_unique<To_center_gravity_generator>());
+			//default_fs_gen.push_back(make_unique<To_center_gravity_generator>());
+			//default_fs_gen.push_back(make_unique<To_points_gravity_generator>(3, 10));
+			default_fs_gen.push_back(make_unique<In_out_gravity_generator>(5, 30));
+		}
+
+		{ // set camera position and rotation
+			camera->transform->SetWorldPosition(vec3(-25, 17, 25));
+			camera->transform->SetWorldRotation(vec3(-20, -45, 0));
+			camera->Update();
+		}
+
+		{ // spawn balls
+			//spawn_balls(300);
+			spawn_balls(1000);
 		}
 
 		for (auto& game_object : game_objects) {

@@ -52,8 +52,9 @@ namespace migine {
 		
 		if (!is_asleep()) {
 			// Adjust position and orientation
-			transform.change_position_with_delta(velocity * delta_time);
-			transform.change_orientation_with_delta(angular_velocity * delta_time);
+			//transform.change_position_with_delta(velocity * delta_time);
+			//transform.change_orientation_with_delta(angular_velocity * delta_time);
+			transform.change_state_with_delta(velocity * delta_time, angular_velocity * delta_time);
 			// Normalize the orientation, and update the matrices with the new position and orientation.
 			calculate_derived_data();
 		}

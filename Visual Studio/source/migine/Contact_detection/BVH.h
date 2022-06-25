@@ -83,13 +83,17 @@ namespace migine {
 		void insert(gsl::not_null<Collider_base*> collider);
 		void remove(gsl::not_null<Collider_base*> collider);
 		void print(std::ostream& out_stream) const;
-		void update(gsl::not_null<Collider_base*> collider); // TODO find better name
+		void update(gsl::not_null<Collider_base*> collider);
 		void cache_contacts(gsl::not_null<Collider_base*> collider);
 		void cache_contacts_and_insert(gsl::not_null<Collider_base*> collider);
+		void cache_contacts_and_insert_old(gsl::not_null<Collider_base*> collider);
+		void cache_contacts_and_insert_new(gsl::not_null<Collider_base*> collider);
 		void erase_from_all_contacts(gsl::not_null<Collider_base*> collider);
 		const contacts_cache_t& get_contacts() const;
 		size_t get_contact_count() const;
 		void clean_dirty_nodes();
+		void clean_dirty_nodes_old();
+		void clean_dirty_nodes_new();
 		const std::unordered_set<gsl::not_null<Collider_base*>> get_objects_in_contact_with(gsl::not_null<Collider_base*> collider) const;
 
 #ifdef DEBUGGING
@@ -101,8 +105,13 @@ namespace migine {
 
 	private:
 		void insert(Node* root, gsl::not_null<Collider_base*> collider, AABB bounding_volume);
+		void insert_old(Node* root, gsl::not_null<Collider_base*> collider, AABB bounding_volume);
+		void insert_by_manhatten(Node* root, gsl::not_null<Collider_base*> collider, AABB bounding_volume);
+		void insert_by_manhatten_mid_stop(Node* root, gsl::not_null<Collider_base*> collider, AABB bounding_volume);
+		void insert_by_volume(Node* root, gsl::not_null<Collider_base*> collider, AABB bounding_volume);
 		void insert(Node* root, gsl::not_null<Collider_base*> collider);
 		void remove_leaf(gsl::not_null<Node*> leaf);
+		void generate_contacts(gsl::not_null<Collider_base*> collider, AABB bounding_volume);
 		void cache_contact(gsl::not_null<Collider_base*> collider0, gsl::not_null<Collider_base*> collider1);
 		void remove_contact(gsl::not_null<Collider_base*> colldier0, gsl::not_null<Collider_base*> collider1);
 		void print_recursive(std::ostream& out_stream, Node* root, int level) const;

@@ -31,7 +31,7 @@ namespace migine {
 		if (is_asleep() && other.is_asleep()) {
 			return vector<unique_ptr<Contact>>();
 		}
-		return other.check_collision(*this);
+		return other.check_collision(*this); // double dispatch
 	}
 
 	vector<unique_ptr<Contact>> Sphere_collider::check_collision(Box_collider& other) {  // DRY principle
@@ -103,7 +103,8 @@ namespace migine {
 	}
 
 
-	Sphere_collider::Sphere_collider() : Has_mesh(get_mesh<Mesh_id::sphere>()) {
+	Sphere_collider::Sphere_collider() : Has_mesh(get_mesh<Mesh_id::sphere>()) 
+	{
 		compute_center_and_radius();
 	}
 

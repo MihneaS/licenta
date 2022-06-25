@@ -103,6 +103,10 @@ namespace migine {
 		return is_zero_aprox(val0 - val1);
 	}
 
+	float manhatten_distance(glm::vec3 p0, glm::vec3 p1) {
+		return abs(p0.x - p1.x) + abs(p0.y - p1.y) + abs(p0.z - p1.z);
+	}
+
 	vec3 lerp(vec3 v0, vec3 v1, float t) {
 		return v0 + (v1 - v0) * t;
 	}
@@ -123,64 +127,6 @@ namespace migine {
 		// fie seg_p0 = p0, seg_p1 = p1, q = p
 		vec3 p0q = p - seg_p0;
 		return seg_p0 + dot(p0q, seg) / dot(seg, seg) * seg;
-	}
-
-	void _transform_inertia_tensor(mat3& iitWorld, const mat3& iitBody, const mat4& rotmat) {
-		assert(false); // am descoperit ca matricile  pe care se bazeaza aceste hardcodari sunt transpuse fata de matricile din glm
-		float t04 = rotmat[0][0] * iitBody[0][0] +
-			rotmat[0][1] * iitBody[1][0] +
-			rotmat[0][2] * iitBody[2][0];
-		float t09 = rotmat[0][0] * iitBody[0][1] +
-			rotmat[0][1] * iitBody[1][1] +
-			rotmat[0][2] * iitBody[2][1];
-		float t14 = rotmat[0][0] * iitBody[0][2] +
-			rotmat[0][1] * iitBody[1][2] +
-			rotmat[0][2] * iitBody[2][2];
-		float t28 = rotmat[1][0] * iitBody[0][0] +
-			rotmat[1][1] * iitBody[1][0] +
-			rotmat[1][2] * iitBody[2][0];
-		float t33 = rotmat[1][0] * iitBody[0][1] +
-			rotmat[1][1] * iitBody[1][1] +
-			rotmat[1][2] * iitBody[2][1];
-		float t38 = rotmat[1][0] * iitBody[0][2] +
-			rotmat[1][1] * iitBody[1][2] +
-			rotmat[1][2] * iitBody[2][2];
-		float t52 = rotmat[2][0] * iitBody[0][0] +
-			rotmat[2][1] * iitBody[1][0] +
-			rotmat[2][2] * iitBody[2][0];
-		float t57 = rotmat[2][0] * iitBody[0][1] +
-			rotmat[2][1] * iitBody[1][1] +
-			rotmat[2][2] * iitBody[2][1];
-		float t62 = rotmat[2][0] * iitBody[0][2] +
-			rotmat[2][1] * iitBody[1][2] +
-			rotmat[2][2] * iitBody[2][2];
-		iitWorld[0][0] = t04 * rotmat[0][0] +
-			t09 * rotmat[0][1] +
-			t14 * rotmat[0][2];
-		iitWorld[0][1] = t04 * rotmat[1][0] +
-			t09 * rotmat[1][1] +
-			t14 * rotmat[1][2];
-		iitWorld[0][2] = t04 * rotmat[2][0] +
-			t09 * rotmat[2][1] +
-			t14 * rotmat[2][2];
-		iitWorld[1][0] = t28 * rotmat[0][0] +
-			t33 * rotmat[0][1] +
-			t38 * rotmat[0][2];
-		iitWorld[1][1] = t28 * rotmat[1][0] +
-			t33 * rotmat[1][1] +
-			t38 * rotmat[1][2];
-		iitWorld[1][2] = t28 * rotmat[2][0] +
-			t33 * rotmat[2][1] +
-			t38 * rotmat[2][2];
-		iitWorld[2][0] = t52 * rotmat[0][0] +
-			t57 * rotmat[0][1] +
-			t62 * rotmat[0][2];
-		iitWorld[2][1] = t52 * rotmat[1][0] +
-			t57 * rotmat[1][1] +
-			t62 * rotmat[1][2];
-		iitWorld[2][2] = t52 * rotmat[2][0] +
-			t57 * rotmat[2][1] +
-			t62 * rotmat[2][2];
 	}
 
 	// Returns a quaternion such that q*start = dest
