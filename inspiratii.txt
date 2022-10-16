@@ -1,9 +1,0 @@
-aabb tree
-https://github.com/godotengine/godot/blob/master/core/math/dynamic_bvh.h
-https://box2d.org/files/ErinCatto_DynamicBVH_GDC2019.pdf
-
-unordered_map vs map
-http://supercomputingblog.com/windows/ordered-map-vs-unordered-map-a-performance-study/
-
-cpp Singleton
-https://stackoverflow.com/questions/1008019/c-singleton-design-pattern
